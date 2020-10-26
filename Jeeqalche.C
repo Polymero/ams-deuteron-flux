@@ -11,7 +11,7 @@
 void Miiqtool(string rootfiles = "local") {
 
   // Create new objects
-  TFile f("Simp.root", "recreate");
+  TFile f("../Simp.root", "recreate");
   TTree *T = new TTree("Simp", "Simplified Compact Tree");
   NtpCompact *Compact = new NtpCompact();
   NtpSHeader *SHeader = new NtpSHeader();
