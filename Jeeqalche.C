@@ -28,8 +28,8 @@ void Miiqtool(string rootfiles = "local") {
       comp_chain.Add("/net/dataserver3/data/users/bueno/data/iss/AO/ISS.B1130/pass7/*.root");
       rtii_chain.Add("/net/dataserver3/data/users/bueno/data/iss/AO/ISS.B1130/pass7/*.root");
     } else if(rootfiles == "local") {
-      comp_chain.Add("./pass7/*.root");
-      rtii_chain.Add("./pass7/*.root");
+      comp_chain.Add("../../pass7/*.root");
+      rtii_chain.Add("../../pass7/*.root");
     } else {
       throw 001;
     }
