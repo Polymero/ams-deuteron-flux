@@ -10,8 +10,6 @@ import ROOT
 # ------------------------------------------------------------------------------
 # DATA
 # ------------------------------------------------------------------------------
-# Canvas config (to prevent warnings)
-c_i = 0
 # Output directory for images
 out_path = './CutAnalysis/'
 # Include header file
@@ -54,8 +52,9 @@ CR = ROOT.TCut('trk_rig > {0}*cf'.format(geo_crit)) # geo-magnetic cut-off
 
 def cut_plot(par, title='', xlabel='', ylabel='events', stats=False, bins=200, xrange=(0,0), yrange=(0,0), log_y=True, prop=False):
     # Create Canvas
-    global c_i
-    canvas = ROOT.TCanvas("{}".format(c_i),"{}".format(c_i), 800, 500)
+    if title == '':
+        title = par
+    canvas = ROOT.TCanvas("{}".format(title),"{}".format(title), 800, 500)
     # Draw Histogram and store in ROOT.histo
     xrange = str(xrange)[1:-1]
     chain.Draw('{} >> hist1({}, {})'.format(par, bins, xrange), '')
@@ -71,8 +70,6 @@ def cut_plot(par, title='', xlabel='', ylabel='events', stats=False, bins=200, x
     ROOT.hist5.SetLineColor(ROOT.kBlack)
     ROOT.hist5.SetLineWidth(2)
     # Labelling
-    if title == '':
-        title = par
     ROOT.hist1.SetTitle(title)
     ROOT.hist1.GetXaxis().SetTitle(xlabel)
     ROOT.hist1.GetYaxis().SetTitle(ylabel)
@@ -97,15 +94,16 @@ def cut_plot(par, title='', xlabel='', ylabel='events', stats=False, bins=200, x
         he1 = ROOT.hist3.GetEntries(); print('CG+CQ: ', he1, '({:.1f} %)'.format(he1/chain_events*100))
         he1 = ROOT.hist4.GetEntries(); print('CG+CQ+CZ: ', he1, '({:.1f} %)'.format(he1/chain_events*100))
         he1 = ROOT.hist5.GetEntries(); print('CG+CQ+CZ+CR: ', he1, '({:.1f} %)'.format(he1/chain_events*100))
-    # Increment canvas counter
-    c_i += 1
+    # Return canvas and legend elements
     return canvas, legend
 
 # ------------------------------------------------------------------------------
 # CUT PLOTS
 # ------------------------------------------------------------------------------
 # TOF Beta (prop = True)
-c, l = cut_plot('tof_beta', title='TOF Beta', xlabel='beta (v/c)', xrange=(.01,2.), prop=True); c.Draw(); l.Draw("same")
+c, l = cut_plot('tof_beta', title='TOF Beta', xlabel='beta (v/c)', xrange=(.01,2.), prop=True)
+c.Draw()
+l.Draw("same")
 c.Print(out_path + 'TOF_Beta.png')
 # RICH Beta
 c, l = cut_plot('rich_beta', title='RICH Beta', xlabel='beta (v/c)', xrange=(.74,1.05)); c.Draw(); l.Draw("same")
