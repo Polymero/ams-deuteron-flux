@@ -45,6 +45,8 @@ CZb = ROOT.TCut('trk_q_lay[4]{0}0 && trk_q_lay[1]{0}0 && trk_q_lay[2]{0}0 && trk
 CZ = CZa + CZb
 # Geo-magnetic cut-off
 CR = ROOT.TCut('trk_rig > {0}*cf'.format(geo_crit)) # geo-magnetic cut-off
+# TOF - RICH Consistency
+CC = ROOT.TCut('abs(tof_beta-rich_beta)/tof_beta > 0.05')
 
 # ------------------------------------------------------------------------------
 # PLOT FUNCTION
@@ -52,7 +54,7 @@ CR = ROOT.TCut('trk_rig > {0}*cf'.format(geo_crit)) # geo-magnetic cut-off
 
 ROOT.gStyle.SetOptTitle(0)
 
-def cut_plot(par, title='', xlabel='', ylabel='events', stats=False, bins=200, xrange=(0,0), yrange=(0,0), log_y=True, prop=False):
+def cut_plot(par, title='', xlabel='', ylabel='events', stats=False, bins=200, xrange=(0,0), yrange=(0,0), log_y=True, prop=False, lx=0.65, ly=0.6):
     # Create Canvas
     if title == '':
         title = par
@@ -64,18 +66,21 @@ def cut_plot(par, title='', xlabel='', ylabel='events', stats=False, bins=200, x
     chain.Draw('{} >> {}({}, {})'.format(par, title+'3', bins, xrange), CG+CQ, 'SAME')
     chain.Draw('{} >> {}({}, {})'.format(par, title+'4', bins, xrange), CG+CQ+CZ, 'SAME')
     chain.Draw('{} >> {}({}, {})'.format(par, title+'5', bins, xrange), CG+CQ+CZ+CR, 'SAME')
+    chain.Draw('{} >> {}({}, {})'.format(par, title+'6', bins, xrange), CG+CQ+CZ+CR+CC, 'SAME')
     # Get TH1F objects
     hist1 = ROOT.gROOT.FindObject(title+'1')
     hist2 = ROOT.gROOT.FindObject(title+'2')
     hist3 = ROOT.gROOT.FindObject(title+'3')
     hist4 = ROOT.gROOT.FindObject(title+'4')
     hist5 = ROOT.gROOT.FindObject(title+'5')
+    hist6 = ROOT.gROOT.FindObject(title+'6')
     # Coloring
     hist1.SetLineColor(ROOT.kBlue); hist1.SetLineWidth(3)
     hist2.SetLineColor(ROOT.kRed); hist2.SetLineWidth(3)
     hist3.SetLineColor(ROOT.kGreen); hist3.SetLineWidth(3)
     hist4.SetLineColor(ROOT.kOrange); hist4.SetLineWidth(3)
     hist5.SetLineColor(ROOT.kBlack); hist5.SetLineWidth(5)
+    hist6.SetLineColor(ROOT.kMagenta); hist6.SetLineWidth(3)
     # Labelling
     # hist1.SetTitle(title) # Title is bugging, so just get rid of it (won't use it in thesis anyway)
     hist1.GetXaxis().SetTitle(xlabel)
@@ -86,12 +91,13 @@ def cut_plot(par, title='', xlabel='', ylabel='events', stats=False, bins=200, x
         hist1.SetAxisRange(yrange[0], yrange[1], "Y")
     canvas.SetLogy(log_y)
     # Legend
-    legend = ROOT.TLegend(0.65 ,0.6 ,0.85 ,0.75)
+    legend = ROOT.TLegend(lx, ly,lx+.20, ly+.15)
     legend.AddEntry(hist1, 'None')
     legend.AddEntry(hist2, 'CG')
     legend.AddEntry(hist3, 'CG+CQ')
     legend.AddEntry(hist4, 'CG+CQ+CZ')
     legend.AddEntry(hist5, 'CG+CQ+CZ+CR')
+    legend.AddEntry(hist6, 'CG+CQ+CZ+CR+CC')
     legend.SetLineWidth(0)
     #legend.SetTextSize(10) # This line makes text in TLegend disappear !!!
     legend.Draw() # TLegend can be drawn here but has to returned as well !!!
@@ -102,6 +108,7 @@ def cut_plot(par, title='', xlabel='', ylabel='events', stats=False, bins=200, x
         he1 = hist3.GetEntries(); print('CG+CQ: ', he1, '({:.1f} %)'.format(he1/chain_events*100))
         he1 = hist4.GetEntries(); print('CG+CQ+CZ: ', he1, '({:.1f} %)'.format(he1/chain_events*100))
         he1 = hist5.GetEntries(); print('CG+CQ+CZ+CR: ', he1, '({:.1f} %)'.format(he1/chain_events*100))
+        he1 = hist6.GetEntries(); print('CG+CQ+CZ+CR+CC: ', he1, '({:.1f} %)'.format(he1/chain_events*100))
     # Delete histograms
     # ROOT.hist1.SetDirectory(0)
     # ROOT.hist2.SetDirectory(0)
@@ -118,28 +125,41 @@ def cut_plot(par, title='', xlabel='', ylabel='events', stats=False, bins=200, x
 c, l = cut_plot('tof_beta', title='TOF Beta', xlabel='beta (v/c)', xrange=(.01,2.), prop=True)
 c.Print(out_path + 'TOF_Beta.png')
 # RICH Beta
-c, l =cut_plot('rich_beta', title='RICH Beta', xlabel='beta (v/c)', xrange=(.74,1.05))
+c, l = cut_plot('rich_beta', title='RICH Beta', xlabel='beta (v/c)', xrange=(.74,1.05), lx=.2)
 c.Print(out_path + 'RICH_Beta.png')
 # Tracker Rigidity
-c, l =cut_plot('trk_rig', title='Tracker Rigidity', xlabel='R [GV]', xrange=(0,22), yrange=(1,1e6))
+c, l = cut_plot('trk_rig', title='Tracker Rigidity', xlabel='R [GV]', xrange=(0,22), yrange=(1,1e6))
 c.Print(out_path + 'Tracker_Rigidity.png')
 # Inner Tracker Charge
-c, l =cut_plot('trk_q_inn', title='Inner Tracker Charge', xlabel='Z [e]', xrange=(0.3,3.0), yrange=(1,1e5))
+c, l = cut_plot('trk_q_inn', title='Inner Tracker Charge', xlabel='Z [e]', xrange=(0.3,3.0), yrange=(1,1e5), lx=.7)
 c.Print(out_path + 'Inner_Tracker_Charge.png')
 # First Tracker Layer Charge
-c, l =cut_plot('trk_q_lay[0]', title='First Tracker Layer Charge', xlabel='Z [e]', xrange=(0.3,3.0), yrange=(1,3e4))
+c, l = cut_plot('trk_q_lay[0]', title='First Tracker Layer Charge', xlabel='Z [e]', xrange=(0.3,3.0), yrange=(1,3e4), lx=.7)
 c.Print(out_path + 'First_Tracker_Layer_Charge.png')
 # Bending Plane Chi-squared
-c, l =cut_plot('trk_chisqn[1]', title='Bending Plane Chi-squared', xlabel='chi-squared', xrange=(-.5,10.5), yrange=(1,3e5))
+c, l = cut_plot('trk_chisqn[1]', title='Bending Plane Chi-squared', xlabel='chi-squared', xrange=(-.5,10.5), yrange=(1,3e5))
 c.Print(out_path + 'Bending_Plane_Chisquared.png')
 # TOF Mass
-c, l =cut_plot('trk_q_inn * trk_rig * TMath::Sqrt(1/tof_beta/tof_beta - 1)', title='TOF Mass',
-                xlabel='m [GeV/c^2]', xrange=(.1,2.5), yrange=(0, 3750), log_y=False)
+c, l = cut_plot('trk_q_inn * trk_rig * TMath::Sqrt(1/tof_beta/tof_beta - 1)', title='TOF Mass Log',
+                xlabel='m [GeV/c^2]', xrange=(.1,2.5), yrange=(1, 3750), log_y=True, ly=.15)
+c.Print(out_path + 'TOF_Mass_Log.png')
+c, l = cut_plot('trk_q_inn * trk_rig * TMath::Sqrt(1/tof_beta/tof_beta - 1)', title='TOF Mass',
+                xlabel='m [GeV/c^2]', xrange=(.1,2.5), yrange=(0, 4000), log_y=False)
 c.Print(out_path + 'TOF_Mass.png')
 # RICH Mass
-c, l =cut_plot('trk_q_inn * trk_rig * TMath::Sqrt(1/rich_beta/rich_beta - 1)', title='RICH Mass',
-                xlabel='m [GeV/c^2]', xrange=(.1,2.5), yrange=(0, 4250), log_y=False)
+c, l = cut_plot('trk_q_inn * trk_rig * TMath::Sqrt(1/rich_beta/rich_beta - 1)', title='RICH Mass Log',
+                xlabel='m [GeV/c^2]', xrange=(.1,2.5), yrange=(1, 4250), log_y=True, ly=.7)
+c.Print(out_path + 'RICH_Mass_Log.png')
+c, l = cut_plot('trk_q_inn * trk_rig * TMath::Sqrt(1/rich_beta/rich_beta - 1)', title='RICH Mass',
+                xlabel='m [GeV/c^2]', xrange=(.1,2.5), yrange=(0, 5000), log_y=False)
 c.Print(out_path + 'RICH_Mass.png')
+# Livetime
+c, l = cut_plot('lf', title='Livetime', xlabel='t [s]', xrange=(0,1), log_y=True, lx=.2);
+c.Print(out_path + 'Livetime.png')
+# TOF - RICH Consistency
+c, l = cut_plot('abs(tof_beta-rich_beta)/tof_beta', title='TOF - RICH Beta Consistency',
+                xlabel='t [s]', xrange=(0,0.3), yrange=(1, 1e4), log_y=True)
+c.Print(out_path + 'TOF_RICH_Beta_Consistency')
 
 # ------------------------------------------------------------------------------
 # YET TO FIX: ALL BELOW

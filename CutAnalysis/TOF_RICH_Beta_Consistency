@@ -1,0 +1,160 @@
+%!PS-Adobe-2.0
+%%Title: ./CutAnalysis/TOF_RICH_Beta_Consistency: TOF - RICH Beta Consistency
+%%Creator: ROOT Version 6.20/08
+%%CreationDate: Wed Oct 28 13:23:39 2020
+%%Orientation: Landscape
+%%DocumentNeededResources: ProcSet (FontSetInit)
+%%EndComments
+%%BeginProlog
+/s {stroke} def /l {lineto} def /m {moveto} def /t {translate} def
+/r {rotate} def /rl {roll}  def /R {repeat} def
+/d {rlineto} def /rm {rmoveto} def /gr {grestore} def /f {eofill} def
+/c {setrgbcolor} def /black {0 setgray} def /sd {setdash} def
+/cl {closepath} def /sf {scalefont setfont} def /lw {setlinewidth} def
+/box {m dup 0 exch d exch 0 d 0 exch neg d cl} def
+/NC{systemdict begin initclip end}def/C{NC box clip newpath}def
+/bl {box s} def /bf {gsave box gsave f grestore 1 lw [] 0 sd s grestore} def /Y { 0 exch d} def /X { 0 d} def 
+/K {{pop pop 0 moveto} exch kshow} bind def
+/ita {/ang 15 def gsave [1 0 ang dup sin exch cos div 1 0 0] concat} def 
+/mp {newpath /y exch def /x exch def} def
+/side {[w .77 mul w .23 mul] .385 w mul sd w 0 l currentpoint t -144 r} def
+/mr {mp x y w2 0 360 arc} def /m24 {mr s} def /m20 {mr f} def
+/mb {mp x y w2 add m w2 neg 0 d 0 w neg d w 0 d 0 w d cl} def
+/mt {mp x y w2 add m w2 neg w neg d w 0 d cl} def
+/w4 {w 4 div} def
+/w6 {w 6 div} def
+/w8 {w 8 div} def
+/m21 {mb f} def /m25 {mb s} def /m22 {mt f} def /m26{mt s} def
+/m23 {mp x y w2 sub m w2 w d w neg 0 d cl f} def
+/m27 {mp x y w2 add m w3 neg w2 neg d w3 w2 neg d w3 w2 d cl s} def
+/m28 {mp x w2 sub y w2 sub w3 add m w3 0 d  0 w3 neg d w3 0 d 0 w3 d w3 0 d  0 w3 d w3 neg 0 d 0 w3 d w3 neg 0 d 0 w3 neg d w3 neg 0 d cl s } def
+/m29 {mp gsave x w2 sub y w2 add w3 sub m currentpoint t 4 {side} repeat cl fill gr} def
+/m30 {mp gsave x w2 sub y w2 add w3 sub m currentpoint t 4 {side} repeat cl s gr} def
+/m31 {mp x y w2 sub m 0 w d x w2 sub y m w 0 d x w2 sub y w2 add m w w neg d x w2 sub y w2 sub m w w d s} def
+/m32 {mp x y w2 sub m w2 w d w neg 0 d cl s} def
+/m33 {mp x y w2 add m w3 neg w2 neg d w3 w2 neg d w3 w2 d cl f} def
+/m34 {mp x w2 sub y w2 sub w3 add m w3 0 d  0 w3 neg d w3 0 d 0 w3 d w3 0 d  0 w3 d w3 neg 0 d 0 w3 d w3 neg 0 d 0 w3 neg d w3 neg 0 d cl f } def
+/m35 {mp x y w2 add m w2 neg w2 neg d w2 w2 neg d w2 w2 d w2 neg w2 d x y w2 sub m 0 w d x w2 sub y m w 0 d s} def
+/m36 {mb x w2 sub y w2 add m w w neg d x w2 sub y w2 sub m w w d s} def
+/m37 {mp x y m w4 neg w2 d w4 neg w2 neg d w2 0 d  w4 neg w2 neg d w2 0 d w4 neg w2 d w2 0 d w4 neg w2 d w4 neg w2 neg d cl s} def
+/m38 {mp x w4 sub y w2 add m w4 neg w4 neg d 0 w2 neg d w4 w4 neg d w2 0 d w4 w4 d 0 w2 d w4 neg w4 d w2 neg 0 d x y w2 sub m 0 w d x w2 sub y m w 0 d cl s} def
+/m39 {mp x y m w4 neg w2 d w4 neg w2 neg d w2 0 d  w4 neg w2 neg d w2 0 d w4 neg w2 d w2 0 d w4 neg w2 d w4 neg w2 neg d cl f} def
+/m40 {mp x y m w4 w2 d w4 w4 neg d w2 neg w4 neg d w2 w4 neg d w4 neg w4 neg d w4 neg w2 d w4 neg w2 neg d w4 neg w4 d w2 w4 d w2 neg w4 d w4 w4 d w4 w2 neg d cl s} def
+/m41 {mp x y m w4 w2 d w4 w4 neg d w2 neg w4 neg d w2 w4 neg d w4 neg w4 neg d w4 neg w2 d w4 neg w2 neg d w4 neg w4 d w2 w4 d w2 neg w4 d w4 w4 d w4 w2 neg d cl f} def
+/m42 {mp x y w2 add m w8 neg w2 -3 4 div mul d w2 -3 4 div mul w8 neg d w2 3 4 div mul w8 neg d w8 w2 -3 4 div mul d w8 w2 3 4 div mul d w2 3 4 div mul w8 d w2 -3 4 div mul w8 d w8 neg w2 3 4 div mul d cl s} def
+/m43 {mp x y w2 add m w8 neg w2 -3 4 div mul d w2 -3 4 div mul w8 neg d w2 3 4 div mul w8 neg d w8 w2 -3 4 div mul d w8 w2 3 4 div mul d w2 3 4 div mul w8 d w2 -3 4 div mul w8 d w8 neg w2 3 4 div mul d cl f} def
+/m44 {mp x y m w6 neg w2 d w2 2 3 div mul 0 d w6 neg w2 neg d w2 w6 d 0 w2 -2 3 div mul d w2 neg w6 d w6 w2 neg d w2 -2 3 div mul 0 d w6 w2 d w2 neg w6 neg d 0 w2 2 3 div mul d w2 w6 neg d cl s} def
+/m45 {mp x y m w6 neg w2 d w2 2 3 div mul 0 d w6 neg w2 neg d w2 w6 d 0 w2 -2 3 div mul d w2 neg w6 d w6 w2 neg d w2 -2 3 div mul 0 d w6 w2 d w2 neg w6 neg d 0 w2 2 3 div mul d w2 w6 neg d cl f} def
+/m46 {mp x y w4 add m w4 neg w4 d w4 neg w4 neg d  w4 w4 neg d w4 neg w4 neg d w4 w4 neg d w4 w4 d w4 w4 neg d w4 w4 d w4 neg w4 d w4 w4 d w4 neg w4 d w4 neg w4 neg d cl s} def
+/m47 {mp x y w4 add m w4 neg w4 d w4 neg w4 neg d w4 w4 neg d w4 neg w4 neg d  w4 w4 neg d w4 w4 d w4 w4 neg d w4 w4 d w4 neg w4 d w4 w4 d w4 neg w4 d w4 neg w4 neg d cl f} def
+/m48 {mp x y w4 add m w4 neg w4 d w4 neg w4 neg d w4 w4 neg d  w4 neg w4 neg d w4 w4 neg d w4 w4 d w4 w4 neg d w4 w4 d w4 neg w4 d w4 w4 d w4 neg w4 d w4 neg w4 neg d  w4 w4 neg d w4 neg w4 neg d w4 neg w4 d w4 w4 d cl f} def
+/m49 {mp x w2 sub w3 add y w2 sub w3 add m  0 w3 neg d w3 0 d 0 w3 d w3 0 d 0 w3 d w3 neg 0 d 0 w3 d w3 neg 0 d 0 w3 neg d w3 neg 0 d 0 w3 neg d w3 0 d 0 w3 d w3 0 d 0 w3 neg d w3 neg 0 d cl f } def
+/m2 {mp x y w2 sub m 0 w d x w2 sub y m w 0 d s} def
+/m5 {mp x w2 sub y w2 sub m w w d x w2 sub y w2 add m w w neg d s} def
+%%IncludeResource: ProcSet (FontSetInit)
+%%IncludeResource: font Times-Roman
+%%IncludeResource: font Times-Italic
+%%IncludeResource: font Times-Bold
+%%IncludeResource: font Times-BoldItalic
+%%IncludeResource: font Helvetica
+%%IncludeResource: font Helvetica-Oblique
+%%IncludeResource: font Helvetica-Bold
+%%IncludeResource: font Helvetica-BoldOblique
+%%IncludeResource: font Courier
+%%IncludeResource: font Courier-Oblique
+%%IncludeResource: font Courier-Bold
+%%IncludeResource: font Courier-BoldOblique
+%%IncludeResource: font Symbol
+%%IncludeResource: font ZapfDingbats
+/reEncode {exch findfont dup length dict begin {1 index /FID eq  {pop pop} {def} ifelse } forall /Encoding exch def currentdict end dup /FontName get exch definefont pop } def [/Times-Bold /Times-Italic /Times-BoldItalic /Helvetica /Helvetica-Oblique
+ /Helvetica-Bold /Helvetica-BoldOblique /Courier /Courier-Oblique /Courier-Bold /Courier-BoldOblique /Times-Roman /AvantGarde-Book /AvantGarde-BookOblique /AvantGarde-Demi /AvantGarde-DemiOblique /Bookman-Demi /Bookman-DemiItalic /Bookman-Light
+ /Bookman-LightItalic /Helvetica-Narrow /Helvetica-Narrow-Bold /Helvetica-Narrow-BoldOblique /Helvetica-Narrow-Oblique /NewCenturySchlbk-Roman /NewCenturySchlbk-Bold /NewCenturySchlbk-BoldItalic /NewCenturySchlbk-Italic /Palatino-Bold
+ /Palatino-BoldItalic /Palatino-Italic /Palatino-Roman ] {ISOLatin1Encoding reEncode } forall/Zone {/iy exch def /ix exch def  ix 1 sub  3144 mul  1 iy sub  2224 mul t} def
+%%EndProlog
+%%BeginSetup
+%%EndSetup
+newpath  gsave  90 r 0 -594 t  28 20 t .25 .25 scale  gsave 
+%%Page: 1 1
+ gsave  gsave 
+ 1 1 Zone
+ gsave  0 0 t black[  ] 0 sd 3 lw 1 1 1 c 2948 1586 0 0 bf black 1 1 1 c 2358 1269 295 159 bf black 2358 1269 295 159 bl 1 1 1 c 2358 1269 295 159 bf black 2358 1269 295 159 bl 0 0 1 c 9 lw 1 1 1 c black 0 0 1 c 295 1428 m 12 X -41 Y 11 X -3 Y 12 X 1
+ Y 12 X -2 Y 12 X -4 Y 12 X 1 Y 11 X -3 Y 12 X -1 Y 12 X -5 Y 12 X -3 Y 12 X -5 Y 11 X -3 Y 12 X -6 Y 12 X 2 Y 12 X -7 Y 11 X -5 Y 12 X -3 Y 12 X -3 Y 12 X -6 Y 12 X -1 Y 11 X -5 Y 12 X -9 Y 12 X -2 Y 12 X -5 Y 12 X -3 Y 11 X -8 Y 12 X -2 Y 12 X -3 Y
+ 12 X -11 Y 12 X -3 Y 11 X -5 Y 12 X -6 Y 12 X -11 Y 12 X -1 Y 12 X -6 Y 11 X -2 Y 12 X -6 Y 12 X -6 Y 12 X -5 Y 11 X -6 Y 12 X -7 Y 12 X -6 Y 12 X -15 Y 12 X -1 Y 23 X -7 Y 12 X -12 Y 12 X -3 Y 12 X -15 Y 11 X -1 Y 12 X -1 Y 12 X -15 Y 12 X 3 Y 12 X
+ -9 Y 11 X -17 Y 12 X -1 Y 12 X -7 Y 24 X -14 Y 11 X -7 Y 12 X -5 Y 12 X -12 Y 12 X 5 Y 11 X -20 Y 12 X -4 Y 12 X 5 Y 12 X -17 Y 12 X 4 Y 11 X -9 Y 12 X -11 Y 24 X -4 Y 12 X -10 Y 11 X -14 Y 12 X -20 Y 12 X 9 Y 12 X -8 Y 12 X 8 Y 11 X -11 Y 12 X -1 Y
+ 12 X -26 Y 12 X 7 Y 12 X -11 Y 11 X -8 Y 12 X -4 Y 12 X 13 Y 12 X -10 Y 12 X -1 Y 11 X -18 Y 12 X -7 Y 12 X 5 Y 12 X -16 Y 11 X 1 Y 12 X 5 Y 12 X -7 Y 12 X -10 Y 12 X 2 Y 11 X -4 Y 12 X -5 Y 12 X -2 Y 12 X -5 Y 12 X -8 Y 11 X 23 Y 12 X -28 Y 12 X -3
+ Y 12 X -17 Y 12 X 11 Y 11 X -13 Y 12 X 3 Y 12 X 15 Y 12 X -15 Y 12 X -3 Y 23 X -9 Y 12 X -1 Y 12 X -5 Y 11 X 18 Y 12 X -29 Y 12 X 9 Y 12 X -9 Y 12 X 3 Y 11 X 4 Y 12 X -36 Y 12 X 41 Y 12 X -27 Y 12 X 19 Y 11 X -17 Y 12 X 7 Y 12 X -49 Y 12 X 45 Y 12 X
+ -5 Y 11 X -3 Y 12 X 5 Y 12 X -4 Y 12 X -20 Y 12 X -1 Y 11 X 17 Y 12 X -13 Y 12 X -6 Y 12 X 3 Y 11 X -37 Y 12 X 43 Y 12 X -26 Y 12 X -11 Y 12 X 9 Y 11 X 31 Y 12 X -19 Y 12 X -12 Y 12 X -15 Y 12 X 27 Y 11 X -13 Y 12 X -16 Y 12 X -4 Y 12 X 49 Y 12 X
+ -54 Y 11 X 5 Y 12 X -16 Y 12 X 37 Y 12 X -78 Y 12 X 52 Y 11 X 28 Y 12 X 9 Y 12 X -37 Y 12 X -9 Y 23 X -17 Y 12 X 39 Y 12 X -19 Y 12 X -15 Y 11 X -10 Y 12 X 20 Y 12 X 9 Y 12 X -2 Y 12 X -17 Y 11 X 15 Y 12 X -31 Y 12 X -9 Y 12 X 23 Y 12 X -43 Y 11 X
+ 64 Y 12 X -50 Y 12 X 31 Y 12 X -22 Y 23 X -19 Y 12 X 41 Y 12 X 10 Y 12 X -32 Y 12 X 25 Y 11 X -55 Y 12 X 27 Y 24 X -51 Y 11 X 60 Y 12 X 19 Y 12 X -37 Y 12 X -7 Y 12 X 3 Y 11 X 30 Y 12 X s black 3 lw 295 159 m 2358 X s 295 197 m -38 Y s 373 178 m -19
+ Y s 452 178 m -19 Y s 531 178 m -19 Y s 609 178 m -19 Y s 688 197 m -38 Y s 766 178 m -19 Y s 845 178 m -19 Y s 924 178 m -19 Y s 1002 178 m -19 Y s 1081 197 m -38 Y s 1160 178 m -19 Y s 1238 178 m -19 Y s 1317 178 m -19 Y s 1395 178 m -19 Y s 1474
+ 197 m -38 Y s 1553 178 m -19 Y s 1631 178 m -19 Y s 1710 178 m -19 Y s 1788 178 m -19 Y s 1867 197 m -38 Y s 1946 178 m -19 Y s 2024 178 m -19 Y s 2103 178 m -19 Y s 2182 178 m -19 Y s 2260 197 m -38 Y s 2339 178 m -19 Y s 2417 178 m -19 Y s 2496
+ 178 m -19 Y s 2575 178 m -19 Y s 2653 197 m -38 Y s 2653 197 m -38 Y s
+ gsave  2948 1586 0 0 C 280.31 106.709 t 0 r /Helvetica findfont 52.5581 sf 0 0 m (0) show NC gr 
+ gsave  2948 1586 0 0 C 635.475 106.709 t 0 r /Helvetica findfont 52.5581 sf 0 0 m (0.05) show NC gr 
+ gsave  2948 1586 0 0 C 1047.98 106.709 t 0 r /Helvetica findfont 52.5581 sf 0 0 m (0.1) show NC gr 
+ gsave  2948 1586 0 0 C 1422.25 106.709 t 0 r /Helvetica findfont 52.5581 sf 0 0 m (0.15) show NC gr 
+ gsave  2948 1586 0 0 C 1829.98 106.709 t 0 r /Helvetica findfont 52.5581 sf 0 0 m (0.2) show NC gr 
+ gsave  2948 1586 0 0 C 2209.03 106.709 t 0 r /Helvetica findfont 52.5581 sf 0 0 m (0.25) show NC gr 
+ gsave  2948 1586 0 0 C 2615.16 106.709 t 0 r /Helvetica findfont 52.5581 sf 0 0 m (0.3) show NC gr 
+ gsave  2948 1586 0 0 C 2570.57 54.1508 t 0 r /Helvetica findfont 52.5581 sf 0 0 m (t [s]) show NC gr  295 159 m 1269 Y s 366 159 m -71 X s
+ gsave  2948 1586 0 0 C 251.642 138.562 t 0 r /Helvetica findfont 52.5581 sf 0 0 m (1) show NC gr  330 254 m -35 X s 330 310 m -35 X s 330 350 m -35 X s 330 380 m -35 X s 330 406 m -35 X s 330 427 m -35 X s 330 445 m -35 X s 330 461 m -35 X s 366 476
+ m -71 X s
+ gsave  2948 1586 0 0 C 213.418 457.096 t 0 r /Helvetica findfont 52.5581 sf 0 0 m (10) show NC gr  330 571 m -35 X s 330 627 m -35 X s 330 667 m -35 X s 330 698 m -35 X s 330 723 m -35 X s 330 744 m -35 X s 330 762 m -35 X s 330 779 m -35 X s 366
+ 793 m -71 X s
+ gsave  2948 1586 0 0 C 251.642 793.149 t 0 r /Helvetica findfont 35.0387 sf 0 0 m (2) show NC gr 
+ gsave  2948 1586 0 0 C 194.306 770.852 t 0 r /Helvetica findfont 52.5581 sf 0 0 m (10) show NC gr  330 889 m -35 X s 330 945 m -35 X s 330 984 m -35 X s 330 1015 m -35 X s 330 1040 m -35 X s 330 1061 m -35 X s 330 1080 m -35 X s 330 1096 m -35 X s
+ 366 1110 m -71 X s
+ gsave  2948 1586 0 0 C 251.642 1111.68 t 0 r /Helvetica findfont 35.0387 sf 0 0 m (3) show NC gr 
+ gsave  2948 1586 0 0 C 194.306 1087.79 t 0 r /Helvetica findfont 52.5581 sf 0 0 m (10) show NC gr  330 1206 m -35 X s 330 1262 m -35 X s 330 1301 m -35 X s 330 1332 m -35 X s 330 1357 m -35 X s 330 1379 m -35 X s 330 1397 m -35 X s 330 1413 m -35 X
+ s 366 1428 m -71 X s
+ gsave  2948 1586 0 0 C 251.642 1427.03 t 0 r /Helvetica findfont 35.0387 sf 0 0 m (4) show NC gr 
+ gsave  2948 1586 0 0 C 194.306 1404.73 t 0 r /Helvetica findfont 52.5581 sf 0 0 m (10) show NC gr 
+ gsave  2948 1586 0 0 C 133.784 1274.14 t 90 r /Helvetica findfont 52.5581 sf 0 0 m (events) show NC gr  1 0 0 c 9 lw 1 1 1 c black 1 0 0 c 295 1354 m 12 X 5 Y 11 X -2 Y 12 X -1 Y 12 X -1 Y 12 X -4 Y 12 X 1 Y 11 X -3 Y 12 X -2 Y 12 X -5 Y 12 X -3 Y
+ 12 X -4 Y 11 X -3 Y 12 X -6 Y 24 X -7 Y 11 X -5 Y 12 X -3 Y 12 X -1 Y 12 X -7 Y 12 X -2 Y 11 X -3 Y 12 X -11 Y 12 X -2 Y 12 X -5 Y 12 X -3 Y 11 X -8 Y 12 X -1 Y 12 X -7 Y 12 X -7 Y 12 X -3 Y 11 X -5 Y 12 X -7 Y 12 X -13 Y 12 X 1 Y 12 X -7 Y 11 X -1
+ Y 12 X -5 Y 12 X -6 Y 12 X -8 Y 11 X -5 Y 12 X -6 Y 12 X -8 Y 12 X -14 Y 23 X -4 Y 12 X -3 Y 12 X -10 Y 12 X -6 Y 12 X -17 Y 11 X -1 Y 12 X 2 Y 12 X -14 Y 12 X -2 Y 12 X -6 Y 11 X -18 Y 12 X -5 Y 12 X -4 Y 12 X 1 Y 12 X -17 Y 11 X -6 Y 12 X -8 Y 12
+ X -10 Y 12 X 6 Y 11 X -19 Y 12 X -5 Y 12 X 2 Y 12 X -15 Y 12 X 2 Y 11 X -5 Y 12 X -19 Y 12 X 4 Y 12 X -4 Y 12 X -3 Y 11 X -19 Y 12 X -17 Y 12 X 4 Y 12 X -8 Y 12 X 5 Y 11 X -14 Y 12 X 6 Y 12 X -29 Y 12 X 2 Y 12 X -12 Y 11 X -8 Y 24 X 18 Y 12 X -9 Y
+ 12 X -13 Y 11 X -20 Y 12 X 2 Y 12 X 2 Y 12 X -12 Y 11 X -11 Y 12 X 2 Y 12 X -1 Y 12 X -4 Y 12 X -3 Y 11 X -4 Y 12 X -6 Y 24 X 5 Y 12 X -22 Y 11 X 24 Y 12 X -29 Y 12 X -10 Y 12 X -16 Y 12 X 23 Y 11 X -10 Y 12 X 11 Y 12 X -11 Y 12 X 2 Y 12 X -8 Y 11 X
+ -4 Y 12 X -4 Y 12 X -18 Y 12 X 2 Y 11 X 32 Y 12 X -29 Y 12 X -13 Y 12 X 5 Y 12 X -9 Y 11 X -1 Y 12 X -29 Y 12 X 44 Y 12 X -33 Y 12 X 21 Y 11 X -2 Y 12 X 4 Y 12 X -53 Y 12 X 44 Y 12 X -4 Y 11 X -10 Y 12 X 14 Y 12 X -8 Y 12 X -39 Y 12 X 15 Y 11 X 9 Y
+ 24 X -11 Y 12 X 18 Y 11 X -71 Y 12 X 69 Y 12 X -26 Y 12 X -6 Y 12 X 6 Y 11 X 30 Y 12 X -16 Y 12 X -14 Y 12 X -39 Y 12 X 46 Y 11 X -27 Y 12 X 12 Y 12 X -28 Y 12 X 48 Y 12 X -41 Y 11 X -7 Y 12 X -21 Y 12 X 59 Y 12 X -76 Y 12 X 38 Y 11 X 28 Y 12 X 18 Y
+ 12 X -56 Y 12 X 29 Y 12 X -22 Y 11 X -35 Y 12 X 63 Y 12 X -21 Y 12 X -22 Y 11 X -3 Y 12 X 3 Y 12 X 15 Y 12 X 7 Y 12 X -11 Y 11 X 20 Y 12 X -43 Y 24 X 16 Y 12 X -29 Y 11 X 40 Y 12 X -54 Y 12 X 50 Y 12 X -18 Y 12 X -13 Y 11 X -19 Y 12 X 50 Y 12 X 7 Y
+ 12 X -14 Y 12 X -43 Y 11 X -22 Y 12 X 45 Y 12 X 4 Y 12 X -69 Y 11 X 52 Y 12 X 26 Y 12 X -36 Y 24 X 10 Y 11 X 17 Y 12 X s 0 1 0 c 1 1 1 c black 0 1 0 c 295 1332 m 12 X 4 Y 11 X -1 Y 12 X -1 Y 12 X -1 Y 12 X -5 Y 12 X 2 Y 11 X -3 Y 12 X -3 Y 12 X -4 Y
+ 12 X -3 Y 12 X -4 Y 11 X -3 Y 12 X -4 Y 24 X -8 Y 11 X -5 Y 12 X -3 Y 12 X -1 Y 12 X -7 Y 12 X -1 Y 11 X -4 Y 12 X -10 Y 12 X -3 Y 12 X -5 Y 12 X -1 Y 11 X -13 Y 12 X 1 Y 12 X -6 Y 12 X -8 Y 12 X -2 Y 11 X -5 Y 12 X -6 Y 12 X -16 Y 12 X 3 Y 12 X -10
+ Y 11 X 1 Y 12 X -7 Y 12 X -7 Y 12 X -10 Y 11 X -1 Y 12 X -8 Y 12 X -10 Y 12 X -15 Y 12 X 1 Y 11 X -3 Y 12 X -4 Y 12 X -13 Y 12 X -4 Y 12 X -19 Y 11 X -1 Y 12 X 4 Y 12 X -13 Y 12 X -7 Y 12 X -5 Y 11 X -18 Y 12 X -6 Y 12 X -4 Y 12 X 2 Y 12 X -24 Y 11
+ X -3 Y 12 X -7 Y 12 X -19 Y 12 X 10 Y 11 X -21 Y 12 X -3 Y 12 X -1 Y 12 X -17 Y 12 X 5 Y 11 X -3 Y 12 X -30 Y 12 X 7 Y 12 X -2 Y 12 X -8 Y 11 X -20 Y 12 X -16 Y 12 X -2 Y 12 X -8 Y 12 X 8 Y 11 X -12 Y 12 X -3 Y 12 X -37 Y 12 X 13 Y 12 X -15 Y 11 X
+ -15 Y 12 X 1 Y 12 X 17 Y 12 X -3 Y 12 X -25 Y 11 X -31 Y 12 X 11 Y 12 X -4 Y 12 X -12 Y 11 X -4 Y 12 X -10 Y 12 X 6 Y 12 X -6 Y 12 X -14 Y 11 X -2 Y 24 X -10 Y 12 X -20 Y 12 X 14 Y 11 X 12 Y 12 X -28 Y 12 X -23 Y 12 X -6 Y 12 X 38 Y 11 X -11 Y 12 X
+ -5 Y 12 X -25 Y 12 X 25 Y 12 X -31 Y 11 X 3 Y 24 X -43 Y 12 X 27 Y 11 X 19 Y 12 X -46 Y 12 X -17 Y 12 X 40 Y 12 X -14 Y 11 X -9 Y 12 X 23 Y 12 X -55 Y 12 X 10 Y 12 X 49 Y 11 X -7 Y 12 X -47 Y 12 X -5 Y 12 X 24 Y 12 X -9 Y 11 X -15 Y 24 X -51 Y 12 X
+ 28 Y 12 X 23 Y 11 X -17 Y 12 X 6 Y 12 X 5 Y 12 X 43 Y 11 X -156 Y 12 X 138 Y 12 X -25 Y 12 X -70 Y 12 X 46 Y 11 X 49 Y 12 X -14 Y 12 X -49 Y 12 X -15 Y 12 X 53 Y 11 X -53 Y 12 X -8 Y 12 X -65 Y 12 X 95 Y 12 X -22 Y 11 X -8 Y 12 X 8 Y 12 X -17 Y 12 X
+ -43 Y 12 X 75 Y 11 X -15 Y 12 X 22 Y 12 X -49 Y 12 X 27 Y 12 X -17 Y 11 X -87 Y 12 X 31 Y 12 X 56 Y 12 X -56 Y 11 X 56 Y 12 X -31 Y 12 X 21 Y 12 X -46 Y 12 X 25 Y 11 X 40 Y 12 X -80 Y 12 X 28 Y 12 X 12 Y 12 X -12 Y 11 X 75 Y 12 X -119 Y 12 X 56 Y 12
+ X 31 Y 12 X -126 Y 11 X 95 Y 12 X 11 Y 12 X -11 Y 12 X -25 Y 12 X -70 Y 11 X 83 Y 12 X 12 Y 12 X -40 Y 12 X -111 Y 11 X 77 Y 12 X 74 Y 12 X -56 Y 12 X -18 Y 12 X 18 Y 11 X 31 Y 12 X s 1 0.8 0 c 1 1 1 c black 1 0.8 0 c 295 1216 m 12 X 6 Y 11 X -5 Y
+ 12 X 3 Y 12 X -1 Y 12 X -6 Y 12 X 2 Y 11 X -5 Y 12 X 3 Y 12 X -4 Y 12 X -1 Y 12 X -4 Y 11 X -2 Y 12 X 5 Y 12 X -7 Y 12 X -6 Y 11 X -2 Y 12 X 2 Y 12 X -4 Y 12 X -6 Y 12 X 6 Y 11 X -12 Y 12 X -9 Y 12 X -2 Y 12 X -4 Y 12 X 5 Y 11 X -7 Y 24 X -7 Y 12 X
+ -12 Y 12 X 4 Y 11 X -5 Y 12 X -9 Y 12 X -18 Y 12 X 9 Y 12 X -14 Y 11 X 7 Y 12 X -7 Y 12 X -7 Y 12 X -16 Y 11 X 2 Y 12 X -6 Y 12 X -13 Y 12 X -10 Y 12 X -7 Y 11 X 1 Y 12 X -5 Y 12 X -16 Y 12 X 6 Y 12 X -22 Y 11 X -6 Y 12 X 8 Y 12 X -24 Y 24 X 4 Y 11
+ X -27 Y 12 X 2 Y 12 X -7 Y 12 X -8 Y 12 X -19 Y 11 X 3 Y 12 X -18 Y 12 X -17 Y 12 X 18 Y 11 X -18 Y 12 X -5 Y 12 X -7 Y 12 X -14 Y 12 X -1 Y 11 X 2 Y 12 X -36 Y 12 X 5 Y 12 X 4 Y 12 X -4 Y 11 X -40 Y 12 X -1 Y 12 X -1 Y 12 X -4 Y 12 X 17 Y 11 X -33
+ Y 24 X -35 Y 12 X 1 Y 12 X -3 Y 11 X -23 Y 12 X 26 Y 12 X -11 Y 12 X 4 Y 12 X -21 Y 11 X -41 Y 12 X 20 Y 12 X -26 Y 12 X 9 Y 11 X -22 Y 12 X 31 Y 12 X -15 Y 12 X -23 Y 12 X 3 Y 11 X -18 Y 12 X 4 Y 12 X -47 Y 12 X 47 Y 12 X 7 Y 23 X -38 Y 24 X -40 Y
+ 12 X 71 Y 11 X -64 Y 12 X 47 Y 12 X -5 Y 12 X 5 Y 12 X -54 Y 11 X -21 Y 12 X 34 Y 12 X -34 Y 12 X 21 Y 11 X 24 Y 12 X -17 Y 12 X -53 Y 12 X 32 Y 12 X -7 Y 11 X 14 Y 24 X -30 Y 12 X -40 Y 12 X 63 Y 11 X 14 Y 12 X -29 Y 12 X 15 Y 12 X -42 Y 12 X 42 Y
+ 11 X -63 Y 12 X 48 Y 12 X -88 Y 12 X 71 Y 12 X -31 Y 11 X -25 Y 12 X 13 Y 24 X 52 Y 11 X -191 Y 12 X 207 Y 12 X -45 Y 12 X -85 Y 12 X 95 Y 11 X 27 Y 12 X -17 Y 12 X -43 Y 12 X 23 Y 23 X -67 Y 12 X -18 Y 12 X -77 Y 12 X 77 Y 12 X 18 Y 11 X -65 Y 24 X
+ -30 Y 24 X 126 Y 11 X -96 Y 12 X 96 Y 12 X -49 Y 12 X 62 Y 12 X -109 Y 11 X -30 Y 12 X 30 Y 12 X 121 Y 12 X -121 Y 23 X 65 Y 24 X -95 Y 12 X 56 Y 11 X 70 Y 12 X -70 Y 12 X -96 Y 12 X 70 Y 12 X 65 Y 11 X -18 Y 12 X -77 Y 12 X 30 Y 12 X 47 Y 12 X -117
+ Y 11 X 117 Y 24 X -77 Y 24 X -96 Y 11 X 207 Y 12 X -55 Y 24 X -247 Y 11 X 151 Y 12 X 135 Y 12 X -191 Y 12 X 56 Y 12 X 70 Y 11 X 26 Y 12 X s black 15 lw 1 1 1 c black 295 1091 m 12 X 15 Y 11 X -8 Y 12 X 5 Y 12 X 3 Y 12 X -13 Y 12 X 7 Y 11 X -2 Y 24 X
+ -7 Y 12 X 1 Y 23 X -14 Y 12 X 13 Y 12 X -5 Y 12 X -1 Y 11 X -21 Y 12 X 13 Y 24 X -10 Y 12 X 11 Y 11 X -20 Y 12 X -10 Y 12 X 5 Y 12 X -9 Y 12 X 6 Y 11 X -9 Y 12 X 7 Y 12 X -8 Y 12 X -22 Y 12 X 7 Y 11 X 5 Y 12 X -10 Y 12 X -16 Y 12 X 2 Y 12 X -22 Y 11
+ X 19 Y 12 X -12 Y 12 X -2 Y 12 X -16 Y 23 X -5 Y 12 X -12 Y 12 X -11 Y 12 X -21 Y 11 X 16 Y 12 X 5 Y 12 X -35 Y 12 X 6 Y 12 X -22 Y 11 X -14 Y 12 X 14 Y 12 X -27 Y 12 X 2 Y 12 X 3 Y 11 X -12 Y 12 X -4 Y 12 X -6 Y 12 X -4 Y 12 X -17 Y 11 X -20 Y 12 X
+ -14 Y 12 X 1 Y 12 X 5 Y 11 X -8 Y 12 X -24 Y 12 X 13 Y 12 X 6 Y 12 X -34 Y 11 X 7 Y 12 X -41 Y 12 X -9 Y 12 X 18 Y 12 X 11 Y 11 X -42 Y 12 X -6 Y 12 X -6 Y 12 X -6 Y 12 X 23 Y 11 X -29 Y 12 X -11 Y 12 X -31 Y 12 X -9 Y 12 X -15 Y 11 X 19 Y 12 X -14
+ Y 12 X -5 Y 12 X -11 Y 12 X -48 Y 11 X 8 Y 12 X -56 Y 12 X 31 Y 12 X 32 Y 11 X -52 Y 12 X 10 Y 12 X 27 Y 12 X -104 Y 12 X 87 Y 11 X -56 Y 12 X 25 Y 12 X -121 Y 12 X 81 Y 12 X 40 Y 11 X -74 Y 12 X -47 Y 12 X 109 Y 12 X -139 Y 12 X 77 Y 11 X -77 Y 12
+ X 172 Y 12 X -116 Y 12 X 95 Y 12 X -121 Y 23 X 47 Y 12 X -47 Y 12 X 47 Y 23 X -77 Y 12 X 126 Y 12 X -166 Y 12 X 40 Y 11 X 56 Y 12 X -152 Y 24 X 152 Y 12 X 39 Y 11 X -18 Y 12 X -47 Y 12 X -70 Y 12 X 40 Y 12 X 111 Y 11 X -55 Y 12 X -247 Y 12 X 221 Y
+ 24 X 26 Y 11 X -152 Y 12 X -95 Y 12 X 221 Y 23 X -221 Y 12 X 191 Y 12 X -40 Y 12 X -151 Y 12 X 95 Y 11 X 56 Y 12 X 40 Y 12 X -96 Y 12 X -95 Y 35 X 95 Y 12 X -95 Y 47 X 95 Y 12 X -95 Y 35 X 95 Y 12 X -95 Y 106 X 95 Y 12 X -95 Y 35 X 95 Y 12 X -95 Y
+ 24 X 95 Y 12 X -95 Y 129 X 95 Y 12 X -95 Y 106 X s 1 0 1 c 9 lw 1 1 1 c black 1 0 1 c 295 159 m 389 X 785 Y 12 X 62 Y 12 X -22 Y 11 X 19 Y 12 X -12 Y 12 X -2 Y 12 X -16 Y 23 X -5 Y 12 X -12 Y 12 X -11 Y 12 X -21 Y 11 X 16 Y 12 X 5 Y 12 X -35 Y 12 X
+ 6 Y 12 X -22 Y 11 X -14 Y 12 X 14 Y 12 X -27 Y 12 X 2 Y 12 X 3 Y 11 X -12 Y 12 X -4 Y 12 X -6 Y 12 X -4 Y 12 X -17 Y 11 X -20 Y 12 X -14 Y 12 X 1 Y 12 X 5 Y 11 X -8 Y 12 X -24 Y 12 X 13 Y 12 X 6 Y 12 X -34 Y 11 X 7 Y 12 X -41 Y 12 X -9 Y 12 X 18 Y
+ 12 X 11 Y 11 X -42 Y 12 X -6 Y 12 X -6 Y 12 X -6 Y 12 X 23 Y 11 X -29 Y 12 X -11 Y 12 X -31 Y 12 X -9 Y 12 X -15 Y 11 X 19 Y 12 X -14 Y 12 X -5 Y 12 X -11 Y 12 X -48 Y 11 X 8 Y 12 X -56 Y 12 X 31 Y 12 X 32 Y 11 X -52 Y 12 X 10 Y 12 X 27 Y 12 X -104
+ Y 12 X 87 Y 11 X -56 Y 12 X 25 Y 12 X -121 Y 12 X 81 Y 12 X 40 Y 11 X -74 Y 12 X -47 Y 12 X 109 Y 12 X -139 Y 12 X 77 Y 11 X -77 Y 12 X 172 Y 12 X -116 Y 12 X 95 Y 12 X -121 Y 23 X 47 Y 12 X -47 Y 12 X 47 Y 23 X -77 Y 12 X 126 Y 12 X -166 Y 12 X 40
+ Y 11 X 56 Y 12 X -152 Y 24 X 152 Y 12 X 39 Y 11 X -18 Y 12 X -47 Y 12 X -70 Y 12 X 40 Y 12 X 111 Y 11 X -55 Y 12 X -247 Y 12 X 221 Y 24 X 26 Y 11 X -152 Y 12 X -95 Y 12 X 221 Y 23 X -221 Y 12 X 191 Y 12 X -40 Y 12 X -151 Y 12 X 95 Y 11 X 56 Y 12 X
+ 40 Y 12 X -96 Y 12 X -95 Y 35 X 95 Y 12 X -95 Y 47 X 95 Y 12 X -95 Y 35 X 95 Y 12 X -95 Y 106 X 95 Y 12 X -95 Y 35 X 95 Y 12 X -95 Y 24 X 95 Y 12 X -95 Y 129 X 95 Y 12 X -95 Y 106 X s black 1 1 1 c 590 238 1916 952 bf black
+ gsave  2948 1586 0 0 C 2062.51 1161.06 t 0 r /Helvetica findfont 27.0754 sf 0 0 m (None) show NC gr  1 1 1 c 3 lw 1938 1156 m 104 X 28 Y -104 X f 0 0 1 c 9 lw 1938 1170 m 104 X s black 3 lw /w 2 def /w2 {w 2 div} def /w3 {w 3 div} def 1990 1170 m20
+ 9 lw
+ gsave  2948 1586 0 0 C 2062.51 1122.83 t 0 r /Helvetica findfont 27.0754 sf 0 0 m (CG) show NC gr  1 1 1 c 3 lw 1938 1116 m 104 X 28 Y -104 X f 9 lw 1 0 0 c 1938 1130 m 104 X s black 3 lw 1990 1130 m20 9 lw
+ gsave  2948 1586 0 0 C 2062.51 1083.02 t 0 r /Helvetica findfont 27.0754 sf 0 0 m (CG+CQ) show NC gr  1 1 1 c 3 lw 1938 1077 m 104 X 27 Y -104 X f 9 lw 0 1 0 c 1938 1091 m 104 X s black 3 lw 1990 1091 m20 9 lw
+ gsave  2948 1586 0 0 C 2062.51 1043.2 t 0 r /Helvetica findfont 27.0754 sf 0 0 m (CG+CQ+CZ) show NC gr  1 1 1 c 3 lw 1938 1037 m 104 X 28 Y -104 X f 9 lw 1 0.8 0 c 1938 1051 m 104 X s black 3 lw 1990 1051 m20 9 lw
+ gsave  2948 1586 0 0 C 2062.51 1003.38 t 0 r /Helvetica findfont 27.0754 sf 0 0 m (CG+CQ+CZ+CR) show NC gr  1 1 1 c 3 lw 1938 997 m 104 X 28 Y -104 X f 9 lw black 15 lw 1938 1011 m 104 X s 3 lw 1990 1011 m20 15 lw
+ gsave  2948 1586 0 0 C 2062.51 963.565 t 0 r /Helvetica findfont 27.0754 sf 0 0 m (CG+CQ+CZ+CR+CC) show NC gr  1 1 1 c 3 lw 1938 958 m 104 X 27 Y -104 X f 15 lw 1 0 1 c 9 lw 1938 972 m 104 X s black 3 lw 1990 972 m20 9 lw gr showpage
+ gr 
+%%Trailer
+%%Pages:  1
+ gr  gr  gr 
+%%EOF
