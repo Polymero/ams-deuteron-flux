@@ -46,7 +46,7 @@ CZ = CZa + CZb
 # Geo-magnetic cut-off
 CR = ROOT.TCut('trk_rig > {0}*cf'.format(geo_crit)) # geo-magnetic cut-off
 # TOF - RICH Consistency
-CC = ROOT.TCut('abs(tof_beta-rich_beta)/tof_beta > 0.05')
+CC = ROOT.TCut('abs(tof_beta-rich_beta)/tof_beta < 0.05')
 
 # ------------------------------------------------------------------------------
 # PLOT FUNCTION
