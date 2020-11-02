@@ -65,13 +65,20 @@ def eff_plot(cut, title='', xlabel='Rigidity [GV]', ylabel='efficiency', bins=50
     if title == '':
         title = par
     canvas = ROOT.TCanvas("{}".format(title),"{}".format(title), 1600, 1000)
-    # Cuts
-    current_inst =
-    current_cut  =
+    # Current cut
+    current_inst = cut_df[cut_df['Name'] == cut]['Instrument'].values[0]
+    current_cut  = cut_df[cut_df['Name'] == cut]['Cut'].values[0]
+    # Other 'independent' cuts
+    base_cut = ROOT.TCut(''); effi_cut = ROOT.TCut('')
+    base_df = cut_df[(cut_df['Instrument'] != current_inst)]
+    for c in base_df['Cut'].values:
+        base_cut += c
+    effi_df = sub_df.append(cut_df[cut_df['Name'] == 'Cchi'])
+    for c in effi_df['Cut'].values:
+        effi_cut += c
     # Draw Histogram and store in ROOT.???
-    xrange = str(xrange)[1:-1]
-    chain.Draw('trk_rig >> {}({}, 0, 22)'.format(title+'1', bins), '', '')
-    chain.Draw('trk_rig >> {}({}, 0, 22)'.format(title+'2', bins), cuts, 'SAME')
+    chain.Draw('trk_rig >> {}({}, 0, 22)'.format(title+'1', bins), base_cut, '')
+    chain.Draw('trk_rig >> {}({}, 0, 22)'.format(title+'2', bins), effi_cut, 'SAME')
     # Get TH1F objects
     hist1 = ROOT.gROOT.FindObject(title+'1')
     hist2 = ROOT.gROOT.FindObject(title+'2')
@@ -99,3 +106,6 @@ def eff_plot(cut, title='', xlabel='Rigidity [GV]', ylabel='efficiency', bins=50
 # ------------------------------------------------------------------------------
 # CUT EFFICIENCY PLOTS
 # ------------------------------------------------------------------------------
+# TOF Beta cut
+c, l = eff_plot()
+c.Print(out_path + 'Downward Particle Cut (TOF Beta).png')
