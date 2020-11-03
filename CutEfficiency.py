@@ -52,7 +52,7 @@ cut_df = cut_df.append({'Name': 'Clay', 'Cut': ROOT.TCut('trk_q_lay[4]{0}0 && tr
 cut_df = cut_df.append({'Name': 'Cgeo', 'Cut': ROOT.TCut('trk_rig > {0}*cf'.format(geo_crit)),
           'Instrument': 'Tracker', 'Description': 'Geo-magnetic cut-off'}, ignore_index=True)
 # Print CUTS for visual check
-print(cut_df)
+#print(cut_df)
 
 # ------------------------------------------------------------------------------
 # PLOT FUNCTION
@@ -63,37 +63,45 @@ ROOT.gStyle.SetOptTitle(0)
 def eff_plot(cut, title='', xlabel='Rigidity [GV]', ylabel='efficiency', bins=50, lx=0.65, ly=0.2):
     # Create Canvas
     if title == '':
-        title = par
+        title = cut
     canvas = ROOT.TCanvas("{}".format(title),"{}".format(title), 1600, 1000)
+    canvas.Divide(1,2)
     # Current cut
     current_inst = cut_df[cut_df['Name'] == cut]['Instrument'].values[0]
     current_cut  = cut_df[cut_df['Name'] == cut]['Cut'].values[0]
     # Other 'independent' cuts
-    base_cut = ROOT.TCut(''); effi_cut = ROOT.TCut('')
+    base_cut = ROOT.TCut('')
+    effi_cut = ROOT.TCut('')
     base_df = cut_df[(cut_df['Instrument'] != current_inst)]
     for c in base_df['Cut'].values:
         base_cut += c
-    effi_df = sub_df.append(cut_df[cut_df['Name'] == 'Cchi'])
-    for c in effi_df['Cut'].values:
-        effi_cut += c
+    effi_cut = base_cut + current_cut
     # Draw Histogram and store in ROOT.???
-    chain.Draw('trk_rig >> {}({}, 0, 22)'.format(title+'1', bins), base_cut, '')
-    chain.Draw('trk_rig >> {}({}, 0, 22)'.format(title+'2', bins), effi_cut, 'SAME')
+    canvas.cd(1)
+    chain.Draw('trk_rig >> {}({}, 5, 22)'.format(cut+'1', bins), effi_cut, '')
+    chain.Draw('trk_rig >> {}({}, 5, 22)'.format(cut+'2', bins), base_cut, 'SAME')
     # Get TH1F objects
-    hist1 = ROOT.gROOT.FindObject(title+'1')
-    hist2 = ROOT.gROOT.FindObject(title+'2')
+    hist1 = ROOT.gROOT.FindObject(cut+'1')
+    hist2 = ROOT.gROOT.FindObject(cut+'2')
+    # Coloring
+    hist1.SetLineColor(ROOT.kBlue); hist1.SetLineWidth(2)
+    hist2.SetLineColor(ROOT.kRed); hist2.SetLineWidth(2)
+    # Labelling
+    hist1.GetXaxis().SetTitle(xlabel)
+    hist1.GetYaxis().SetTitle(ylabel)
+    hist1.SetStats(False)
     # Create ratio histogram
-    hist3 = hist1.CLone(title+'3')
-    hist3.Divide(hist2)
+    canvas.cd(2)
+    hist3 = hist1.Clone(cut+'3')
+    #hist3.Divide(hist2)
+    hist3.Draw()
     # Axis
-    hist1.SetAxisRange(0, 1, "Y")
+    hist3.SetAxisRange(0, 1, "Y")
     # Coloring
     hist3.SetLineColor(ROOT.kGreen); hist3.SetLineWidth(3)
     # Labelling
-    # hist1.SetTitle(title) # Title is bugging, so just get rid of it (won't use it in thesis anyway)
     hist3.GetXaxis().SetTitle(xlabel)
     hist3.GetYaxis().SetTitle(ylabel)
-    hist3.SetStats(stats)
     # Legend
     legend = ROOT.TLegend(lx, ly,lx+.20, ly+.15)
     legend.AddEntry(hist3, title)
@@ -107,5 +115,5 @@ def eff_plot(cut, title='', xlabel='Rigidity [GV]', ylabel='efficiency', bins=50
 # CUT EFFICIENCY PLOTS
 # ------------------------------------------------------------------------------
 # TOF Beta cut
-c, l = eff_plot()
+c, l = eff_plot('Cbet', title='TOF Beta Cut')
 c.Print(out_path + 'Downward Particle Cut (TOF Beta).png')
