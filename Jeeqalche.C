@@ -8,11 +8,12 @@
 #include "Ntp.h"
 
 // CREATE SIMPLIFIED TREE FROM ROOT FILES
-void Miiqtool(string rootfiles = "local") {
+void Miiqtoolat(string rootfiles = "local") {
 
   // Create new objects
   TFile f("../Simp.root", "recreate");
   TTree *T = new TTree("Simp", "Simplified Compact Tree");
+  TTree *C = new TTree("RTIInfo", "RTIInfo");
   NtpCompact *Compact = new NtpCompact();
   NtpSHeader *SHeader = new NtpSHeader();
   RTIInfo *RTIInfo = new class RTIInfo();
@@ -28,8 +29,8 @@ void Miiqtool(string rootfiles = "local") {
       comp_chain.Add("/net/dataserver3/data/users/bueno/data/iss/AO/ISS.B1130/pass7/*.root");
       rtii_chain.Add("/net/dataserver3/data/users/bueno/data/iss/AO/ISS.B1130/pass7/*.root");
     } else if(rootfiles == "local") {
-      comp_chain.Add("../pass7/*.root");
-      rtii_chain.Add("../pass7/*.root");
+      comp_chain.Add("../Runs/*.root");
+      rtii_chain.Add("../Runs/*.root");
     } else {
       throw 001;
     }
@@ -125,4 +126,24 @@ void Miiqtool(string rootfiles = "local") {
   T->Print();
   T->Scan("tof_beta:utime:utime_rti:lf:cf", "", "colsize=15 precision=10", 24, 40);
 
+
+  // Get all RTIInfo values too into a seperate tree
+  C->Branch("utime_rti",  &utime_rti,   "utime_rti/I");
+  C->Branch("lf",         &lf,          "lf/F");
+  C->Branch("cf",         &cf,          "cf/F");
+
+  for (Int_t i = 0; i < rtii_chain.GetEntries(); i++) {
+    rtii_chain.GetEntry(i);
+    utime_rti = RTIInfo->utime;
+    lf = RTIInfo->lf;
+    cf=RTIInfo->cf[0][3][1];
+
+    // Fill tree
+    C->Fill();
+  }
+
+  // Write tree to file
+  C->Write();
+  // Print tree (for visual check)
+  C->Print();
 }

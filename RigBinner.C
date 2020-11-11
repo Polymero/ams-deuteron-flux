@@ -1,33 +1,38 @@
 // C++ macro's edited for remote ssh to Kapteyn
 // Created        23-10-20
-// Last Edited    24-10-20
+// Last Edited    11-11-20
 
 // Include header file(s)
 #include <iostream>
 #include "Ntp.h"
+#include "Simple.h"
 
 // Create several important
 void RigBinner() {
 
+  // No canvas titles
+  gStyle->SetOptTitle(0);
+
   // Import trees from Simple.root
   TChain simp_chain("Simp");
   simp_chain.Add("../Simp.root");
-  TChain rtii_chain("RTI");
+  TChain rtii_chain("RTIInfo");
   rtii_chain.Add("../Simp.root");
 
-  //simp_chain.SetBranchAddress("Simple", &Simple);
-  //rtii_chain.SetBranchAddress("RTIInfo", &RTIInfo);
+  Float_t RTIcf;
+  Float_t RTIlf;
+  rtii_chain.SetBranchAddress("cf", &RTIcf);
+  rtii_chain.SetBranchAddress("lf", &RTIlf);
 
   // Creation of the bins
   Float_t bin_left[11] = {0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20};
   Float_t bin_right[11] = {2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22};
   Float_t bin_middle[11];
+  Float_t DeltaR[11];
   for (Int_t i = 0; i < 11; i++) {
     bin_middle[i] = (bin_left[i] + bin_right[i]) / 2;
+    DeltaR[i] = bin_right[i] - bin_left[i];
   }
-
-  // Delta R, i.e. rigidity bin width
-  Float_t DeltaR = bin_right - bin_left;
 
   // Number of events per bin
   // Cuts
@@ -53,6 +58,7 @@ void RigBinner() {
   TCut* slice_11 = new TCut("trk_rig > 20 && trk_rig <= 22");
 
   // Draw histograms
+  TCanvas* c1 = new TCanvas();
   simp_chain.Draw("trk_rig >> hist_1(100, 0, 22)", *master_cut && *slice_1, "");
   simp_chain.Draw("trk_rig >> hist_2(100)", *master_cut && *slice_2, "same");
   simp_chain.Draw("trk_rig >> hist_3(100)", *master_cut && *slice_3, "same");
@@ -65,9 +71,67 @@ void RigBinner() {
   simp_chain.Draw("trk_rig >> hist_10(100)", *master_cut && *slice_10, "same");
   simp_chain.Draw("trk_rig >> hist_11(100)", *master_cut && *slice_11, "same");
 
-  // GetEntries count of histograms
+  TH1F* hist_1 = new TH1F(); gROOT->GetObject("hist_1", hist_1);
+  TH1F* hist_2 = new TH1F(); gROOT->GetObject("hist_2", hist_2);
+  TH1F* hist_3 = new TH1F(); gROOT->GetObject("hist_3", hist_3);
+  TH1F* hist_4 = new TH1F(); gROOT->GetObject("hist_4", hist_4);
+  TH1F* hist_5 = new TH1F(); gROOT->GetObject("hist_5", hist_5);
+  TH1F* hist_6 = new TH1F(); gROOT->GetObject("hist_6", hist_6);
+  TH1F* hist_7 = new TH1F(); gROOT->GetObject("hist_7", hist_7);
+  TH1F* hist_8 = new TH1F(); gROOT->GetObject("hist_8", hist_8);
+  TH1F* hist_9 = new TH1F(); gROOT->GetObject("hist_9", hist_9);
+  TH1F* hist_10 = new TH1F(); gROOT->GetObject("hist_10", hist_10);
+  TH1F* hist_11 = new TH1F(); gROOT->GetObject("hist_11", hist_11);
 
+  hist_1->SetAxisRange(0, 2000, "Y");
+  hist_1->SetStats(0);
+
+  hist_1->SetLineColor(kBlack); hist_1->SetLineWidth(3);
+  hist_2->SetLineColor(kGray); hist_2->SetLineWidth(3);
+  hist_3->SetLineColor(kRed); hist_3->SetLineWidth(3);
+  hist_4->SetLineColor(kOrange); hist_4->SetLineWidth(3);
+  hist_5->SetLineColor(kGreen); hist_5->SetLineWidth(3);
+  hist_6->SetLineColor(kCyan); hist_6->SetLineWidth(3);
+  hist_7->SetLineColor(kBlue); hist_7->SetLineWidth(3);
+  hist_8->SetLineColor(kViolet); hist_8->SetLineWidth(3);
+  hist_9->SetLineColor(kMagenta); hist_9->SetLineWidth(3);
+  hist_10->SetLineColor(kGray); hist_10->SetLineWidth(3);
+  hist_11->SetLineColor(kBlack); hist_11->SetLineWidth(3);
+
+  c1->Draw();
+
+  // GetEntries count of histograms
+  Int_t N[11] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  N[0] = hist_1->GetEntries();
+  N[1] = hist_2->GetEntries();
+  N[2] = hist_3->GetEntries();
+  N[3] = hist_4->GetEntries();
+  N[4] = hist_5->GetEntries();
+  N[5] = hist_6->GetEntries();
+  N[6] = hist_7->GetEntries();
+  N[7] = hist_8->GetEntries();
+  N[8] = hist_9->GetEntries();
+  N[9] = hist_10->GetEntries();
+  N[10] = hist_11->GetEntries();
 
   // Exposure time as function of rigidity
+  Float_t T[11] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  for (Int_t i = 0; i < rtii_chain.GetEntries(); i++) {
+    rtii_chain.GetEntry(i);
+    for (Int_t j = 0; j < 11; j++) {
+      if (bin_middle[j] > 1.2 * RTIcf) {
+        T[j] += RTIlf;
+      }
+    }
+  }
+
+  // Proton rate
+  Float_t Rate[11] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  for (Int_t i = 0; i < 11; i++) {
+    Rate[i] = N[i] / T[i] / DeltaR[i];
+
+    cout << N[i] << "     " << T[i] << "     " << DeltaR[i] << "     " << Rate[i] << endl;
+
+  }
 
 }
