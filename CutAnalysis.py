@@ -158,8 +158,8 @@ c, l = cut_plot('lf', title='Livetime', xlabel='t [s]', xrange=(0,1), log_y=True
 c.Print(out_path + 'Livetime.png')
 # TOF - RICH Consistency
 c, l = cut_plot('abs(tof_beta-rich_beta)/tof_beta', title='TOF - RICH Beta Consistency',
-                xlabel='t [s]', xrange=(0,0.3), yrange=(1, 1e4), log_y=True)
-c.Print(out_path + 'TOF_RICH_Beta_Consistency')
+                xlabel='abs(tof_beta-rich_beta)/tof_beta', xrange=(0,0.3), yrange=(1, 1e4), log_y=True)
+c.Print(out_path + 'TOF_RICH_Beta_Consistency.png')
 
 # ------------------------------------------------------------------------------
 # YET TO FIX: ALL BELOW

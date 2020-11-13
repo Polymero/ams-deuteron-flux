@@ -7,7 +7,6 @@
 #include "Ntp.h"
 #include "Simple.h"
 
-// Create several important
 void RigBinner() {
 
   // No canvas titles
