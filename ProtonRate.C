@@ -1,13 +1,12 @@
 // C++ macro for rate calculation of cosmic protons
-// Created        23-10-20
-// Last Edited    11-11-20
+// Created        09-11-20
+// Last Edited    14-11-20
 
 // Include header file(s)
 #include <iostream>
-#include "Ntp.h"
-#include "Simple.h"
+#include "Header Files/Ntp.h"
 
-void RigBinner() {
+void ProtonRate(bool logx = 1, bool logy = 1, bool vcheck = 0) {
 
   // No canvas titles
   gStyle->SetOptTitle(0);
@@ -65,9 +64,14 @@ void RigBinner() {
     TH1F* hist = new TH1F();
     gROOT->GetObject(Form("hist%d", bin), hist);
     // Styling
-    hist->SetLineWidth(3);
-    hist->SetStats(0);
-    hist->SetAxisRange(0, 2000, "Y");
+    // hist->SetLineWidth(3);
+    // hist->SetStats(0);
+    // Axes
+    // hist->SetAxisRange(0, 2000, "Y");
+    // hist->GetXaxis()->SetTitle("R [GV]");
+    // hist->GetXaxis()->SetTitle("Counts");
+    // c1->SetLogx(logx);
+    // c1->SetLogy(logy);
 
     // Number of events
     Num[bin] = hist->GetEntries();
@@ -75,7 +79,9 @@ void RigBinner() {
   }
 
   // Draw canvas
-  c1->Draw();
+  // c1->Draw();
+  // Print canvas
+  // c1->Print("./ProtonRate/Rigidity Binning.png");
 
   // Exposure time as function of rigidity
   Float_t T[32] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
@@ -107,7 +113,12 @@ void RigBinner() {
     }
 
     // Print elements (for visual check)
-    cout << bin_middle[i] << "     " << Num[i] << "     " << T[i] << "     " << DeltaR[i] << "     " << Rate[i] << endl;
+    if (vcheck == 1) {
+      if (i == 0) {
+        cout << "R_middle" << "     " << "Bin Counts" << "     " << "Exposure Time" << "     " << "Bin Width" << "      " << "Rate" << endl;
+      }
+      cout << bin_middle[i] << "     " << Num[i] << "     " << T[i] << "     " << DeltaR[i] << "     " << Rate[i] << endl;
+    }
   }
 
   // Error in Rate (purely from N)
@@ -136,24 +147,48 @@ void RigBinner() {
   Rgraph->SetMarkerStyle(20);
   Rgraph->SetMarkerSize(1);
   Rgraph->SetMarkerColor(kRed);
+  // Axes
+  Rgraph->GetXaxis()->SetTitle("R [GV]");
+  Rgraph->GetYaxis()->SetTitle("Rate [s^-1]");
+  c2->SetLogx(logx);
+  c2->SetLogy(logy);
+  // Draw
   Rgraph->Draw("AP");
+  // Print canvas
+  c2->Print("./ProtonRate/Proton Rate.png");
 
   // Counts Graph
-  TGraph* Ngraph = new TGraph(32, bin_middle, Num);
+  TGraphErrors* Ngraph = new TGraphErrors(32, bin_middle, Num, ErrRig, 0);
   TCanvas* c3 = new TCanvas("c3", "Count Graph");
   // Styling
-  Ngraph->SetFillColor(40);
   Ngraph->SetMarkerStyle(20);
-  Ngraph->SetMarkerSize(.5);
-  Ngraph->Draw("ABP");
+  Ngraph->SetMarkerSize(1);
+  Ngraph->SetMarkerColor(kGreen);
+  // Axes
+  Ngraph->GetXaxis()->SetTitle("R [GV]");
+  Ngraph->GetYaxis()->SetTitle("Bin Counts [GV]");
+  c3->SetLogx(logx);
+  c3->SetLogy(logy);
+  // Draw
+  Ngraph->Draw("AP");
+  // Print canvas
+  c3->Print("./ProtonRate/Bin Counts.png");
 
   // Livetime Graph
-  TGraph* Tgraph = new TGraph(32, bin_middle, T);
-  TCanvas* c4 = new TCanvas("c4", "Livetime Graph");
+  TGraphErrors* Tgraph = new TGraphErrors(32, bin_middle, T, ErrRig, 0);
+  TCanvas* c4 = new TCanvas("c4", "Exposure Time Graph");
   // Styling
   Tgraph->SetMarkerStyle(20);
   Tgraph->SetMarkerSize(1);
   Tgraph->SetMarkerColor(kBlue);
-  Tgraph->Draw("APC");
+  // Axes
+  Tgraph->GetXaxis()->SetTitle("R [GV]");
+  Tgraph->GetYaxis()->SetTitle("Exposure Time [s]");
+  c4->SetLogx(logx);
+  c4->SetLogy(logy);
+  // Draw
+  Tgraph->Draw("AP");
+  // Print canvas
+  c4->Print("./ProtonRate/Exposure Time.png");
 
 }
