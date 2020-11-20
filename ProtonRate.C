@@ -6,7 +6,7 @@
 #include <iostream>
 #include "Header Files/Ntp.h"
 
-void ProtonRate(bool logx = 1, bool logy = 1, bool vcheck = 0) {
+void ProtonRate(bool logx = 1, bool logy = 1, bool vcheck = 0, Double_t scale = 2.7) {
 
   // No canvas titles
   gStyle->SetOptTitle(0);
@@ -150,10 +150,20 @@ void ProtonRate(bool logx = 1, bool logy = 1, bool vcheck = 0) {
   // Axes
   Rgraph->GetXaxis()->SetTitle("R [GV]");
   Rgraph->GetYaxis()->SetTitle("Rate [s^-1]");
-  c2->SetLogx(logx);
-  c2->SetLogy(logy);
   // Draw
   Rgraph->Draw("AP");
+
+  // Fit Rate Graph
+  // TF1 *plaw = new TF1("plaw","[0]*pow(x, [1])", 2, 22);
+  // plaw->SetParameter(300,-2.5);
+  // // plaw->FixParameter(0,300);
+  // // plaw->FixParameter(1,-2.5);
+  // Rgraph->Fit("plaw", "EX0");
+  // //cout << plaw->GetParameters() << endl;
+  // plaw->Draw("same");
+
+  c2->SetLogx(logx);
+  c2->SetLogy(logy);
   // Print canvas
   c2->Print("./ProtonRate/Proton Rate.png");
 
@@ -190,5 +200,26 @@ void ProtonRate(bool logx = 1, bool logy = 1, bool vcheck = 0) {
   Tgraph->Draw("AP");
   // Print canvas
   c4->Print("./ProtonRate/Exposure Time.png");
+
+  // // Scaled Rate Graph
+  // Float_t ScaledRate[32] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+  // for (Int_t i = 0; i < 32; i++) {
+  //   ScaledRate[i] = Rate[i] * pow(bin_middle[i], scale);
+  // }
+  // TGraphErrors* Sgraph = new TGraphErrors(32, bin_middle, ScaledRate, ErrRig, ErrRate);
+  // TCanvas* c5 = new TCanvas("c5", "Scaled Rate Graph");
+  // // Styling
+  // Sgraph->SetMarkerStyle(20);
+  // Sgraph->SetMarkerSize(1);
+  // Sgraph->SetMarkerColor(kRed);
+  // // Axes
+  // Sgraph->GetXaxis()->SetTitle("R [GV]");
+  // Sgraph->GetYaxis()->SetTitle(Form("Rate * R^%f [s^-1 GV^%f]", scale, scale));
+  // c5->SetLogx(logx);
+  // c5->SetLogy(logy);
+  // // Draw
+  // Sgraph->Draw("AP");
+  // // Print canvas
+  // c5->Print(Form("./ProtonRate/Scaled R^%2f Proton Rate.png",scale));
 
 }

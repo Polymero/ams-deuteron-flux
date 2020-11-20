@@ -89,55 +89,12 @@ void Efficiency(bool logx = 0, bool vcheck = 0) {
     // Styling
     hist3->SetStats(0);
     hist3->SetLineColor(kRed);
-    hist3->SetLineWidth(4);
+    hist3->SetLineWidth(2);
     // Axes
     hist3->GetXaxis()->SetTitle("R [GV]");
     hist3->GetYaxis()->SetTitle("Cut Efficiency");
     hist3->SetAxisRange(0,1,"Y");
     c1->SetLogx(logx);
-
-
-
-    // SPLICE
-    // Input nodees
-    double bin_left[32] = {1.00,1.16,1.33,1.51,1.71,1.92,2.15,2.40,2.67,2.97,3.29,3.64,4.02,4.43,4.88,5.37,5.90,6.47,7.09,7.76,8.48,9.26,10.1,11.0,12.0,13.0,14.1,15.3,16.6,18.0,19.5,21.1};
-    double bin_right[32] = {1.16,1.33,1.51,1.71,1.92,2.15,2.40,2.67,2.97,3.29,3.64,4.02,4.43,4.88,5.37,5.90,6.47,7.09,7.76,8.48,9.26,10.1,11.0,12.0,13.0,14.1,15.3,16.6,18.0,19.5,21.1,22.8};
-    std::vector<double> nodes;
-    for (int j = 0; j < 32; j++) {
-      nodes.emplace_back((bin_right[j] + bin_left[j]) / 2);
-    }
-    double x_min = nodes[0];
-    double x_max = nodes[nodes.size()-1];
-    // Define TF1 using a lambda function
-    // Coordinates of each node are fit parameters, incl derivs at beg and end -> nodes.size()*2+2
-    TF1 *f_spline = new TF1(Form("func%d", i), [&](Double_t *x, Double_t *par){
-      Double_t xx = x[0];
-      // Vectors for node coordinates
-      std::vector<double> xn;
-      std::vector<double> yn;
-      for (int j = 0; j < nodes.size(); j++){
-        xn.emplace_back(par[j]);
-        yn.emplace_back(par[j+nodes.size()]);
-      }
-      // First deriv at beg and end
-      Double_t b1 = par[nodes.size()*2];
-      Double_t e1 = par[nodes.size()*2+1];
-      // Define spline with nodes and derivs
-      TSpline3 sp3("sp3", &xn[0], &yn[0], nodes.size(), "b1e1", b1, e1);
-      return
-        sp3.Eval(xx);
-    }, x_min, x_max, nodes.size()*2+2);
-    for (int j = 0; j < nodes.size(); j++){
-      f_spline->FixParameter(j, nodes[j]);
-      f_spline->SetParameter(j+nodes.size(), hist3->GetBinContent(hist3->FindBin(nodes[j])));
-    }
-    f_spline->FixParameter(nodes.size()*2, 0.);
-    f_spline->FixParameter(nodes.size()*2+1, 0.);
-    // Draw Spline
-    f_spline->SetLineColor(kBlack);
-    f_spline->Draw("same");
-
-
 
     // Draw Canvas
     c1->Draw();
