@@ -10,6 +10,8 @@
 #include "TF1.h"
 #include "TH1F.h"
 #include "TCanvas.h"
+#include "TObject.h"
+#include "TString.h"
 
 //------------------------------------------------------------------------------
 // CLASS DEFINITION
