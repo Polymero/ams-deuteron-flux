@@ -1,6 +1,6 @@
 // C++ macro for cut efficiency calculation. PNG output in ./Efficiency
-// Created        12-11-20
-// Last Edited    14-11-20
+// Created        ..-11-20
+// Last Edited    ..-11-20
 
 // Include header file(s)
 #include <iostream>
