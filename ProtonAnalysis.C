@@ -5,6 +5,7 @@
 // Include header file(s)
 #include <iostream>
 #include <string>
+#include <algorithm>
 #include "Header Files/Ntp.h"
 #include "TChain.h"
 #include "TF1.h"
