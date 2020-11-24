@@ -6,6 +6,10 @@
 #include <iostream>
 #include <string>
 #include "Header Files/Ntp.h"
+#include "TChain.h"
+#include "TF1.h"
+#include "TH1F.h"
+#include "TCanvas.h"
 
 //------------------------------------------------------------------------------
 // CLASS DEFINITION
@@ -22,11 +26,10 @@ class Anaaqra {
     string run_files = "../Simp.root";
     string pmc_dir = "../MC Protons";
     // Rigidity bins
-    double bin_num = 32;
+    int bin_num = 32;
     double bin_edges[33] = {1.00,1.16,1.33,1.51,1.71,1.92,2.15,2.40,2.67,2.97,
       3.29,3.64,4.02,4.43,4.88,5.37,5.90,6.47,7.09,7.76,8.48,9.26,10.1,11.0,
       12.0,13.0,14.1,15.3,16.6,18.0,19.5,21.1,22.8};
-
 
     //--------------------------------------------------------------------------
     // CONSTRUCTORS
@@ -34,6 +37,11 @@ class Anaaqra {
     Anaaqra() { // Default constructor
       cout << "Class succesfully constructed!" << endl;
     }
+
+    //--------------------------------------------------------------------------
+    // LIST OF METHODS
+    //--------------------------------------------------------------------------
+    TH1F Acceptance(); // Returns acceptance as function of rigidity
 
 };
 
@@ -56,8 +64,8 @@ TH1F Anaaqra::Acceptance() {
     // Import tree
     TChain mc_chain("Compact");
     TChain fi_chain("File");
-    mc_chain.Add(Form("%s/%d.root", pmc_dir, start_num + i));
-    fi_chain.Add(Form("%s/%d.root", pmc_dir, start_num + i));
+    mc_chain.Add(Form("../MC Protons/%d.root", start_num + i));
+    fi_chain.Add(Form("../MC Protons/%d.root", start_num + i));
     // Create empty class objects
     NtpCompact *MCompact = new class NtpCompact();
     FileMCInfo *FMCI = new class FileMCInfo();
@@ -96,8 +104,8 @@ TH1F Anaaqra::Acceptance() {
     }
 
     // Print total fractions for visual check
-    cout << "Total fraction in R=(" << bin_edges[0] << ", " << bin_edges[-1]
-         << ") of " << start_num+i << ".root: " << total frac << endl;
+    cout << "Total fraction in R=(" << bin_edges[0] << ", " << bin_edges[bin_num+1]
+         << ") of " << start_num+i << ".root: " << total_frac << endl;
 
   }
 
@@ -108,8 +116,8 @@ TH1F Anaaqra::Acceptance() {
   }
   // Print sum for visual check
   cout << "Total generated MC events: " << total_gen << endl;
-  cout << "Total MC events in R=" << bin_edges[0] << ", " << bin_edges[-1]
+  cout << "Total MC events in R=" << bin_edges[0] << ", " << bin_edges[bin_num+1]
        << "): " << total_bin << endl;
 
-  return 0;
+  return *NgenHist;
 }
