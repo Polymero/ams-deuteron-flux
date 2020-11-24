@@ -45,6 +45,10 @@ class Anaaqra {
     //--------------------------------------------------------------------------
     TH1F Acceptance(); // Returns acceptance as function of rigidity
 
+
+    // DESTRUCTOR
+    virtual ~Anaaqra();
+
 };
 
 //------------------------------------------------------------------------------
