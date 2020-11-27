@@ -12,14 +12,11 @@ void Acceptance() {
   double bin_right[32] = {1.16,1.33,1.51,1.71,1.92,2.15,2.40,2.67,2.97,3.29,3.64,4.02,4.43,4.88,5.37,5.90,6.47,7.09,7.76,8.48,9.26,10.1,11.0,12.0,13.0,14.1,15.3,16.6,18.0,19.5,21.1,22.8};
   double bin_edges[33] = {1.00,1.16,1.33,1.51,1.71,1.92,2.15,2.40,2.67,2.97,3.29,3.64,4.02,4.43,4.88,5.37,5.90,6.47,7.09,7.76,8.48,9.26,10.1,11.0,12.0,13.0,14.1,15.3,16.6,18.0,19.5,21.1,22.8};
 
-  // Define Ngen Histogram
+  // Define histogram
   TH1F* NgenHist = new TH1F("NgenHist", "Generated Events per Rigidity Bin", 32, bin_edges);
   double total_gen = 0;
-
   // Create canvas
   TCanvas* c1 = new TCanvas("Ngen", "Generated Events per Rigidity Bin");
-
-
 
   // Loop over MC root files to fill Ngen histogram
   int start_num = 1209496744;
@@ -89,5 +86,12 @@ void Acceptance() {
 
   cout << "Total Generated Events: " << total_gen << endl;
   cout << "Total Events in R=(1.0, 22.8): " << total_bin << endl;
+
+
+
+  // Define histogram
+  TH1F* NselHist = new TH1F("NselHist", "Selected Events per Rigidity Bin", 32, bin_edges);
+  // Create canvas
+  TCanvas* c2 = new TCanvas("Nsel", "Selected Events per Rigidity Bin");
 
 }

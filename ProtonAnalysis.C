@@ -39,7 +39,7 @@ class Anaaqra {
     //--------------------------------------------------------------------------
     Anaaqra() { // Default constructor
       cout << "Class succesfully constructed!" << endl;
-    }
+    };
 
     //--------------------------------------------------------------------------
     // LIST OF METHODS
