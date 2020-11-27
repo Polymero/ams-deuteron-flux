@@ -74,7 +74,7 @@ void Acceptance() {
     total_bin += NgenHist->GetBinContent(i);
   }
 
-  // Draw Histogram
+  // Draw histogram
   NgenHist->Draw();
   c1->SetLogx();
   c1->SetLogy();
@@ -93,5 +93,23 @@ void Acceptance() {
   TH1F* NselHist = new TH1F("NselHist", "Selected Events per Rigidity Bin", 32, bin_edges);
   // Create canvas
   TCanvas* c2 = new TCanvas("Nsel", "Selected Events per Rigidity Bin");
+
+  // Get chain
+  TChain cp_chain("Compact");
+  cp_chain.Add("../Simp.root");
+
+  // Fill histogram
+  for (Int_t i=0; i<cp_chain->GetEntries(); i++) {
+    cp_chain.GetEntry(i);
+    NselHist->Fill("trk_rig");
+  }
+
+  // Draw histrogram
+  NselHist->Draw();
+
+  // Draw canvas
+  c2->Draw();
+
+
 
 }
