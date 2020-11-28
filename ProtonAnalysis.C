@@ -47,9 +47,6 @@ class Anaaqra {
     TH1F Acceptance(); // Returns acceptance as function of rigidity
 
 
-    // DESTRUCTOR
-    virtual ~Anaaqra();
-
 };
 
 //------------------------------------------------------------------------------
@@ -73,22 +70,25 @@ TH1F Anaaqra::Acceptance() {
     TChain fi_chain("File");
     mc_chain.Add(Form("../MC Protons/%d.root", start_num + i));
     fi_chain.Add(Form("../MC Protons/%d.root", start_num + i));
+
     // Create empty class objects
-    NtpCompact *MCompact = new class NtpCompact();
+    NtpCompact *Compact = new class NtpCompact();
     FileMCInfo *FMCI = new class FileMCInfo();
-    // Set branch address
-    mc_chain.SetBranchAddress("Compact", &MCompact);
+    // Set Branch address
+    mc_chain.SetBranchAddress("Compact", &Compact);
     fi_chain.SetBranchAddress("FileMCInfo", &FMCI);
 
     // MC parameters
-    double ngen = 0;
-    double rig_min = 0;
-    double rig_max = 0;
+    Double_t ngen = 0;
+    Double_t rig_min = 0;
+    Double_t rig_max = 0;
     // Get FileMCInfo entry for MC information
     fi_chain.GetEntry(0);
     ngen = FMCI->ngen_datacard;
     rig_min = FMCI->momentum[0];
     rig_max = FMCI->momentum[1];
+    cout << ngen << "   " << rig_min << "   " << rig_max << endl;
+    cout << bin_edges[0] << "   " << bin_edges[bin_num+1] << endl;
     // Add ngen to total_gen for visual check
     total_gen += ngen;
 
@@ -101,30 +101,41 @@ TH1F Anaaqra::Acceptance() {
     double total_frac = 0;
     for (int j=0; j<bin_num; j++) {
       // Fraction of spectrum in bin
-      double frac = genFlux->Integral(bin_edges[j], bin_edges[j])/genFlux->Integral(rig_min, rig_max);
+      double frac = genFlux->Integral(bin_edges[j], bin_edges[j+1])/genFlux->Integral(rig_min, rig_max);
       total_frac += frac;
       // Number of events in fraction
       double nev = frac * ngen;
       // Set bin to current count + nev
-      NgenHist->SetBinContent(j, NgenHist->GetBinContent(j) + nev);
+      NgenHist->SetBinContent(j+1, NgenHist->GetBinContent(j+1) + nev);
 
     }
 
     // Print total fractions for visual check
-    cout << "Total fraction in R=(" << bin_edges[0] << ", " << bin_edges[bin_num+1]
+    cout << "Total fraction in R=(" << bin_edges[0] << ", " << bin_edges[bin_num]
          << ") of " << start_num+i << ".root: " << total_frac << endl;
 
   }
 
+  // Draw histogram
+  NgenHist->Draw();
+  NgenHist->SetStats(0);
+  cAcc->SetLogx();
+  cAcc->SetLogy();
+  // Draw canvas
+  cAcc->Draw();
+  // Print canvas
+  cAcc->Print("./ProtonAnalysis/Acceptance MC Generated Events.png");
+
   // Sum over bins for visual check
   double total_bin = 0;
   for (int i=0; i<bin_num; i++) {
-    total_bin += NgenHist->GetBinContent(i);
+    total_bin += NgenHist->GetBinContent(i+1);
   }
   // Print sum for visual check
   cout << "Total generated MC events: " << total_gen << endl;
-  cout << "Total MC events in R=" << bin_edges[0] << ", " << bin_edges[bin_num+1]
+  cout << "Total MC events in R=" << bin_edges[0] << ", " << bin_edges[bin_num]
        << "): " << total_bin << endl;
+
 
   return *NgenHist;
 }
