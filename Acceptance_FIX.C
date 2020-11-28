@@ -110,10 +110,25 @@ void Acceptance() {
   ev_chain.SetBranchAddress("Compact", &EvComp);
 
   // Fill histogram
+  Int_t PhysTriggs = 0;
+  Int_t UnphTriggs = 0;
   for (Int_t i=0; i<ev_chain.GetEntries(); i++) {
     ev_chain.GetEntry(i);
     NdetHist->Fill(EvComp->trk_rig[0]);
+    // Triggers
+    bool HasPhysTrig = ((EvComp->sublvl1&0x3E)!=0)&&((EvComp->trigpatt&0x2)!=0);
+    bool HasUnphTrig = ((EvComp->sublvl1&0x3E)==0)&&((EvComp->trigpatt&0x2)!=0);
+    if (HasPhysTrig) {
+      PhysTriggs = PhysTriggs+1;
+    }
+    if (HasUnphTrig) {
+      UnphTriggs = UnphTriggs+1;
+    }
   }
+  cout << "Entries: " << ev_chain.GetEntries() << endl;
+  cout << "PhysTriggs: " << PhysTriggs << endl;
+  cout << "UnphTriggs: " << UnphTriggs << endl;
+  cout << "No??Triggs: " << ev_chain.GetEntries() - PhysTriggs - UnphTriggs << endl;
 
   // Draw histogram
   NdetHist->Draw();
@@ -165,6 +180,8 @@ void Acceptance() {
   // Axes
   Agraph->GetXaxis()->SetTitle("R [GV]");
   Agraph->GetYaxis()->SetTitle("Acceptance [m^2 sr]");
+  Agraph->SetMaximum(1);
+  Agraph->SetMinimum(0);
   c4->SetLogx();
   // Draw
   Agraph->Draw("AP");

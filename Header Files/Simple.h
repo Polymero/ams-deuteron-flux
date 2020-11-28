@@ -18,17 +18,19 @@ class Miiqtool {
 
   unsigned int status;                      ///< nParticle()+nAntiCluster()*10+nBetaH()*100+nTrTrack()*1000+nTrRecHit()*10000+nTrdCluster()*1000000+nTofClusterH()*100000000
 
-  float        tof_beta;                    ///< TOF Beta
+  int          event;
+  int          utime;
 
   float        trk_q_inn;                   ///< Inner Tracker Charge
   float        trk_q_lay[9];                ///< Tracker Layer charge (inverted sign for bad status)
   float        trk_rig;                     ///< Choutko fit rigidities (FS) [GV]
   float        trk_chisqn[2];               ///< Choutko fit normalized Chi2 (FS | X, Y)
 
+  float        tof_beta;                    ///< TOF Beta
+
   float        rich_beta;                   ///< RICH beta best estimator
 
-  int          event;
-  int          utime;
+  int          utime_rti;
 
   float        lf;
   float        cf;

@@ -6,6 +6,7 @@
 #include <iostream>
 #include <string>
 #include "Header Files/Ntp.h"
+#include "Header Files/Simple.h"
 
 // CREATE SIMPLIFIED TREE FROM ROOT FILES
 void Miiqtoolat(string rootfiles = "local") {
@@ -62,19 +63,23 @@ void Miiqtoolat(string rootfiles = "local") {
   Float_t lf;                   ///< Livetime [0,1]
   Float_t cf;                   ///< Max geomagnetic cutoff in the field of view (Stoermer|40 degrees|+) [GV]
 
-  // Initialise branches
-  T->Branch("status",     &status,      "status/I");
-  T->Branch("event",      &event,       "event/I");
-  T->Branch("utime",      &utime,       "utime/I");
-  T->Branch("trk_q_inn",  &trk_q_inn,   "trk_q_inn/F");
-  T->Branch("trk_q_lay",  &trk_q_lay,   "trk_q_lay[9]/F");
-  T->Branch("trk_rig",    &trk_rig,     "trk_rig/F");
-  T->Branch("trk_chisqn", &trk_chisqn,  "trk_chisqn[2]/F");
-  T->Branch("tof_beta",   &tof_beta,    "tof_beta/F");
-  T->Branch("rich_beta",  &rich_beta,   "rich_beta/F");
-  T->Branch("utime_rti",  &utime_rti,   "utime_rti/I");
-  T->Branch("lf",         &lf,          "lf/F");
-  T->Branch("cf",         &cf,          "cf/F");
+  // Initialise Single Branch
+  Miiqtool *Tool = new class Miiqtool();
+  T->Branch("Simp", &Tool, "status/I:event/I:utime/I:trk_q_inn/F:trk_q_lay[9]/F:trk_rig/F:trk_chisqn[2]/F:tof_beta/F:rich_beta/F:utime_rti/I:lf/F:cf/F");
+
+  // // Initialise branches
+  // T->Branch("status",     &status,      "status/I");
+  // T->Branch("event",      &event,       "event/I");
+  // T->Branch("utime",      &utime,       "utime/I");
+  // T->Branch("trk_q_inn",  &trk_q_inn,   "trk_q_inn/F");
+  // T->Branch("trk_q_lay",  &trk_q_lay,   "trk_q_lay[9]/F");
+  // T->Branch("trk_rig",    &trk_rig,     "trk_rig/F");
+  // T->Branch("trk_chisqn", &trk_chisqn,  "trk_chisqn[2]/F");
+  // T->Branch("tof_beta",   &tof_beta,    "tof_beta/F");
+  // T->Branch("rich_beta",  &rich_beta,   "rich_beta/F");
+  // T->Branch("utime_rti",  &utime_rti,   "utime_rti/I");
+  // T->Branch("lf",         &lf,          "lf/F");
+  // T->Branch("cf",         &cf,          "cf/F");
 
   // Get number of entries
   Int_t nentries = comp_chain.GetEntries();
@@ -82,7 +87,7 @@ void Miiqtoolat(string rootfiles = "local") {
   cout << "Number of Entries: " << nentries << endl;
 
   // Loop over entries
-  Int_t j=0;
+  Int_t kJut = 0;
   for(Int_t i=0; i < nentries; i++){
 
     // Get entry
@@ -90,8 +95,8 @@ void Miiqtoolat(string rootfiles = "local") {
     // Compact parameters
     status = Compact->status;
     trk_q_inn = Compact->trk_q_inn;
-    for(Int_t j=0; j < 9; j++){
-      trk_q_lay[j] = Compact->trk_q_lay[j];
+    for(Int_t k=0; k < 9; k++){
+      trk_q_lay[k] = Compact->trk_q_lay[k];
     }
     trk_rig = Compact->trk_rig[0];
     trk_chisqn[0] = Compact->trk_chisqn[0][0];
@@ -104,12 +109,12 @@ void Miiqtoolat(string rootfiles = "local") {
     utime = SHeader->utime;
 
     // Get entry
-    rtii_chain.GetEntry(j);
+    rtii_chain.GetEntry(kJut);
     utime_rti = RTIInfo->utime;
-    // Math Compact utime with RTI utime
+    // Match Compact utime with RTI utime
     while(utime != utime_rti){
-      j++;
-      rtii_chain.GetEntry(j);
+      kJut = kJut+1;
+      rtii_chain.GetEntry(kJut);
       utime_rti = RTIInfo->utime;
     }
     // RTIInfo parameters
@@ -124,7 +129,7 @@ void Miiqtoolat(string rootfiles = "local") {
   T->Write();
   // Print tree (for visual check)
   T->Print();
-  T->Scan("tof_beta:utime:utime_rti:lf:cf", "", "colsize=15 precision=10", 24, 40);
+  T->Scan("tof_beta:rich_beta:utime:utime_rti:lf:cf", "", "colsize=15 precision=10", 24, 0);
 
 
   // Get all RTIInfo values too into a seperate tree
