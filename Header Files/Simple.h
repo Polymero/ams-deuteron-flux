@@ -30,8 +30,6 @@ class Miiqtool {
 
   float        rich_beta;                   ///< RICH beta best estimator
 
-  int          utime_rti;
-
   float        lf;
   float        cf;
 
