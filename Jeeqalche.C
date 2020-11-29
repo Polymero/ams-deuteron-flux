@@ -15,10 +15,16 @@ void Miiqtoolat(string rootfiles = "local") {
   TFile f("../Simp.root", "recreate");
   TTree *T = new TTree("Simp", "Simplified Compact Tree");
   TTree *C = new TTree("RTIInfo", "RTIInfo");
+  // Reading objects
   NtpCompact *Compact = new NtpCompact();
   NtpSHeader *SHeader = new NtpSHeader();
   RTIInfo *RTIInfo = new class RTIInfo();
+  // Writing objects
+  Miiqtool *Tool = new class Miiqtool();
 
+  //----------------------------------------------------------------------------
+  // DATA
+  //----------------------------------------------------------------------------
   // Create chains with pass7 files
   TChain comp_chain("Compact");
   TChain rtii_chain("RTI");
@@ -40,12 +46,14 @@ void Miiqtoolat(string rootfiles = "local") {
     cout << "Error Nr. " << e << ": File location not recognised." << endl;
     return 0;
   }
-  // Set branch address to compact
+  // Set branch addresses
   comp_chain.SetBranchAddress("Compact", &Compact);
   comp_chain.SetBranchAddress("SHeader", &SHeader);
   rtii_chain.SetBranchAddress("RTIInfo", &RTIInfo);
 
-  // Initialise parameters
+  //----------------------------------------------------------------------------
+  // PARAMETERS
+  //----------------------------------------------------------------------------
   Int_t status;                 ///< nParticle()+nAntiCluster()*10+nBetaH()*100+nTrTrack()*1000+nTrRecHit()*10000+nTrdCluster()*1000000+nTofClusterH()*100000000
   Int_t event;                  ///< Event
   Int_t utime;                  ///< JMDC unix time [s]
@@ -63,8 +71,37 @@ void Miiqtoolat(string rootfiles = "local") {
   Float_t lf;                   ///< Livetime [0,1]
   Float_t cf;                   ///< Max geomagnetic cutoff in the field of view (Stoermer|40 degrees|+) [GV]
 
+  // RTIINFO TREE
+  // Get all RTIInfo values too into a seperate tree
+  C->Branch("utime_rti",  &utime_rti,   "utime_rti/I");
+  C->Branch("lf",         &lf,          "lf/F");
+  C->Branch("cf",         &cf,          "cf/F");
+
+  // RTI map
+  map<int, std::pair<float,float>> rtimap;
+
+  for (Int_t i = 0; i < rtii_chain.GetEntries(); i++) {
+
+    rtii_chain.GetEntry(i);
+
+    // Get parameters
+    utime_rti = RTIInfo->utime;
+    lf = RTIInfo->lf;
+    cf=RTIInfo->cf[0][3][1];
+
+    // Fill RTI map
+    pp.insert({utime_rti, std::pair<float,float>(lf, cf)})   
+
+    // Fill tree
+    C->Fill();
+  }
+
+  // Write tree to file
+  C->Write();
+  // Print tree (for visual check)
+  C->Print();
+
   // Initialise Single Branch
-  Miiqtool *Tool = new class Miiqtool();
   T->Branch("Simp", &Tool, "status/I:event/I:utime/I:trk_q_inn/F:trk_q_lay[9]/F:trk_rig/F:trk_chisqn[2]/F:tof_beta/F:rich_beta/F:utime_rti/I:lf/F:cf/F");
 
   // // Initialise branches
@@ -85,6 +122,7 @@ void Miiqtoolat(string rootfiles = "local") {
   Int_t nentries = comp_chain.GetEntries();
   // Print nentries (for visual check)
   cout << "Number of Entries: " << nentries << endl;
+
 
   // Loop over entries
   Int_t kJut = 0;
@@ -132,23 +170,5 @@ void Miiqtoolat(string rootfiles = "local") {
   T->Scan("tof_beta:rich_beta:utime:utime_rti:lf:cf", "", "colsize=15 precision=10", 24, 0);
 
 
-  // Get all RTIInfo values too into a seperate tree
-  C->Branch("utime_rti",  &utime_rti,   "utime_rti/I");
-  C->Branch("lf",         &lf,          "lf/F");
-  C->Branch("cf",         &cf,          "cf/F");
 
-  for (Int_t i = 0; i < rtii_chain.GetEntries(); i++) {
-    rtii_chain.GetEntry(i);
-    utime_rti = RTIInfo->utime;
-    lf = RTIInfo->lf;
-    cf=RTIInfo->cf[0][3][1];
-
-    // Fill tree
-    C->Fill();
-  }
-
-  // Write tree to file
-  C->Write();
-  // Print tree (for visual check)
-  C->Print();
 }
