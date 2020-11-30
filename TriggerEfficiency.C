@@ -63,11 +63,12 @@ void TriggerEfficiency() {
   }
 
   // Create canvas 1
-  TCanvas* c1 = new TCanvas("Phys", "PHysical Triggers per Rigidity Bin");
+  TCanvas* c1 = new TCanvas("Phys", "Physical Triggers per Rigidity Bin");
   PhysHist->Draw();
   PhysHist->SetStats(0);
   c1->SetLogx();
   c1->Draw();
+  c1->Print("./TriggerEfficiency/Physical Triggers per Rigidity Bin.png");
 
   // Create canvas 2
   TCanvas* c2 = new TCanvas("Unph", "Unphysical Triggers per Rigidity Bin");
@@ -75,6 +76,7 @@ void TriggerEfficiency() {
   UnphHist->SetStats(0);
   c2->SetLogx();
   c2->Draw();
+  c2->Print("./TriggerEfficiency/Unphysical Triggers per Rigitidy Bin.png");
 
   // Create canvas 3
   TCanvas* c3 = new TCanvas("TrigEff", "Trigger Efficiency per Rigidity Bin");
@@ -82,6 +84,7 @@ void TriggerEfficiency() {
   TriggEffHist->SetStats(0);
   c3->SetLogx();
   c3->Draw();
+  c3->Print("./TriggerEfficiency/Trigger Efficiency per Rigidity Bin.png");
 
   // Convert TH1F to TGraph
   double TrigEff[32] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
@@ -104,5 +107,7 @@ void TriggerEfficiency() {
 
   // Draw
   TEGraph->Draw("AP");
+  c4->Draw();
+  c4->Print("./TriggerEfficiency/Trigger Efficiency TGraph.png");
 
 }

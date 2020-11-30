@@ -6,6 +6,7 @@
 #include <iostream>
 #include <string>
 #include "Header Files/Ntp.h"
+#include "Header Files/Simple.h"
 
 // CREATE SIMPLIFIED TREE FROM ROOT FILES
 void Miiqtoolat(string rootfiles = "local") {
@@ -14,10 +15,16 @@ void Miiqtoolat(string rootfiles = "local") {
   TFile f("../Simp.root", "recreate");
   TTree *T = new TTree("Simp", "Simplified Compact Tree");
   TTree *C = new TTree("RTIInfo", "RTIInfo");
+  // Reading objects
   NtpCompact *Compact = new NtpCompact();
   NtpSHeader *SHeader = new NtpSHeader();
   RTIInfo *RTIInfo = new class RTIInfo();
+  // Writing objects
+  Miiqtool *Tool = new class Miiqtool();
 
+  //----------------------------------------------------------------------------
+  // DATA
+  //----------------------------------------------------------------------------
   // Create chains with pass7 files
   TChain comp_chain("Compact");
   TChain rtii_chain("RTI");
@@ -39,12 +46,14 @@ void Miiqtoolat(string rootfiles = "local") {
     cout << "Error Nr. " << e << ": File location not recognised." << endl;
     return 0;
   }
-  // Set branch address to compact
+  // Set branch addresses
   comp_chain.SetBranchAddress("Compact", &Compact);
   comp_chain.SetBranchAddress("SHeader", &SHeader);
   rtii_chain.SetBranchAddress("RTIInfo", &RTIInfo);
 
-  // Initialise parameters
+  //----------------------------------------------------------------------------
+  // PARAMETERS
+  //----------------------------------------------------------------------------
   Int_t status;                 ///< nParticle()+nAntiCluster()*10+nBetaH()*100+nTrTrack()*1000+nTrRecHit()*10000+nTrdCluster()*1000000+nTofClusterH()*100000000
   Int_t event;                  ///< Event
   Int_t utime;                  ///< JMDC unix time [s]
@@ -63,87 +72,77 @@ void Miiqtoolat(string rootfiles = "local") {
   Float_t cf;                   ///< Max geomagnetic cutoff in the field of view (Stoermer|40 degrees|+) [GV]
 
   // Initialise branches
-  T->Branch("status",     &status,      "status/I");
-  T->Branch("event",      &event,       "event/I");
-  T->Branch("utime",      &utime,       "utime/I");
-  T->Branch("trk_q_inn",  &trk_q_inn,   "trk_q_inn/F");
-  T->Branch("trk_q_lay",  &trk_q_lay,   "trk_q_lay[9]/F");
-  T->Branch("trk_rig",    &trk_rig,     "trk_rig/F");
-  T->Branch("trk_chisqn", &trk_chisqn,  "trk_chisqn[2]/F");
-  T->Branch("tof_beta",   &tof_beta,    "tof_beta/F");
-  T->Branch("rich_beta",  &rich_beta,   "rich_beta/F");
-  T->Branch("utime_rti",  &utime_rti,   "utime_rti/I");
-  T->Branch("lf",         &lf,          "lf/F");
-  T->Branch("cf",         &cf,          "cf/F");
+  C->Branch("utime_rti",  &utime_rti,   "utime_rti/I");
+  C->Branch("lf",         &lf,          "lf/F");
+  C->Branch("cf",         &cf,          "cf/F");
+  T->Branch("Simp", &Tool);
 
   // Get number of entries
   Int_t nentries = comp_chain.GetEntries();
   // Print nentries (for visual check)
   cout << "Number of Entries: " << nentries << endl;
 
-  // Loop over entries
-  Int_t j=0;
-  for(Int_t i=0; i < nentries; i++){
+  // RTI map
+  map<int, std::pair<float,float>> rtimap = map<int, std::pair<float,float>>();
 
-    // Get entry
-    comp_chain.GetEntry(i);
-    // Compact parameters
-    status = Compact->status;
-    trk_q_inn = Compact->trk_q_inn;
-    for(Int_t j=0; j < 9; j++){
-      trk_q_lay[j] = Compact->trk_q_lay[j];
-    }
-    trk_rig = Compact->trk_rig[0];
-    trk_chisqn[0] = Compact->trk_chisqn[0][0];
-    trk_chisqn[1] = Compact->trk_chisqn[0][1];
-    tof_beta = Compact->tof_beta;
-    rich_beta = Compact->rich_beta;
+  // Loop over RTIInfo entries
+  for (Int_t i = 0; i < rtii_chain.GetEntries(); i++) {
 
-    // SHeader parameters
-    event = SHeader->event;
-    utime = SHeader->utime;
+    rtii_chain.GetEntry(i);
 
-    // Get entry
-    rtii_chain.GetEntry(j);
+    // Get parameters
     utime_rti = RTIInfo->utime;
-    // Math Compact utime with RTI utime
-    while(utime != utime_rti){
-      j++;
-      rtii_chain.GetEntry(j);
-      utime_rti = RTIInfo->utime;
-    }
-    // RTIInfo parameters
     lf = RTIInfo->lf;
     cf = RTIInfo->cf[0][3][1];
+
+    // Fill RTI map
+    rtimap.insert({utime_rti, std::pair<float,float>(lf, cf)});
+
+    // Fill tree
+    C->Fill();
+  }
+
+  // Loop over Compact entries
+  for(Int_t i=0; i < nentries; i++){
+
+    comp_chain.GetEntry(i);
+
+    // Compact parameters
+    Tool->status = Compact->status;
+    Tool->trk_q_inn = Compact->trk_q_inn;
+    for(Int_t k=0; k < 9; k++){
+      Tool->trk_q_lay[k] = Compact->trk_q_lay[k];
+    }
+    Tool->trk_rig = Compact->trk_rig[0];
+    Tool->trk_chisqn[0] = Compact->trk_chisqn[0][0];
+    Tool->trk_chisqn[1] = Compact->trk_chisqn[0][1];
+    Tool->tof_beta = Compact->tof_beta;
+    Tool->rich_beta = Compact->rich_beta;
+
+    // SHeader parameters
+    Tool->event = SHeader->event;
+    Tool->utime = SHeader->utime;
+
+    // RTIInfo parameters
+    Tool->lf = rtimap[SHeader->utime].first;
+    Tool->cf = rtimap[SHeader->utime].second;
 
     // Fill tree
     T->Fill();
   }
 
   // Write tree to file
-  T->Write();
-  // Print tree (for visual check)
-  T->Print();
-  T->Scan("tof_beta:utime:utime_rti:lf:cf", "", "colsize=15 precision=10", 24, 40);
-
-
-  // Get all RTIInfo values too into a seperate tree
-  C->Branch("utime_rti",  &utime_rti,   "utime_rti/I");
-  C->Branch("lf",         &lf,          "lf/F");
-  C->Branch("cf",         &cf,          "cf/F");
-
-  for (Int_t i = 0; i < rtii_chain.GetEntries(); i++) {
-    rtii_chain.GetEntry(i);
-    utime_rti = RTIInfo->utime;
-    lf = RTIInfo->lf;
-    cf=RTIInfo->cf[0][3][1];
-
-    // Fill tree
-    C->Fill();
-  }
-
-  // Write tree to file
   C->Write();
   // Print tree (for visual check)
   C->Print();
+  C->Scan("utime_rti:lf:cf", "", "colsize=15 precision=10", 24, 0);
+
+  // Write tree to file
+  T->Write();
+  // Print tree (for visual check)
+  T->Print();
+  T->Scan("tof_beta:rich_beta:utime:lf:cf", "", "colsize=15 precision=10", 24, 0);
+
+
+
 }
