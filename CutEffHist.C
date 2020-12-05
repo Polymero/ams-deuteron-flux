@@ -29,33 +29,73 @@ void CutEffHist() {
   TH1F* Hlay = new TH1F("Hlay", "Hlay", 32, bin_edges);
   TH1F* Hgeo = new TH1F("Hgeo", "Hgeo", 32, bin_edges);
   // Total efficiency
-  TH1F* Htot = new TH1F("Htot", "Htot", 32, bin_edges);
+  //TH1F* Htot = new TH1F("Htot", "Htot", 32, bin_edges);
   // Instrument bases
   TH1F* Btof = new TH1F("Btof", "Btof", 32, bin_edges);
   TH1F* Btrk = new TH1F("Btrk", "Btrk", 32, bin_edges);
 
   // Loop over all entries of the chain
-  for (Int_t i = 0; i < simp_chain->GetEntries(); i++) {
+  for (Int_t i = 0; i < simp_chain.GetEntries(); i++) {
 
     simp_chain.GetEntry(i);
 
     // Boolean cuts (instead of TCut)
     bool Crig = (Tool->trk_rig > 0)&&(Tool->trk_rig <= 22);
+    bool Ctrg = ((Tool->sublvl1&0x3E)!=0)&&((Tool->trigpatt&0x2)!=0);
     bool Cpar = Tool->status % 10 == 1;
-    bool Ccon = abs(Tool->tof_beta - Tool->rich_beta)/Tool->tof_beta < 0.05;
+    bool Ccon = std::abs(Tool->tof_beta - Tool->rich_beta)/Tool->tof_beta < 0.05;
     bool Cbet = Tool->tof_beta > 0;
     bool Cchi = (Tool->trk_chisqn[0] < 10)&&(Tool->trk_chisqn[1] < 10)&&(Tool->trk_chisqn[0] > 0)&&(Tool->trk_chisqn[1] > 0);
     bool Cinn = (Tool->trk_q_inn > 0.80)&&(Tool->trk_q_inn < 1.30);
     bool Clay = (Tool->trk_q_lay[0] >= 0)&&(Tool->trk_q_lay[1] >= 0)&&(Tool->trk_q_lay[2] >= 0)&&(Tool->trk_q_lay[3] >= 0)&&(Tool->trk_q_lay[4] >= 0)&&(Tool->trk_q_lay[5] >= 0)&&(Tool->trk_q_lay[6] >= 0)&&(Tool->trk_q_lay[7] >= 0)&&(Tool->trk_q_lay[8] >= 0);
     bool Cgeo = Tool->trk_rig > 1.2 * Tool->cf;
-    //bool Ctrg = ((Tool->sublvl1&0x3E)!=0)&&((Tool->trigpatt&0x2)!=0);
 
-    if () {
-      Hrig->Fill(Tool->trk_rig);
-    }
+    bool Ctof = Cpar && Ccon && Cbet;
+    bool Ctrk = Cchi && Cinn && Clay && Cgeo;
+
+    if (Ctrk && Ctrg && Crig) {Btof->Fill(Tool->trk_rig);}
+    if (Ctof && Ctrg && Crig) {Btrk->Fill(Tool->trk_rig);}
+
+    if (Cpar && Ctrk && Ctrg && Crig) {Hpar->Fill(Tool->trk_rig);}
+    if (Ccon && Ctrk && Ctrg && Crig) {Hcon->Fill(Tool->trk_rig);}
+    if (Cbet && Ctrk && Ctrg && Crig) {Hbet->Fill(Tool->trk_rig);}
+    if (Cchi && Ctof && Ctrg && Crig) {Hchi->Fill(Tool->trk_rig);}
+    if (Cinn && Ctof && Ctrg && Crig) {Hinn->Fill(Tool->trk_rig);}
+    if (Clay && Ctof && Ctrg && Crig) {Hlay->Fill(Tool->trk_rig);}
+    if (Cgeo && Ctof && Ctrg && Crig) {Hgeo->Fill(Tool->trk_rig);}
 
   }
 
-  cout << endl;
+  Hpar->Divide(Btof);
+  Hcon->Divide(Btof);
+  Hbet->Divide(Btof);
+  Hchi->Divide(Btrk);
+  Hinn->Divide(Btrk);
+  Hlay->Divide(Btrk);
+  Hgeo->Divide(Btrk);
+
+  TH1F* TotCutEff = (TH1F*) Hpar->Clone();
+  TotCutEff->Multiply(Hcon);
+  TotCutEff->Multiply(Hbet);
+  TotCutEff->Multiply(Hchi);
+  TotCutEff->Multiply(Hinn);
+  TotCutEff->Multiply(Hlay);
+  TotCutEff->Multiply(Hgeo);
+
+  TCanvas* c1 = new TCanvas("c1", "Cut Efficiencies");
+  c1->SetLogx();
+
+  Hpar->Draw(); Hpar->SetAxisRange(0,1,"Y"); c1->Print("./CutEfficiency/Single Particle Cut.png");
+  Hcon->Draw(); Hcon->SetAxisRange(0,1,"Y"); c1->Print("./CutEfficiency/Beta Consistency Cut.png");
+  Hbet->Draw(); Hbet->SetAxisRange(0,1,"Y"); c1->Print("./CutEfficiency/TOF Beta Cut.png");
+  Hchi->Draw(); Hchi->SetAxisRange(0,1,"Y"); c1->Print("./CutEfficiency/Well Consructed Track Cut.png");
+  Hinn->Draw(); Hinn->SetAxisRange(0,1,"Y"); c1->Print("./CutEfficiency/Inner Tracker Charge Cut.png");
+  Hlay->Draw(); Hlay->SetAxisRange(0,1,"Y"); c1->Print("./CutEfficiency/Tracker Layer Charge Cut.png");
+  Hgeo->Draw(); Hgeo->SetAxisRange(0,1,"Y"); c1->Print("./CutEfficiency/Geo-magnetic Cut-off Cut.png");
+
+  TotCutEff->Draw();
+  TotCutEff->SetAxisRange(0,.2,"Y");
+
+  c1->Print("Total Cut Efficiency.png");
 
 }

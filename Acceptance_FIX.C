@@ -6,7 +6,7 @@
 #include <iostream>
 #include "Header Files/Ntp.h"
 
-void Acceptance() {
+void Acceptance(bool apply_cuts = 0) {
 
   // Define Rigidity Bins
   double bin_left[32] = {1.00,1.16,1.33,1.51,1.71,1.92,2.15,2.40,2.67,2.97,3.29,3.64,4.02,4.43,4.88,5.37,5.90,6.47,7.09,7.76,8.48,9.26,10.1,11.0,12.0,13.0,14.1,15.3,16.6,18.0,19.5,21.1};
@@ -113,8 +113,28 @@ void Acceptance() {
   Int_t PhysTriggs = 0;
   Int_t UnphTriggs = 0;
   for (Int_t i=0; i<ev_chain.GetEntries(); i++) {
+
     ev_chain.GetEntry(i);
-    NdetHist->Fill(EvComp->trk_rig[0]);
+
+    // Boolean cuts (instead of TCut)
+    bool Crig = (EvComp->trk_rig[0] > 0)&&(EvComp->trk_rig[0] <= 22);
+    bool Ctrg = ((EvComp->sublvl1&0x3E)!=0)&&((EvComp->trigpatt&0x2)!=0);
+    bool Cpar = EvComp->status % 10 == 1;
+    bool Ccon = std::abs(EvComp->tof_beta - EvComp->rich_beta)/EvComp->tof_beta < 0.05;
+    bool Cbet = EvComp->tof_beta > 0;
+    bool Cchi = (EvComp->trk_chisqn[0][0] < 10)&&(EvComp->trk_chisqn[0][1] < 10)&&(EvComp->trk_chisqn[0][0] > 0)&&(EvComp->trk_chisqn[0][1] > 0);
+    bool Cinn = (EvComp->trk_q_inn > 0.80)&&(EvComp->trk_q_inn < 1.30);
+    bool Clay = (EvComp->trk_q_lay[0] >= 0)&&(EvComp->trk_q_lay[1] >= 0)&&(EvComp->trk_q_lay[2] >= 0)&&(EvComp->trk_q_lay[3] >= 0)&&(EvComp->trk_q_lay[4] >= 0)&&(EvComp->trk_q_lay[5] >= 0)&&(EvComp->trk_q_lay[6] >= 0)&&(EvComp->trk_q_lay[7] >= 0)&&(EvComp->trk_q_lay[8] >= 0);
+    //bool Cgeo = EvComp->trk_rig[0] > 1.2 * EvComp->cf[0][3][1];
+
+    if (apply_cuts) {
+      if (Crig && Ctrg && Cpar && Ccon && Cbet && Cchi && Cinn && Clay) {
+        NdetHist->Fill(EvComp->trk_rig[0]);
+      }
+    } else {
+      NdetHist->Fill(EvComp->trk_rig[0]);
+    }
+
     // Triggers
     bool HasPhysTrig = ((EvComp->sublvl1&0x3E)!=0)&&((EvComp->trigpatt&0x2)!=0);
     bool HasUnphTrig = ((EvComp->sublvl1&0x3E)==0)&&((EvComp->trigpatt&0x2)!=0);
@@ -180,7 +200,11 @@ void Acceptance() {
   // Axes
   Agraph->GetXaxis()->SetTitle("R [GV]");
   Agraph->GetYaxis()->SetTitle("Acceptance [m^2 sr]");
-  Agraph->SetMaximum(1);
+  if (apply_cuts) {
+    Agraph->SetMaximum(.1);
+  } else {
+    Agraph->SetMaximum(1);
+  }
   Agraph->SetMinimum(0);
   c4->SetLogx();
   // Draw
