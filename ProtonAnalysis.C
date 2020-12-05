@@ -27,8 +27,8 @@ class Anaaqra {
     // ATTRIBUTES
     //--------------------------------------------------------------------------
     // Rigidity bins
-    int Bin_num = 32;
-    double Bin_edges[33] = {1.00,1.16,1.33,1.51,1.71,1.92,2.15,2.40,2.67,2.97,
+    const int Bin_num = 32;
+    double Bin_edges[32+1] = {1.00,1.16,1.33,1.51,1.71,1.92,2.15,2.40,2.67,2.97,
                             3.29,3.64,4.02,4.43,4.88,5.37,5.90,6.47,7.09,7.76,
                             8.48,9.26,10.1,11.0,12.0,13.0,14.1,15.3,16.6,18.0,
                             19.5,21.1,22.8};
@@ -39,11 +39,16 @@ class Anaaqra {
     TH1F *Events_cut    = new TH1F("Events_cut", "Selected AMS-02 Events", 32, Bin_edges);
     TH1F *ExposureTime  = new TH1F("ExposureTime", "Exposure Time per Rigidity Bin", 32, Bin_edges);
     TH1F *RateHist      = new TH1F("RateHist", "Proton Rate per Rigidity Bin", 32, Bin_edges);
+    TH1F *MC_generated  = new TH1F("MC_generated", "Generated MC Events per Rigidity Bin", 32, Bin_edges);
+    TH1F *MC_detected   = new TH1F("MC_detected", "Detected MC Events per Rigidity Bin", 32, Bin_edges);
+    TH1F *AcceptHist    = new TH1F("AcceptHist", "Acceptance per Rigidity Bin", 32, Bin_edges);
     // Data objects
-    TChain *Simp_chain = new TChain("Simp");
-    TChain *RTII_chain = new TChain("RTIInfo");
-    Miiqtool *Tool = new Miiqtool();
-    MiiqRTI *Woi = new MiiqRTI();
+    TChain *Simp_chain  = new TChain("Simp");
+    TChain *RTII_chain  = new TChain("RTIInfo");
+    TChain *MC_chain    = new TChain("Compact");
+    Miiqtool *Tool      = new Miiqtool();
+    MiiqRTI *Woi        = new MiiqRTI();
+    NtpCompact *MC_comp = new NtpCompact();
 
     //--------------------------------------------------------------------------
     // CONSTRUCTORS
@@ -64,10 +69,12 @@ class Anaaqra {
       // Read the trees
       Simp_chain->Add("../Simp.root");
       RTII_chain->Add("../Simp.root");
+      MC_chain->Add("../MC Protons/*.root");
 
       // Set branch addresses
       Simp_chain->SetBranchAddress("Simp", &Tool);
       RTII_chain->SetBranchAddress("RTI", &Woi);
+      MC_chain->SetBranchAddress("Compact", &MC_comp);
 
       cout << "Class succesfully constructed!" << endl;
 
@@ -77,18 +84,49 @@ class Anaaqra {
     // LIST OF METHODS
     //--------------------------------------------------------------------------
     // Singular (independent)
-    TH1F RigBinner();   // Returns number of selected events as function of rigidity
-    TH1F Exposure();    // Returns exposure time (livetime) as function of rigidity
-    TH1F Acceptance();  // Returns (geometric) acceptance as function of rigidity
-    TH1F CutEff();      // Returns the cut (selection) efficiency as function of rigidity
-    TH1F TrigEff();     // Returns the trigger efficiency as function of rigidity
+    TH1F RigBinner();                       // Returns number of selected events as function of rigidity
+    TH1F Exposure();                        // Returns exposure time (livetime) as function of rigidity
+    TH1F Acceptance(bool apply_cuts = 0);   // Returns (geometric) acceptance as function of rigidity
+    TH1F CutEff();                          // Returns the cut (selection) efficiency as function of rigidity
+    TH1F TrigEff();                         // Returns the trigger efficiency as function of rigidity
     // Plural (dependent)
-    TH1F ProtonRate();  // Returns the proton rate as function of rigidity
-    TH1F ProtonFlux();  // Returns the proton flux as function of rigidity
+    TH1F ProtonRate();                      // Returns the proton rate as function of rigidity
+    TH1F ProtonFlux();                      // Returns the proton flux as function of rigidity
     // Debug
     int Debug();
 
 };
+
+//------------------------------------------------------------------------------
+// ASSIST FUNCTIONS
+//------------------------------------------------------------------------------
+// Returns bool if event passed specified selection of cuts
+template <typename T>
+bool EventSelector(T datobj, const char* cutbit, bool is_compact = 0) {
+
+  bool pass = 1;
+
+  if (cutbit[0] == '1') {
+    if (is_compact) {
+      pass &= (datobj->trk_rig[0] >= 1.0) && (datobj->trk_rig[0] <= 22.8);
+    } else {
+      pass &= (datobj->trk_rig >= 1.0) && (datobj->trk_rig <= 22.8);
+    }
+  }
+  if (cutbit[1] == '1') {
+    pass &= ((datobj->sublvl1&0x3E)!=0) && ((datobj->trigpatt&0x2)!=0);
+  }
+  if (cutbit[2] == '1') {
+    pass &= datobj->status % 10 ==1;
+  }
+
+  // Return
+  return pass;
+
+}
+
+
+
 
 //------------------------------------------------------------------------------
 // METHOD FUNCTIONS
@@ -201,10 +239,69 @@ TH1F Anaaqra::Exposure() {
 
 
 // Returns TH1F of the geometric Acceptance
-TH1F Anaaqra::Acceptance() {
-  TH1F* empty = new TH1F();
-  return *empty;
+TH1F Anaaqra::Acceptance(bool apply_cuts = 0) {
+
+  // Loop over MC root files individually (!)
+  int start_num = 1209496744;
+  for (int i=0; i<13; i++) { // ??? Make adaptable
+
+    // Import tree
+    TChain mc_chain("Compact");
+    TChain fi_chain("File");
+    // Create empty class objects
+    NtpCompact *comp = new class NtpCompact();
+    FileMCInfo *fmci = new class FileMCInfo();
+    // Set branch addresses
+    mc_chain.SetBranchAddress("Compact", &comp);
+    fi_chain.SetBranchAddress("FileMCInfo", &fmci);
+
+    // Temporary parameters
+    double ngen = 0;
+    double rig_min = 0;
+    double rig_max = 0;
+    // Get FileMCInfo entry for information about MC gegneration
+    fi_chain.GetEntry(0);
+    // Get parameters
+    ngen = fmci->ngen_datacard;
+    rig_min = fmci->momentum[0];
+    rig_max = fmci->momentum[1];
+
+    // 1/R generation spectum
+    TF1 *genFlux = new TF1("genFlux", "[0]/(x)", rig_min, rig_max);
+    // Normalisation
+    genFlux->SetParameter(0, log(rig_max / rig_min));
+
+    // Loop over rigidity bins
+    for (int j=0; j<Bin_num; j++) {
+
+      // Fraction of spectrum in bin
+      double frac = genFlux->Integral(Bin_edges[j], Bin_edges[j+1]) / genFlux->Integral(rig_min, rig_max);
+      // Number of events in fraction
+      double nev = frac * ngen;
+
+      // Set bin to current bin count + nev
+      MC_generated->SetBinContent(j+1, MC_generated->GetBinContent(j+1) + nev);
+
+    }
+
+  }
+
+  // Loop over MC Compact entries
+  for (int i=0; i<MC_chain->GetEntries(); i++) {
+
+    // Get entry
+    MC_chain->GetEntry(i);
+
+    // Apply cuts
+
+  }
+
+  // Return
+  return *AcceptHist;
+
 }
+
+
 
 // Returns TH1F of the selection efficiency
 TH1F Anaaqra::CutEff() {
@@ -212,11 +309,15 @@ TH1F Anaaqra::CutEff() {
   return *empty;
 }
 
+
+
 // Returns TH1F of the trigger efficiency
 TH1F Anaaqra::TrigEff() {
   TH1F* empty = new TH1F();
   return *empty;
 }
+
+
 
 // Returns TH1F of the proton rate
 TH1F Anaaqra::ProtonRate() {
@@ -256,6 +357,8 @@ TH1F Anaaqra::ProtonRate() {
   return *RateHist;
 
 }
+
+
 
 // Returns TH1F of the proton flux
 TH1F Anaaqra::ProtonFlux() {
