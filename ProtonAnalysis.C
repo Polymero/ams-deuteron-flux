@@ -42,6 +42,10 @@ class Anaaqra {
     TH1F *MC_generated  = new TH1F("MC_generated", "Generated MC Events per Rigidity Bin", 32, Bin_edges);
     TH1F *MC_detected   = new TH1F("MC_detected", "Detected MC Events per Rigidity Bin", 32, Bin_edges);
     TH1F *AcceptHist    = new TH1F("AcceptHist", "Acceptance per Rigidity Bin", 32, Bin_edges);
+    TH1F *CutEff_data   = new TH1F("CutEff_data", "Selection Efficiency of Data per Rigidity Bin", 32, Bin_edges);
+    TH1F *CutEff_MC     = new TH1F("CutEff_MC", "Selection Efficiency of MC per Rigidity Bin", 32, Bin_edges);
+    TH1F *TrigEff_data  = new TH1F("TrigEff_data", "Trigger Efficiency of Data per Rigidity Bin", 32, Bin_edges);
+    TH1F *TrigEff_MC    = new TH1F("TrigEff_MC", "Trigger Efficiency of MC per Rigidity Bin", 32, Bin_edges);
     // Data objects
     TChain *Simp_chain  = new TChain("Simp");
     TChain *RTII_chain  = new TChain("RTIInfo");
@@ -84,14 +88,14 @@ class Anaaqra {
     // LIST OF METHODS
     //--------------------------------------------------------------------------
     // Singular (independent)
-    TH1F RigBinner();                       // Returns number of selected events as function of rigidity
-    TH1F Exposure();                        // Returns exposure time (livetime) as function of rigidity
-    TH1F Acceptance(bool apply_cuts = 0);   // Returns (geometric) acceptance as function of rigidity
-    TH1F CutEff();                          // Returns the cut (selection) efficiency as function of rigidity
-    TH1F TrigEff();                         // Returns the trigger efficiency as function of rigidity
+    TH1F RigBinner();                           // Returns number of selected events as function of rigidity
+    TH1F Exposure();                            // Returns exposure time (livetime) as function of rigidity
+    TH1F Acceptance(bool apply_cuts = 0);       // Returns (geometric) acceptance as function of rigidity
+    TH1F CutEff();                              // Returns the cut (selection) efficiency as function of rigidity
+    const char* TrigEff();                             // Returns the trigger efficiency as function of rigidity
     // Plural (dependent)
-    TH1F ProtonRate();                      // Returns the proton rate as function of rigidity
-    TH1F ProtonFlux();                      // Returns the proton flux as function of rigidity
+    TH1F ProtonRate();                          // Returns the proton rate as function of rigidity
+    TH1F ProtonFlux();                          // Returns the proton flux as function of rigidity
     // Debug
     int Debug();
 
@@ -101,30 +105,34 @@ class Anaaqra {
 // ASSIST FUNCTIONS
 //------------------------------------------------------------------------------
 // Returns bool if event passed specified selection of cuts
-template <typename T>
-bool EventSelector(T datobj, const char* cutbit, bool is_compact = 0) {
+bool EventSelectorCompact(NtpCompact* comp, const char* cutbit) {
 
   bool pass = 1;
 
-  if (cutbit[0] == '1') {
-    if (is_compact) {
-      pass &= (datobj->trk_rig[0] >= 1.0) && (datobj->trk_rig[0] <= 22.8);
-    } else {
-      pass &= (datobj->trk_rig >= 1.0) && (datobj->trk_rig <= 22.8);
-    }
-  }
-  if (cutbit[1] == '1') {
-    pass &= ((datobj->sublvl1&0x3E)!=0) && ((datobj->trigpatt&0x2)!=0);
-  }
-  if (cutbit[2] == '1') {
-    pass &= datobj->status % 10 ==1;
-  }
+  // Boolean cuts (instead of TCut)
+  bool Crig = (comp->trk_rig[0] > 0)&&(comp->trk_rig[0] <= 22);
+  bool Ctrg = ((comp->sublvl1&0x3E)!=0)&&((comp->trigpatt&0x2)!=0);
+  bool Cpar = comp->status % 10 == 1;
+  bool Ccon = std::abs(comp->tof_beta - comp->rich_beta)/comp->tof_beta < 0.05;
+  bool Cbet = comp->tof_beta > 0;
+  bool Cchi = (comp->trk_chisqn[0][0] < 10)&&(comp->trk_chisqn[0][1] < 10)&&(comp->trk_chisqn[0][0] > 0)&&(comp->trk_chisqn[0][1] > 0);
+  bool Cinn = (comp->trk_q_inn > 0.80)&&(comp->trk_q_inn < 1.30);
+  bool Clay = (comp->trk_q_lay[0] >= 0)&&(comp->trk_q_lay[1] >= 0)&&(comp->trk_q_lay[2] >= 0)&&(comp->trk_q_lay[3] >= 0)&&(comp->trk_q_lay[4] >= 0)&&(comp->trk_q_lay[5] >= 0)&&(comp->trk_q_lay[6] >= 0)&&(comp->trk_q_lay[7] >= 0)&&(comp->trk_q_lay[8] >= 0);
+
+  // Adjust return bool according to cutbit
+  if (cutbit[0] == '1') {pass &= Crig;}
+  if (cutbit[1] == '1') {pass &= Ctrg;}
+  if (cutbit[2] == '1') {pass &= Cpar;}
+  if (cutbit[3] == '1') {pass &= Ccon;}
+  if (cutbit[4] == '1') {pass &= Cbet;}
+  if (cutbit[5] == '1') {pass &= Cchi;}
+  if (cutbit[6] == '1') {pass &= Cinn;}
+  if (cutbit[7] == '1') {pass &= Clay;}
 
   // Return
   return pass;
 
 }
-
 
 
 
@@ -248,6 +256,8 @@ TH1F Anaaqra::Acceptance(bool apply_cuts = 0) {
     // Import tree
     TChain mc_chain("Compact");
     TChain fi_chain("File");
+    mc_chain.Add(Form("../MC Protons/%d.root", start_num + i));
+    fi_chain.Add(Form("../MC Protons/%d.root", start_num + i));
     // Create empty class objects
     NtpCompact *comp = new class NtpCompact();
     FileMCInfo *fmci = new class FileMCInfo();
@@ -293,8 +303,38 @@ TH1F Anaaqra::Acceptance(bool apply_cuts = 0) {
     MC_chain->GetEntry(i);
 
     // Apply cuts
+    if (apply_cuts) {
+      if (EventSelectorCompact(MC_comp, "111111110")) {
+        MC_detected->Fill(MC_comp->trk_rig[0]);
+      }
+    } else {
+      MC_detected->Fill(MC_comp->trk_rig[0]);
+    }
 
   }
+
+  // Fill Acceptance histogram
+  // Loop over rigidity bins
+  for (int i=0; i<Bin_num; i++) {
+    AcceptHist->SetBinContent(i+1, MC_detected->GetBinContent(i+1) / MC_generated->GetBinContent(i+1));
+  }
+  // Scale histogram by generation volume
+  double gen_vol = TMath::Pi() * 3.9 * 3.9;
+  AcceptHist->Scale(gen_vol);
+
+  // Canvas
+  TCanvas* c_Acceptance = new TCanvas("c_Acceptance", "Acceptance per Rigitidy Bin");
+  AcceptHist->Draw("hist");
+  // Styling
+  AcceptHist->SetLineColor(kOrange);
+  AcceptHist->SetLineWidth(2);
+  // Axes
+  c_Acceptance->SetLogy();
+  AcceptHist->GetXaxis()->SetTitle("R [GV]");
+  AcceptHist->GetYaxis()->SetTitle("Acceptance [m^2 sr]");
+  // Print
+  c_Acceptance->Draw();
+  c_Acceptance->Print("./ProtonAnalysis/Acceptance Histogram.png");
 
   // Return
   return *AcceptHist;
@@ -312,9 +352,64 @@ TH1F Anaaqra::CutEff() {
 
 
 // Returns TH1F of the trigger efficiency
-TH1F Anaaqra::TrigEff() {
-  TH1F* empty = new TH1F();
-  return *empty;
+const char* Anaaqra::TrigEff() {
+
+  // Temporary histograms
+  TH1F* physHist_mc = new TH1F("physHist_mc", "physHist_mc", 32, Bin_edges);
+  TH1F* unphHist_mc = new TH1F("unphHist_mc", "unphHist_mc", 32, Bin_edges);
+  TH1F* physHist_data = new TH1F("physHist_data", "physHist_data", 32, Bin_edges);
+  TH1F* unphHist_data = new TH1F("unphHist_data", "unphHist_data", 32, Bin_edges);
+
+  // Loop over MC entries
+  for (int i=0; i<MC_chain->GetEntries(); i++) {
+
+    // Get entry
+    MC_chain->GetEntry(i);
+
+    // Check for physical trigger
+    bool HasPhysTrig = ((MC_comp->sublvl1&0x3E)!=0)&&((MC_comp->trigpatt&0x2)!=0);
+    bool HasUnphTrig = ((MC_comp->sublvl1&0x3E)==0)&&((MC_comp->trigpatt&0x2)!=0);
+
+    // Fill histograms
+    if (HasPhysTrig) {
+      physHist_mc->Fill(MC_comp->trk_rig[0]);
+    }
+    if (HasUnphTrig) {
+      unphHist_mc->Fill(MC_comp->trk_rig[0]);
+    }
+
+  }
+
+  // Loop over data entries
+  for (int i=0; i<Simp_chain->GetEntries(); i++) {
+
+    // Get entry
+    Simp_chain->GetEntry(i);
+
+    // Check for physical trigger
+    bool HasPhysTrig = ((Tool->sublvl1&0x3E)!=0)&&((Tool->trigpatt&0x2)!=0);
+    bool HasUnphTrig = ((Tool->sublvl1&0x3E)==0)&&((Tool->trigpatt&0x2)!=0);
+
+    // Fill histograms
+    if (HasPhysTrig) {
+      physHist_data->Fill(Tool->trk_rig);
+    }
+    if (HasUnphTrig) {
+      unphHist_data->Fill(Tool->trk_rig);
+    }
+
+  }
+
+  // Loop over rigidity bins
+  for (int i=0; i<Bin_num; i++) {
+
+    TrigEff_MC->SetBinContent(i+1, physHist_mc->GetBinContent(i+1) / (physHist_mc->GetBinContent(i+1) + unphHist_mc->GetBinContent(i+1)));
+    TrigEff_data->SetBinContent(i+1, physHist_data->GetBinContent(i+1) / (physHist_data->GetBinContent(i+1) + 100 * unphHist_data->GetBinContent(i+1)));
+
+  }
+
+  return "Assigned to the reference parameters.";
+
 }
 
 
@@ -362,6 +457,18 @@ TH1F Anaaqra::ProtonRate() {
 
 // Returns TH1F of the proton flux
 TH1F Anaaqra::ProtonFlux() {
+
+  // Fill empty necessary histograms
+  if (Events_cut->GetEntries() == 0) {
+    TH1F Events_cut = RigBinner();
+  }
+  if (ExposureTime->GetEntries() == 0) {
+    TH1F ExposureTime = Exposure();
+  }
+  if (AcceptHist->GetEntries() == 0) {
+    TH1F AcceptHist = Acceptance();
+  }
+
   TH1F* empty = new TH1F();
   return *empty;
 }
