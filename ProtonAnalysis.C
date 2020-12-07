@@ -44,8 +44,13 @@ class Anaaqra {
     TH1F *AcceptHist    = new TH1F("AcceptHist", "Acceptance per Rigidity Bin", 32, Bin_edges);
     TH1F *CutEff_data   = new TH1F("CutEff_data", "Selection Efficiency of Data per Rigidity Bin", 32, Bin_edges);
     TH1F *CutEff_MC     = new TH1F("CutEff_MC", "Selection Efficiency of MC per Rigidity Bin", 32, Bin_edges);
+    TH1F *PhysHist_mc   = new TH1F("PhysHist_mc", "PhysHist_mc", 32, Bin_edges);
+    TH1F *UnphHist_mc   = new TH1F("UnphHist_mc", "UnphHist_mc", 32, Bin_edges);
+    TH1F *PhysHist_data = new TH1F("PhysHist_data", "PhysHist_data", 32, Bin_edges);
+    TH1F *UnphHist_data = new TH1F("UnphHist_data", "UnphHist_data", 32, Bin_edges);
     TH1F *TrigEff_data  = new TH1F("TrigEff_data", "Trigger Efficiency of Data per Rigidity Bin", 32, Bin_edges);
     TH1F *TrigEff_MC    = new TH1F("TrigEff_MC", "Trigger Efficiency of MC per Rigidity Bin", 32, Bin_edges);
+    TH1F *FluxHist      = new TH1F("FluxHist", "Flux per Rigidity Bin", 32, Bin_edges);
     // Data objects
     TChain *Simp_chain  = new TChain("Simp");
     TChain *RTII_chain  = new TChain("RTIInfo");
@@ -87,6 +92,9 @@ class Anaaqra {
     //--------------------------------------------------------------------------
     // LIST OF METHODS
     //--------------------------------------------------------------------------
+    // Support functions
+    bool EventSelectorCompact(NtpCompact* comp, const char* cutbit);
+    bool EventSelectorSimple(Miiqtool* tool, const char* cutbit);
     // Singular (independent)
     void RigBinner();                           // Returns number of selected events as function of rigidity
     void Exposure();                            // Returns exposure time (livetime) as function of rigidity
@@ -103,12 +111,12 @@ class Anaaqra {
 // ASSIST FUNCTIONS
 //------------------------------------------------------------------------------
 // Returns bool if event passed specified selection of cuts
-bool EventSelectorCompact(NtpCompact* comp, const char* cutbit) {
+bool Anaaqra::EventSelectorCompact(NtpCompact* comp, const char* cutbit) {
 
   bool pass = 1;
 
   // Boolean cuts (instead of TCut)
-  bool Crig = (comp->trk_rig[0] > 0)&&(comp->trk_rig[0] <= 22);
+  bool Crig = (comp->trk_rig[0] > Bin_edges[0])&&(comp->trk_rig[0] <= Bin_edges[Bin_num]);
   bool Ctrg = ((comp->sublvl1&0x3E)!=0)&&((comp->trigpatt&0x2)!=0);
   bool Cpar = comp->status % 10 == 1;
   bool Ccon = std::abs(comp->tof_beta - comp->rich_beta)/comp->tof_beta < 0.05;
@@ -135,12 +143,12 @@ bool EventSelectorCompact(NtpCompact* comp, const char* cutbit) {
 
 
 // Returns bool if event passed specified selection of cuts
-bool EventSelectorSimple(Miiqtool* tool, const char* cutbit) {
+bool Anaaqra::EventSelectorSimple(Miiqtool* tool, const char* cutbit) {
 
   bool pass = 1;
 
   // Boolean cuts (instead of TCut)
-  bool Crig = (tool->trk_rig > 0)&&(tool->trk_rig <= 22);
+  bool Crig = (tool->trk_rig > Bin_edges[0])&&(tool->trk_rig <= Bin_edges[Bin_num]);
   bool Ctrg = ((tool->sublvl1&0x3E)!=0)&&((tool->trigpatt&0x2)!=0);
   bool Cpar = tool->status % 10 == 1;
   bool Ccon = std::abs(tool->tof_beta - tool->rich_beta)/tool->tof_beta < 0.05;
@@ -183,20 +191,9 @@ void Anaaqra::RigBinner() {
     // Get entry
     Simp_chain->GetEntry(i);
 
-    // Boolean cuts (instead of TCut)
-    bool Crig = (Tool->trk_rig > 0)&&(Tool->trk_rig <= 22);
-    bool Ctrg = ((Tool->sublvl1&0x3E)!=0)&&((Tool->trigpatt&0x2)!=0);
-    bool Cpar = Tool->status % 10 == 1;
-    bool Ccon = std::abs(Tool->tof_beta - Tool->rich_beta)/Tool->tof_beta < 0.05;
-    bool Cbet = Tool->tof_beta > 0;
-    bool Cchi = (Tool->trk_chisqn[0] < 10)&&(Tool->trk_chisqn[1] < 10)&&(Tool->trk_chisqn[0] > 0)&&(Tool->trk_chisqn[1] > 0);
-    bool Cinn = (Tool->trk_q_inn > 0.80)&&(Tool->trk_q_inn < 1.30);
-    bool Clay = (Tool->trk_q_lay[0] >= 0)&&(Tool->trk_q_lay[1] >= 0)&&(Tool->trk_q_lay[2] >= 0)&&(Tool->trk_q_lay[3] >= 0)&&(Tool->trk_q_lay[4] >= 0)&&(Tool->trk_q_lay[5] >= 0)&&(Tool->trk_q_lay[6] >= 0)&&(Tool->trk_q_lay[7] >= 0)&&(Tool->trk_q_lay[8] >= 0);
-    bool Cgeo = Tool->trk_rig > 1.2 * Tool->cf;
-
     // Fill histograms
     Events_raw->Fill(Tool->trk_rig);
-    if (Crig && Ctrg && Cpar && Ccon && Cbet && Cchi && Cinn && Clay && Cgeo) {
+    if (EventSelectorSimple(Tool, "111111111")) {
       Events_cut->Fill(Tool->trk_rig);
     }
 
@@ -367,6 +364,101 @@ void Anaaqra::Acceptance(bool apply_cuts = 0) {
 // Returns TH1F of the selection efficiency
 void Anaaqra::CutEff() {
 
+  // Temporary histograms
+  TH1F *Cpar_MC = new TH1F("Cpar_MC", "Single Particle Cut", 32, Bin_edges);
+  TH1F *Ccon_MC = new TH1F("Ccon_MC", "Consistent Beta Cut", 32, Bin_edges);
+  TH1F *Cbet_MC = new TH1F("Cbet_MC", "Single Particle Cut", 32, Bin_edges);
+  TH1F *Cchi_MC = new TH1F("Cchi_MC", "Single Particle Cut", 32, Bin_edges);
+  TH1F *Cinn_MC = new TH1F("Cinn_MC", "Single Particle Cut", 32, Bin_edges);
+  TH1F *Clay_MC = new TH1F("Clay_MC", "Single Particle Cut", 32, Bin_edges);
+  TH1F *Btof_MC = new TH1F("Btof_MC", "TOF Base Cut", 32, Bin_edges);
+  TH1F *Btrk_MC = new TH1F("Btrk_MC", "Tracker Base Cut", 32, Bin_edges);
+
+
+  // Loop over MC entries
+  for (int i=0; i<MC_chain->GetEntries(); i++) {
+
+    // Get entry
+    MC_chain->GetEntry(i);
+
+    // Fill base histograms
+    if (EventSelectorCompact(MC_comp, "10000111")) {Btof_MC->Fill(MC_comp->trk_rig[0]);}
+    if (EventSelectorCompact(MC_comp, "10111000")) {Btrk_MC->Fill(MC_comp->trk_rig[0]);}
+
+    // Fill cut histograms
+    if (EventSelectorCompact(MC_comp, "10100111")) {Cpar_MC->Fill(MC_comp->trk_rig[0]);}
+    if (EventSelectorCompact(MC_comp, "10010111")) {Ccon_MC->Fill(MC_comp->trk_rig[0]);}
+    if (EventSelectorCompact(MC_comp, "10001111")) {Cbet_MC->Fill(MC_comp->trk_rig[0]);}
+    if (EventSelectorCompact(MC_comp, "10111100")) {Cchi_MC->Fill(MC_comp->trk_rig[0]);}
+    if (EventSelectorCompact(MC_comp, "10111010")) {Cinn_MC->Fill(MC_comp->trk_rig[0]);}
+    if (EventSelectorCompact(MC_comp, "10111001")) {Clay_MC->Fill(MC_comp->trk_rig[0]);}
+
+  }
+
+  // Divide by corresponding instrument base
+  Cpar_MC->Divide(Btof_MC);
+  Ccon_MC->Divide(Btof_MC);
+  Cbet_MC->Divide(Btof_MC);
+  Cchi_MC->Divide(Btrk_MC);
+  Cinn_MC->Divide(Btrk_MC);
+  Clay_MC->Divide(Btrk_MC);
+
+  // Loop over rigidity bins
+  for (int i=0; i<Bin_num; i++) {
+    CutEff_MC->SetBinContent(i+1, Cpar_MC->GetBinContent(i+1) * Ccon_MC->GetBinContent(i+1)
+                                * Cbet_MC->GetBinContent(i+1) * Cchi_MC->GetBinContent(i+1)
+                                * Cinn_MC->GetBinContent(i+1) * Clay_MC->GetBinContent(i+1));
+  }
+
+  // Temporary histograms
+  TH1F *Cpar_data = new TH1F("Cpar_data", "Single Particle Cut", 32, Bin_edges);
+  TH1F *Ccon_data = new TH1F("Ccon_data", "Consistent Beta Cut", 32, Bin_edges);
+  TH1F *Cbet_data = new TH1F("Cbet_data", "Single Particle Cut", 32, Bin_edges);
+  TH1F *Cchi_data = new TH1F("Cchi_data", "Single Particle Cut", 32, Bin_edges);
+  TH1F *Cinn_data = new TH1F("Cinn_data", "Single Particle Cut", 32, Bin_edges);
+  TH1F *Clay_data = new TH1F("Clay_data", "Single Particle Cut", 32, Bin_edges);
+  TH1F *Cgeo_data = new TH1F("Cgeo_data", "Geo-magnetic Cut", 32, Bin_edges);
+  TH1F *Btof_data = new TH1F("Btof_data", "TOF Base Cut", 32, Bin_edges);
+  TH1F *Btrk_data = new TH1F("Btrk_data", "Tracker Base Cut", 32, Bin_edges);
+
+  // Loop over data entries
+  for (int i=0; i<Simp_chain->GetEntries(); i++) {
+
+    // Get entry
+    Simp_chain->GetEntry(i);
+
+    // Fill base histograms
+    if (EventSelectorSimple(Tool, "100001111")) {Btof_data->Fill(Tool->trk_rig);}
+    if (EventSelectorSimple(Tool, "101110000")) {Btrk_data->Fill(Tool->trk_rig);}
+
+    // Fill cut histograms
+    if (EventSelectorSimple(Tool, "101001111")) {Cpar_data->Fill(Tool->trk_rig);}
+    if (EventSelectorSimple(Tool, "100101111")) {Ccon_data->Fill(Tool->trk_rig);}
+    if (EventSelectorSimple(Tool, "100011111")) {Cbet_data->Fill(Tool->trk_rig);}
+    if (EventSelectorSimple(Tool, "101111000")) {Cchi_data->Fill(Tool->trk_rig);}
+    if (EventSelectorSimple(Tool, "101110100")) {Cinn_data->Fill(Tool->trk_rig);}
+    if (EventSelectorSimple(Tool, "101110010")) {Clay_data->Fill(Tool->trk_rig);}
+    if (EventSelectorSimple(Tool, "101110001")) {Cgeo_data->Fill(Tool->trk_rig);}
+
+  }
+
+  // Divide by corresponding instrument base
+  Cpar_data->Divide(Btof_data);
+  Ccon_data->Divide(Btof_data);
+  Cbet_data->Divide(Btof_data);
+  Cchi_data->Divide(Btrk_data);
+  Cinn_data->Divide(Btrk_data);
+  Clay_data->Divide(Btrk_data);
+  Cgeo_data->Divide(Btrk_data);
+
+  // Loop over rigidity bins
+  for (int i=0; i<Bin_num; i++) {
+    CutEff_data->SetBinContent(i+1, Cpar_data->GetBinContent(i+1) * Ccon_data->GetBinContent(i+1)
+                                  * Cbet_data->GetBinContent(i+1) * Cchi_data->GetBinContent(i+1)
+                                  * Cinn_data->GetBinContent(i+1) * Clay_data->GetBinContent(i+1)
+                                  * Cgeo_data->GetBinContent(i+1));
+  }
+
   cout << "CutEff() has finished!" << endl;
 
 }
@@ -375,12 +467,6 @@ void Anaaqra::CutEff() {
 
 // Returns TH1F of the trigger efficiency
 void Anaaqra::TrigEff() {
-
-  // Temporary histograms
-  TH1F* physHist_mc = new TH1F("physHist_mc", "physHist_mc", 32, Bin_edges);
-  TH1F* unphHist_mc = new TH1F("unphHist_mc", "unphHist_mc", 32, Bin_edges);
-  TH1F* physHist_data = new TH1F("physHist_data", "physHist_data", 32, Bin_edges);
-  TH1F* unphHist_data = new TH1F("unphHist_data", "unphHist_data", 32, Bin_edges);
 
   // Loop over MC entries
   for (int i=0; i<MC_chain->GetEntries(); i++) {
@@ -395,10 +481,10 @@ void Anaaqra::TrigEff() {
     // Fill histograms
     if (EventSelectorCompact(MC_comp, "10111111")) {
       if (HasPhysTrig) {
-        physHist_mc->Fill(MC_comp->trk_rig[0]);
+        PhysHist_mc->Fill(MC_comp->trk_rig[0]);
       }
       if (HasUnphTrig) {
-        unphHist_mc->Fill(MC_comp->trk_rig[0]);
+        UnphHist_mc->Fill(MC_comp->trk_rig[0]);
       }
     }
 
@@ -417,10 +503,10 @@ void Anaaqra::TrigEff() {
     // Fill histograms
     if (EventSelectorSimple(Tool, "101111111")) {
       if (HasPhysTrig) {
-        physHist_data->Fill(Tool->trk_rig);
+        PhysHist_data->Fill(Tool->trk_rig);
       }
       if (HasUnphTrig) {
-        unphHist_data->Fill(Tool->trk_rig);
+        UnphHist_data->Fill(Tool->trk_rig);
       }
     }
 
@@ -430,15 +516,15 @@ void Anaaqra::TrigEff() {
   for (int i=0; i<Bin_num; i++) {
 
     // Fill histograms
-    if (physHist_mc->GetBinContent(i+1) == 0) {
+    if (PhysHist_mc->GetBinContent(i+1) == 0) {
       TrigEff_MC->SetBinContent(i+1, 0);
     } else {
-      TrigEff_MC->SetBinContent(i+1, physHist_mc->GetBinContent(i+1) / (physHist_mc->GetBinContent(i+1) + unphHist_mc->GetBinContent(i+1)));
+      TrigEff_MC->SetBinContent(i+1, PhysHist_mc->GetBinContent(i+1) / (PhysHist_mc->GetBinContent(i+1) + UnphHist_mc->GetBinContent(i+1)));
     }
-    if (physHist_data->GetBinContent(i+1) == 0) {
+    if (PhysHist_data->GetBinContent(i+1) == 0) {
       TrigEff_data->SetBinContent(i+1, 0);
     } else {
-      TrigEff_data->SetBinContent(i+1, physHist_data->GetBinContent(i+1) / (physHist_data->GetBinContent(i+1) + 100 * unphHist_data->GetBinContent(i+1)));
+      TrigEff_data->SetBinContent(i+1, PhysHist_data->GetBinContent(i+1) / (PhysHist_data->GetBinContent(i+1) + 100 * UnphHist_data->GetBinContent(i+1)));
     }
 
   }
@@ -514,6 +600,19 @@ void Anaaqra::ProtonFlux() {
   if ((TrigEff_MC->GetEntries() == 0) || (TrigEff_data->GetEntries() == 0)) {
     cout << "Running TrigEff()..." << endl;
     TrigEff();
+  }
+
+  // Loop over rigidity bins
+  for (int i=0; i<Bin_num; i++) {
+    if (ExposureTime->GetBinContent(i+1) == 0) {
+      FluxHist->SetBinContent(i+1, 0);
+    } else {
+      FluxHist->SetBinContent(i+1, Events_cut->GetBinContent(i+1) / ExposureTime->GetBinContent(i+1)
+                                   / 2 / Bin_err[i] / AcceptHist->GetBinContent(i+1)
+                                   / CutEff_data->GetBinContent(i+1) * CutEff_MC->GetBinContent(i+1)
+                                   / TrigEff_data->GetBinContent(i+1) * TrigEff_MC->GetBinContent(i+1)
+                                   * pow(Bin_mid[i], 2.7));
+    }
   }
 
   cout << "ProtonFlux() has finished!" << endl;
