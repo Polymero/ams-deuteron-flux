@@ -1,6 +1,6 @@
 // C++ class for full PROTON analysis
 // Created        23-11-20
-// Last Edited    23-11-20
+// Last Edited    07-12-20
 
 // Include header file(s)
 #include <iostream>
@@ -29,9 +29,9 @@ class Anaaqra {
     // Rigidity bins
     const int Bin_num = 32;
     double Bin_edges[32+1] = {1.00,1.16,1.33,1.51,1.71,1.92,2.15,2.40,2.67,2.97,
-                            3.29,3.64,4.02,4.43,4.88,5.37,5.90,6.47,7.09,7.76,
-                            8.48,9.26,10.1,11.0,12.0,13.0,14.1,15.3,16.6,18.0,
-                            19.5,21.1,22.8};
+                              3.29,3.64,4.02,4.43,4.88,5.37,5.90,6.47,7.09,7.76,
+                              8.48,9.26,10.1,11.0,12.0,13.0,14.1,15.3,16.6,18.0,
+                              19.5,21.1,22.8};
     double Bin_err[32];
     double Bin_mid[32];
     // Histograms
@@ -79,13 +79,12 @@ class Anaaqra {
       Simp_chain->Add("../Simp.root");
       RTII_chain->Add("../Simp.root");
       MC_chain->Add("../MC Protons/*.root");
-
       // Set branch addresses
       Simp_chain->SetBranchAddress("Simp", &Tool);
       RTII_chain->SetBranchAddress("RTI", &Woi);
       MC_chain->SetBranchAddress("Compact", &MC_comp);
 
-      cout << "Class succesfully constructed!" << endl;
+      cout << "Class succesfully constructed!\n" << endl;
 
     };
 
@@ -108,7 +107,7 @@ class Anaaqra {
 };
 
 //------------------------------------------------------------------------------
-// ASSIST FUNCTIONS
+// SUPPORT FUNCTIONS
 //------------------------------------------------------------------------------
 // Returns bool if event passed specified selection of cuts
 bool Anaaqra::EventSelectorCompact(NtpCompact* comp, const char* cutbit) {
@@ -178,6 +177,7 @@ bool Anaaqra::EventSelectorSimple(Miiqtool* tool, const char* cutbit) {
 
 //------------------------------------------------------------------------------
 // METHOD FUNCTIONS
+//------------------------------------------------------------------------------
 // Returns TH1F of the selected events per rigidity bin
 void Anaaqra::RigBinner() {
 
@@ -217,7 +217,7 @@ void Anaaqra::RigBinner() {
   c_Events->Draw();
   c_Events->Print("./ProtonAnalysis/Events Histogram.png");
 
-  cout << "RigBinner() has finished!" << endl;
+  cout << "RigBinner() has finished!\n" << endl;
 
 }
 
@@ -259,7 +259,7 @@ void Anaaqra::Exposure() {
   c_Exposure->Draw();
   c_Exposure->Print("./ProtonAnalysis/Exposure Time Histogram.png");
 
-    cout << "Exposure() has finished!" << endl;
+    cout << "Exposure() has finished!\n" << endl;
 
 }
 
@@ -355,7 +355,7 @@ void Anaaqra::Acceptance(bool apply_cuts = 0) {
   c_Acceptance->Draw();
   c_Acceptance->Print("./ProtonAnalysis/Acceptance Histogram.png");
 
-  cout << "Acceptance() has finished!" << endl;
+  cout << "Acceptance() has finished!\n" << endl;
 
 }
 
@@ -459,7 +459,35 @@ void Anaaqra::CutEff() {
                                   * Cgeo_data->GetBinContent(i+1));
   }
 
-  cout << "CutEff() has finished!" << endl;
+  // TGraph
+  double ce_mc[32];
+  double ce_data[32];
+  for (int i=0; i<Bin_num; i++) {
+    ce_mc[i] = CutEff_MC->GetBinContent(i+1);
+    ce_data[i] = CutEff_data->GetBinContent(i+1);
+  }
+  TGraphErrors* ce_mc_graph = new TGraphErrors(32, Bin_mid, ce_mc, ErrRig, 0);
+  TGraphErrors* ce_data_graph = new TGraphErrors(32, Bin_mid, ce_data, ErrRig, 0);
+  // Canvas
+  TCanvas* c_CutEff = new TCanvas("c_CutEff", "Selection Efficiency per Rigitidy Bin");
+  ce_mc_graph->Draw("AP");
+  ce_data_graph->Draw("AP", "same");
+  // Styling
+  ce_mc_graph->SetMarkerStyle(20);
+  ce_mc_graph->SetMarkerSize(1);
+  ce_mc_graph->SetMarkerColor(kRed);
+  ce_data_graph->SetMarkerStyle(20);
+  ce_data_graph->SetMarkerSize(1);
+  ce_data_graph->SetMarkerColor(kBlue);
+  // Axes
+  c_CutEff->SetLogy();
+  ce_mc_graph->GetXaxis()->SetTitle("R [GV]");
+  ce_mc_graph->GetYaxis()->SetTitle("Selection Efficiency");
+  // Print
+  c_CutEff->Draw();
+  c_CutEff->Print("./ProtonAnalysis/Selection Efficiency.png");
+
+  cout << "CutEff() has finished!\n" << endl;
 
 }
 
@@ -529,7 +557,35 @@ void Anaaqra::TrigEff() {
 
   }
 
-  cout << "TrigEff() has finished!" << endl;
+  // TGraph
+  double te_mc[32];
+  double te_data[32];
+  for (int i=0; i<Bin_num; i++) {
+    te_mc[i] = TrigEff_MC->GetBinContent(i+1);
+    te_data[i] = TrigEff_data->GetBinContent(i+1);
+  }
+  TGraphErrors* te_mc_graph = new TGraphErrors(32, Bin_mid, te_mc, ErrRig, 0);
+  TGraphErrors* te_data_graph = new TGraphErrors(32, Bin_mid, te_data, ErrRig, 0);
+  // Canvas
+  TCanvas* c_TrigEff = new TCanvas("c_TrigEff", "Trigger Efficiency per Rigitidy Bin");
+  te_mc_graph->Draw("AP");
+  te_data_graph->Draw("AP", "same");
+  // Styling
+  te_mc_graph->SetMarkerStyle(20);
+  te_mc_graph->SetMarkerSize(1);
+  te_mc_graph->SetMarkerColor(kRed);
+  te_data_graph->SetMarkerStyle(20);
+  te_data_graph->SetMarkerSize(1);
+  te_data_graph->SetMarkerColor(kBlue);
+  // Axes
+  c_TrigEff->SetLogy();
+  te_mc_graph->GetXaxis()->SetTitle("R [GV]");
+  te_mc_graph->GetYaxis()->SetTitle("Trigger Efficiency");
+  // Print
+  c_TrigEff->Draw();
+  c_TrigEff->Print("./ProtonAnalysis/Trigger Efficiency.png");
+
+  cout << "TrigEff() has finished!\n" << endl;
 
 }
 
@@ -557,21 +613,26 @@ void Anaaqra::ProtonRate() {
     }
   }
 
+  // TGraph
+  double p_rate[32];
+  for (int i=0; i<Bin_num; i++) {p_rate[i] = RateHist->GetBinContent(i+1);}
+  TGraphErrors* p_rate_graph = new TGraphErrors(32, Bin_mid, p_rate, ErrRig, 0);
   // Canvas
   TCanvas* c_Rate = new TCanvas("c_Rate", "Proton Rate per Rigitidy Bin");
-  RateHist->Draw();
+  p_rate_graph->Draw("AP");
   // Styling
-  RateHist->SetLineColor(kMagenta);
-  RateHist->SetLineWidth(2);
+  p_rate_graph->SetMarkerStyle(20);
+  p_rate_graph->SetMarkerSize(1);
+  p_rate_graph->SetMarkerColor(kRed);
   // Axes
   c_Rate->SetLogy();
-  RateHist->GetXaxis()->SetTitle("R [GV]");
-  RateHist->GetYaxis()->SetTitle("Rate [s^-1]");
+  p_rate_graph->GetXaxis()->SetTitle("R [GV]");
+  p_rate_graph->GetYaxis()->SetTitle("Rate [s^-1]");
   // Print
   c_Rate->Draw();
-  c_Rate->Print("./ProtonAnalysis/Proton Rate Histogram.png");
+  c_Rate->Print("./ProtonAnalysis/Proton Rate.png");
 
-  cout << "ProtonRate() has finished!" << endl;
+  cout << "ProtonRate() has finished!\n" << endl;
 
 }
 
@@ -611,10 +672,52 @@ void Anaaqra::ProtonFlux() {
                                    / 2 / Bin_err[i] / AcceptHist->GetBinContent(i+1)
                                    / CutEff_data->GetBinContent(i+1) * CutEff_MC->GetBinContent(i+1)
                                    / TrigEff_data->GetBinContent(i+1) * TrigEff_MC->GetBinContent(i+1)
-                                   * pow(Bin_mid[i], 2.7));
+                             );
     }
   }
 
-  cout << "ProtonFlux() has finished!" << endl;
+  // TGraph 1/2
+  double p_flux[32];
+  for (int i=0; i<Bin_num; i++) {
+    p_flux[i] = FluxHist->GetBinContent(i+1);
+  }
+  TGraphErrors* p_flux_graph = new TGraphErrors(32, Bin_mid, p_flux, ErrRig, 0);
+  // Canvas
+  TCanvas* c_Flux = new TCanvas("c_Flux", "Proton Flux per Rigitidy Bin");
+  p_flux_graph->Draw("AP");
+  // Styling
+  p_flux_graph->SetMarkerStyle(20);
+  p_flux_graph->SetMarkerSize(1);
+  p_flux_graph->SetMarkerColor(kRed);
+  // Axes
+  c_Flux->SetLogy();
+  p_flux_graph->GetXaxis()->SetTitle("R [GV]");
+  p_flux_graph->GetYaxis()->SetTitle("Flux [m^-2 sr^-1 s^-1 GV^-1]");
+  // Print
+  c_Flux->Draw();
+  c_Flux->Print("./ProtonAnalysis/Proton Flux.png");
+
+  // TGraph 2/2
+  double p_sflux[32];
+  for (int i=0; i<Bin_num; i++) {
+    p_sflux[i] = FluxHist->GetBinContent(i+1) * pow(Bin_mid[i], 2.7);
+  }
+  TGraphErrors* p_sflux_graph = new TGraphErrors(32, Bin_mid, p_sflux, ErrRig, 0);
+  // Canvas
+  TCanvas* c_SFlux = new TCanvas("c_SFlux", "Scaled Proton Flux per Rigitidy Bin");
+  p_sflux_graph->Draw("AP");
+  // Styling
+  p_sflux_graph->SetMarkerStyle(20);
+  p_sflux_graph->SetMarkerSize(1);
+  p_sflux_graph->SetMarkerColor(kRed);
+  // Axes
+  c_SFlux->SetLogy();
+  p_sflux_graph->GetXaxis()->SetTitle("R [GV]");
+  p_sflux_graph->GetYaxis()->SetTitle("Flux R^2.7 [m^-2 sr^-1 s^-1 GV^1.7]");
+  // Print
+  c_SFlux->Draw();
+  c_SFlux->Print("./ProtonAnalysis/Scaled Proton Flux.png");
+
+  cout << "ProtonFlux() has finished!\n" << endl;
 
 }
