@@ -466,12 +466,12 @@ void Anaaqra::CutEff() {
     ce_mc[i] = CutEff_MC->GetBinContent(i+1);
     ce_data[i] = CutEff_data->GetBinContent(i+1);
   }
-  TGraphErrors* ce_mc_graph = new TGraphErrors(32, Bin_mid, ce_mc, ErrRig, 0);
-  TGraphErrors* ce_data_graph = new TGraphErrors(32, Bin_mid, ce_data, ErrRig, 0);
+  TGraphErrors* ce_mc_graph = new TGraphErrors(32, Bin_mid, ce_mc, Bin_err, 0);
+  TGraphErrors* ce_data_graph = new TGraphErrors(32, Bin_mid, ce_data, Bin_err, 0);
   // Canvas
   TCanvas* c_CutEff = new TCanvas("c_CutEff", "Selection Efficiency per Rigitidy Bin");
   ce_mc_graph->Draw("AP");
-  ce_data_graph->Draw("AP", "same");
+  ce_data_graph->Draw("P");
   // Styling
   ce_mc_graph->SetMarkerStyle(20);
   ce_mc_graph->SetMarkerSize(1);
@@ -481,6 +481,8 @@ void Anaaqra::CutEff() {
   ce_data_graph->SetMarkerColor(kBlue);
   // Axes
   c_CutEff->SetLogy();
+  ce_mc_graph->SetMaximum(4e-1);
+  ce_mc_graph->SetMinimum(1e-3);
   ce_mc_graph->GetXaxis()->SetTitle("R [GV]");
   ce_mc_graph->GetYaxis()->SetTitle("Selection Efficiency");
   // Print
@@ -564,12 +566,12 @@ void Anaaqra::TrigEff() {
     te_mc[i] = TrigEff_MC->GetBinContent(i+1);
     te_data[i] = TrigEff_data->GetBinContent(i+1);
   }
-  TGraphErrors* te_mc_graph = new TGraphErrors(32, Bin_mid, te_mc, ErrRig, 0);
-  TGraphErrors* te_data_graph = new TGraphErrors(32, Bin_mid, te_data, ErrRig, 0);
+  TGraphErrors* te_mc_graph = new TGraphErrors(32, Bin_mid, te_mc, Bin_err, 0);
+  TGraphErrors* te_data_graph = new TGraphErrors(32, Bin_mid, te_data, Bin_err, 0);
   // Canvas
   TCanvas* c_TrigEff = new TCanvas("c_TrigEff", "Trigger Efficiency per Rigitidy Bin");
   te_mc_graph->Draw("AP");
-  te_data_graph->Draw("AP", "same");
+  te_data_graph->Draw("P");
   // Styling
   te_mc_graph->SetMarkerStyle(20);
   te_mc_graph->SetMarkerSize(1);
@@ -578,7 +580,9 @@ void Anaaqra::TrigEff() {
   te_data_graph->SetMarkerSize(1);
   te_data_graph->SetMarkerColor(kBlue);
   // Axes
-  c_TrigEff->SetLogy();
+  //c_TrigEff->SetLogy();
+  te_mc_graph->SetMaximum(1.0);
+  te_mc_graph->SetMinimum(0.0);
   te_mc_graph->GetXaxis()->SetTitle("R [GV]");
   te_mc_graph->GetYaxis()->SetTitle("Trigger Efficiency");
   // Print
@@ -616,7 +620,7 @@ void Anaaqra::ProtonRate() {
   // TGraph
   double p_rate[32];
   for (int i=0; i<Bin_num; i++) {p_rate[i] = RateHist->GetBinContent(i+1);}
-  TGraphErrors* p_rate_graph = new TGraphErrors(32, Bin_mid, p_rate, ErrRig, 0);
+  TGraphErrors* p_rate_graph = new TGraphErrors(32, Bin_mid, p_rate, Bin_err, 0);
   // Canvas
   TCanvas* c_Rate = new TCanvas("c_Rate", "Proton Rate per Rigitidy Bin");
   p_rate_graph->Draw("AP");
@@ -681,7 +685,7 @@ void Anaaqra::ProtonFlux() {
   for (int i=0; i<Bin_num; i++) {
     p_flux[i] = FluxHist->GetBinContent(i+1);
   }
-  TGraphErrors* p_flux_graph = new TGraphErrors(32, Bin_mid, p_flux, ErrRig, 0);
+  TGraphErrors* p_flux_graph = new TGraphErrors(32, Bin_mid, p_flux, Bin_err, 0);
   // Canvas
   TCanvas* c_Flux = new TCanvas("c_Flux", "Proton Flux per Rigitidy Bin");
   p_flux_graph->Draw("AP");
@@ -702,7 +706,7 @@ void Anaaqra::ProtonFlux() {
   for (int i=0; i<Bin_num; i++) {
     p_sflux[i] = FluxHist->GetBinContent(i+1) * pow(Bin_mid[i], 2.7);
   }
-  TGraphErrors* p_sflux_graph = new TGraphErrors(32, Bin_mid, p_sflux, ErrRig, 0);
+  TGraphErrors* p_sflux_graph = new TGraphErrors(32, Bin_mid, p_sflux, Bin_err, 0);
   // Canvas
   TCanvas* c_SFlux = new TCanvas("c_SFlux", "Scaled Proton Flux per Rigitidy Bin");
   p_sflux_graph->Draw("AP");
