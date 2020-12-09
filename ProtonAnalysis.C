@@ -1,6 +1,6 @@
 // C++ class for full PROTON analysis
 // Created        23-11-20
-// Last Edited    07-12-20
+// Last Edited    09-12-20
 
 // Include header file(s)
 #include <iostream>
@@ -34,30 +34,41 @@ class Anaaqra {
                               19.5,21.1,22.8};
     double Bin_err[32];
     double Bin_mid[32];
+    // MC Files
+    int Start_num = 1209496744;
+
     // Histograms
-    TH1F *Events_raw    = new TH1F("Events_raw", "Raw AMS-02 Events", 32, Bin_edges);
-    TH1F *Events_cut    = new TH1F("Events_cut", "Selected AMS-02 Events", 32, Bin_edges);
-    TH1F *ExposureTime  = new TH1F("ExposureTime", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-    TH1F *RateHist      = new TH1F("RateHist", "Proton Rate per Rigidity Bin", 32, Bin_edges);
-    TH1F *MC_generated  = new TH1F("MC_generated", "Generated MC Events per Rigidity Bin", 32, Bin_edges);
-    TH1F *MC_detected   = new TH1F("MC_detected", "Detected MC Events per Rigidity Bin", 32, Bin_edges);
-    TH1F *AcceptHist    = new TH1F("AcceptHist", "Acceptance per Rigidity Bin", 32, Bin_edges);
-    TH1F *CutEff_data   = new TH1F("CutEff_data", "Selection Efficiency of Data per Rigidity Bin", 32, Bin_edges);
-    TH1F *CutEff_MC     = new TH1F("CutEff_MC", "Selection Efficiency of MC per Rigidity Bin", 32, Bin_edges);
-    TH1F *PhysHist_mc   = new TH1F("PhysHist_mc", "PhysHist_mc", 32, Bin_edges);
-    TH1F *UnphHist_mc   = new TH1F("UnphHist_mc", "UnphHist_mc", 32, Bin_edges);
-    TH1F *PhysHist_data = new TH1F("PhysHist_data", "PhysHist_data", 32, Bin_edges);
-    TH1F *UnphHist_data = new TH1F("UnphHist_data", "UnphHist_data", 32, Bin_edges);
-    TH1F *TrigEff_data  = new TH1F("TrigEff_data", "Trigger Efficiency of Data per Rigidity Bin", 32, Bin_edges);
-    TH1F *TrigEff_MC    = new TH1F("TrigEff_MC", "Trigger Efficiency of MC per Rigidity Bin", 32, Bin_edges);
-    TH1F *FluxHist      = new TH1F("FluxHist", "Flux per Rigidity Bin", 32, Bin_edges);
+    // RigBinner()
+    TH1F *Events_raw      = new TH1F("Events_raw", "Raw AMS-02 Events", 32, Bin_edges);
+    TH1F *Events_cut      = new TH1F("Events_cut", "Selected AMS-02 Events", 32, Bin_edges);
+    // Exposure()
+    TH1F *ExposureTime    = new TH1F("ExposureTime", "Exposure Time per Rigidity Bin", 32, Bin_edges);
+    // ProtonRate()
+    TH1F *RateHist        = new TH1F("RateHist", "Proton Rate per Rigidity Bin", 32, Bin_edges);
+    // Acceptance()
+    TH1F *MC_generated    = new TH1F("MC_generated", "Generated MC Events per Rigidity Bin", 32, Bin_edges);
+    TH1F *MC_detected     = new TH1F("MC_detected", "Detected MC Events per Rigidity Bin", 32, Bin_edges);
+    TH1F *AcceptHist      = new TH1F("AcceptHist", "Acceptance per Rigidity Bin", 32, Bin_edges);
+    // CutEff()
+    TH1F *CutEff_data     = new TH1F("CutEff_data", "Selection Efficiency of Data per Rigidity Bin", 32, Bin_edges);
+    TH1F *CutEff_MC       = new TH1F("CutEff_MC", "Selection Efficiency of MC per Rigidity Bin", 32, Bin_edges);
+    // TrigEff()
+    TH1F *PhysHist_mc     = new TH1F("PhysHist_mc", "PhysHist_mc", 32, Bin_edges);
+    TH1F *UnphHist_mc     = new TH1F("UnphHist_mc", "UnphHist_mc", 32, Bin_edges);
+    TH1F *PhysHist_data   = new TH1F("PhysHist_data", "PhysHist_data", 32, Bin_edges);
+    TH1F *UnphHist_data   = new TH1F("UnphHist_data", "UnphHist_data", 32, Bin_edges);
+    TH1F *TrigEff_data    = new TH1F("TrigEff_data", "Trigger Efficiency of Data per Rigidity Bin", 32, Bin_edges);
+    TH1F *TrigEff_MC      = new TH1F("TrigEff_MC", "Trigger Efficiency of MC per Rigidity Bin", 32, Bin_edges);
+    // ProtonFlux()
+    TH1F *FluxHist        = new TH1F("FluxHist", "Flux per Rigidity Bin", 32, Bin_edges);
+
     // Data objects
-    TChain *Simp_chain  = new TChain("Simp");
-    TChain *RTII_chain  = new TChain("RTIInfo");
-    TChain *MC_chain    = new TChain("Compact");
-    Miiqtool *Tool      = new Miiqtool();
-    MiiqRTI *Woi        = new MiiqRTI();
-    NtpCompact *MC_comp = new NtpCompact();
+    TChain *Simp_chain    = new TChain("Simp");
+    TChain *RTII_chain    = new TChain("RTIInfo");
+    TChain *MC_chain      = new TChain("Compact");
+    Miiqtool *Tool        = new Miiqtool();
+    MiiqRTI *Woi          = new MiiqRTI();
+    NtpCompact *MC_comp   = new NtpCompact();
 
     //--------------------------------------------------------------------------
     // CONSTRUCTORS
@@ -95,6 +106,7 @@ class Anaaqra {
     bool EventSelectorCompact(NtpCompact* comp, const char* cutbit);
     bool EventSelectorSimple(Miiqtool* tool, const char* cutbit);
     // Singular (independent)
+    void ParameterAnalysis(const char* cutbit); // Returns raw and cut histograms of various parameters
     void RigBinner();                           // Returns number of selected events as function of rigidity
     void Exposure();                            // Returns exposure time (livetime) as function of rigidity
     void Acceptance(bool apply_cuts = 0);       // Returns (geometric) acceptance as function of rigidity
@@ -178,6 +190,191 @@ bool Anaaqra::EventSelectorSimple(Miiqtool* tool, const char* cutbit) {
 //------------------------------------------------------------------------------
 // METHOD FUNCTIONS
 //------------------------------------------------------------------------------
+// Returns TH1F of various parameters
+void Anaaqra::ParameterAnalysis(const char* cutbit) {
+
+  // Create canvasses
+  TCanvas *Beta_TOF_MC     = new TCanvas("Beta_TOF_MC", "TOF Beta MC");
+  TCanvas *Beta_RICH_MC    = new TCanvas("Beta_RICH_MC", "RICH Beta MC");
+  TCanvas *Rig_MC          = new TCanvas("Rig_MC", "Tracker Rigidity MC");
+  TCanvas *Chisq_MC        = new TCanvas("ChiSq_MC", "Chi-squared Bending plane MC");
+  TCanvas *Q_inn_MC        = new TCanvas("Q_inn_MC", "Inner Tracker Charge MC");
+  TCanvas *Q_lay_MC        = new TCanvas("Q_lay_MC", "First Tracker Layer Charge MC");
+  TCanvas *Beta_TOF_data   = new TCanvas("Beta_TOF_data", "TOF Beta Data");
+  TCanvas *Beta_RICH_data  = new TCanvas("Beta_RICH_data", "RICH Beta Data");
+  TCanvas *Rig_data        = new TCanvas("Rig_data", "Tracker Rigidity Data");
+  TCanvas *Chisq_data      = new TCanvas("ChiSq_data", "Chi-squared Bending plane Data");
+  TCanvas *Q_inn_data      = new TCanvas("Q_inn_data", "Inner Tracker Charge Data");
+  TCanvas *Q_lay_data      = new TCanvas("Q_lay_data", "First Tracker Layer Charge Data");
+
+  // Temporary histograms
+  TH1F *tofbeta_raw = new TH1F("t1r", "", 100, 0.01, 2.0);
+  TH1F *tofbeta_cut = new TH1F("t1c", "", 100, 0.01, 2.0);
+  TH1F *richbeta_raw = new TH1F("t2r", "", 100, 0.74, 1.05);
+  TH1F *richbeta_cut = new TH1F("t2c", "", 100, 0.74, 1.05);
+  TH1F *rig_raw = new TH1F("t3r", "", 100, 0, 22);
+  TH1F *rig_cut = new TH1F("t3c", "", 100, 0, 22);
+  TH1F *chisq_raw = new TH1F("t4r", "", 100, -0.5, 10.5);
+  TH1F *chisq_cut = new TH1F("t4c", "", 100, -0.5, 10.5);
+  TH1F *qinn_raw = new TH1F("t5r", "", 100, 0.3, 3.0);
+  TH1F *qinn_cut = new TH1F("t5c", "", 100, 0.3, 3.0);
+  TH1F *qlay_raw = new TH1F("t6r", "", 100, 0.3, 3.0);
+  TH1F *qlay_cut = new TH1F("t6c", "", 100, 0.3, 3.0);
+
+  // Loop over data entries
+  for (int i=0; i<Simp_chain->GetEntries(); i++) {
+
+    // Get entry
+    Simp_chain->GetEntry(i);
+
+    // Fill raw histograms
+    tofbeta_raw->Fill(Tool->tof_beta);
+    richbeta_raw->Fill(Tool->rich_beta);
+    rig_raw->Fill(Tool->trk_rig);
+    chisq_raw->Fill(Tool->trk_chisqn[1]);
+    qinn_raw->Fill(Tool->trk_q_inn);
+    qlay_raw->Fill(Tool->trk_q_lay[0]);
+
+    // Fill cut histograms if selected
+    if (EventSelectorSimple(Tool, cutbit)) {
+      tofbeta_cut->Fill(Tool->tof_beta);
+      richbeta_cut->Fill(Tool->rich_beta);
+      rig_cut->Fill(Tool->trk_rig);
+      chisq_cut->Fill(Tool->trk_chisqn[1]);
+      qinn_cut->Fill(Tool->trk_q_inn);
+      qlay_cut->Fill(Tool->trk_q_lay[0]);
+    }
+
+  }
+
+  // Create canvasses
+  // TOF Beta Data
+  Beta_TOF_data->cd();
+  tofbeta_raw->Draw(); tofbeta_cut->Draw("same");
+  tofbeta_raw->GetXaxis()->SetTitle("#beta (v/c)"); tofbeta_raw->GetYaxis()->SetTitle("Events");
+  Beta_TOF_data->SetLogx(0); Beta_TOF_data->SetLogy(1); tofbeta_raw->SetMinimum(1);
+  tofbeta_raw->SetLineColor(kRed); tofbeta_cut->SetLineColor(kBlue);
+  Beta_TOF_data->Draw(); Beta_TOF_data->Print("./ProtonAnalysis/PA/TOF Beta Data.png");
+  // RICH Beta Data
+  Beta_RICH_data->cd();
+  richbeta_raw->Draw(); richbeta_cut->Draw("same");
+  richbeta_raw->GetXaxis()->SetTitle("#beta (v/c)"); richbeta_raw->GetYaxis()->SetTitle("Events");
+  Beta_RICH_data->SetLogx(0); Beta_RICH_data->SetLogy(1); richbeta_raw->SetMinimum(1);
+  richbeta_raw->SetLineColor(kRed); richbeta_cut->SetLineColor(kBlue);
+  Beta_RICH_data->Draw(); Beta_RICH_data->Print("./ProtonAnalysis/PA/RICH Beta Data.png");
+  // Rigidity Data
+  Rig_data->cd();
+  rig_raw->Draw(); rig_cut->Draw("same");
+  rig_raw->GetXaxis()->SetTitle("R [GV]"); rig_raw->GetYaxis()->SetTitle("Events");
+  Rig_data->SetLogx(0); Rig_data->SetLogy(1); rig_raw->SetMinimum(1);
+  rig_raw->SetLineColor(kRed); rig_cut->SetLineColor(kBlue);
+  Rig_data->Draw(); Rig_data->Print("./ProtonAnalysis/PA/Rigidity Data.png");
+  // Chi-squared Bending Plane Data
+  Chisq_data->cd();
+  chisq_raw->Draw(); chisq_cut->Draw("same");
+  chisq_raw->GetXaxis()->SetTitle("Chi-squared"); chisq_raw->GetYaxis()->SetTitle("Events");
+  Chisq_data->SetLogx(0); Chisq_data->SetLogy(1); chisq_raw->SetMinimum(1);
+  chisq_raw->SetLineColor(kRed); chisq_cut->SetLineColor(kBlue);
+  Chisq_data->Draw(); Chisq_data->Print("./ProtonAnalysis/PA/Chi-squared Bending Plane Data.png");
+  // Inner Tracker Charge Data
+  Q_inn_data->cd();
+  qinn_raw->Draw(); qinn_cut->Draw("same");
+  qinn_raw->GetXaxis()->SetTitle("Z"); qinn_raw->GetYaxis()->SetTitle("Events");
+  Q_inn_data->SetLogx(0); Q_inn_data->SetLogy(1); qinn_raw->SetMinimum(1);
+  qinn_raw->SetLineColor(kRed); qinn_cut->SetLineColor(kBlue);
+  Q_inn_data->Draw(); Q_inn_data->Print("./ProtonAnalysis/PA/Inner Tracker Charge Data.png");
+  // First Tracker Layer Charge Data
+  Q_lay_data->cd();
+  qlay_raw->Draw(); qlay_cut->Draw("same");
+  qlay_raw->GetXaxis()->SetTitle("Z"); qlay_raw->GetYaxis()->SetTitle("Events");
+  Q_lay_data->SetLogx(0); Q_lay_data->SetLogy(1); qlay_raw->SetMinimum(1);
+  qlay_raw->SetLineColor(kRed); qlay_cut->SetLineColor(kBlue);
+  Q_lay_data->Draw(); Q_lay_data->Print("./ProtonAnalysis/PA/First Tracker Layer Charge Data.png");
+
+  // Clear temporary histograms
+  tofbeta_raw->Reset("ICESM"); tofbeta_cut->Reset("ICESM");
+  richbeta_raw->Reset("ICESM"); richbeta_cut->Reset("ICESM");
+  rig_raw->Reset("ICESM"); rig_cut->Reset("ICESM");
+  chisq_raw->Reset("ICESM"); chisq_cut->Reset("ICESM");
+  qinn_raw->Reset("ICESM"); qinn_cut->Reset("ICESM");
+  qlay_raw->Reset("ICESM"); qlay_cut->Reset("ICESM");
+
+  // Loop over MC entries
+  for (int i=0; i<MC_chain->GetEntries(); i++) {
+
+    // Get entry
+    MC_chain->GetEntry(i);
+
+    // Fill raw histograms
+    tofbeta_raw->Fill(MC_comp->tof_beta);
+    richbeta_raw->Fill(MC_comp->rich_beta);
+    rig_raw->Fill(MC_comp->trk_rig[0]);
+    chisq_raw->Fill(MC_comp->trk_chisqn[0][1]);
+    qinn_raw->Fill(MC_comp->trk_q_inn);
+    qlay_raw->Fill(MC_comp->trk_q_lay[0]);
+
+    // Fill cut histograms if selected
+    if (EventSelectorCompact(MC_comp, cutbit)) {
+      tofbeta_cut->Fill(MC_comp->tof_beta);
+      richbeta_cut->Fill(MC_comp->rich_beta);
+      rig_cut->Fill(MC_comp->trk_rig[0]);
+      chisq_cut->Fill(MC_comp->trk_chisqn[0][1]);
+      qinn_cut->Fill(MC_comp->trk_q_inn);
+      qlay_cut->Fill(MC_comp->trk_q_lay[0]);
+    }
+
+  }
+
+  // Create canvasses
+  // TOF Beta MC
+  Beta_TOF_MC->cd();
+  tofbeta_raw->Draw(); tofbeta_cut->Draw("same");
+  tofbeta_raw->GetXaxis()->SetTitle("#beta (v/c)"); tofbeta_raw->GetYaxis()->SetTitle("Events");
+  Beta_TOF_MC->SetLogx(0); Beta_TOF_MC->SetLogy(1); tofbeta_raw->SetMinimum(1);
+  tofbeta_raw->SetLineColor(kRed); tofbeta_cut->SetLineColor(kBlue);
+  Beta_TOF_MC->Draw(); Beta_TOF_MC->Print("./ProtonAnalysis/PA/TOF Beta MC.png");
+  // RICH Beta MC
+  Beta_RICH_MC->cd();
+  richbeta_raw->Draw(); richbeta_cut->Draw("same");
+  richbeta_raw->GetXaxis()->SetTitle("#beta (v/c)"); richbeta_raw->GetYaxis()->SetTitle("Events");
+  Beta_RICH_MC->SetLogx(0); Beta_RICH_MC->SetLogy(1); richbeta_raw->SetMinimum(1);
+  richbeta_raw->SetLineColor(kRed); richbeta_cut->SetLineColor(kBlue);
+  Beta_RICH_MC->Draw(); Beta_RICH_MC->Print("./ProtonAnalysis/PA/RICH Beta MC.png");
+  // Rigidity MC
+  Rig_MC->cd();
+  rig_raw->Draw(); rig_cut->Draw("same");
+  rig_raw->GetXaxis()->SetTitle("R [GV]"); rig_raw->GetYaxis()->SetTitle("Events");
+  Rig_MC->SetLogx(0); Rig_MC->SetLogy(1); rig_raw->SetMinimum(1);
+  rig_raw->SetLineColor(kRed); rig_cut->SetLineColor(kBlue);
+  Rig_MC->Draw(); Rig_MC->Print("./ProtonAnalysis/PA/Rigidity MC.png");
+  // Chi-squared Bending Plane MC
+  Chisq_MC->cd();
+  chisq_raw->Draw(); chisq_cut->Draw("same");
+  chisq_raw->GetXaxis()->SetTitle("Chi-squared"); chisq_raw->GetYaxis()->SetTitle("Events");
+  Chisq_MC->SetLogx(0); Chisq_MC->SetLogy(1); chisq_raw->SetMinimum(1);
+  chisq_raw->SetLineColor(kRed); chisq_cut->SetLineColor(kBlue);
+  Chisq_MC->Draw(); Chisq_MC->Print("./ProtonAnalysis/PA/Chi-squared Bending Plane MC.png");
+  // Inner Tracker Charge MC
+  Q_inn_MC->cd();
+  qinn_raw->Draw(); qinn_cut->Draw("same");
+  qinn_raw->GetXaxis()->SetTitle("Z"); qinn_raw->GetYaxis()->SetTitle("Events");
+  Q_inn_MC->SetLogx(0); Q_inn_MC->SetLogy(1); qinn_raw->SetMinimum(1);
+  qinn_raw->SetLineColor(kRed); qinn_cut->SetLineColor(kBlue);
+  Q_inn_MC->Draw(); Q_inn_MC->Print("./ProtonAnalysis/PA/Inner Tracker Charge MC.png");
+  // First Tracker Layer Charge MC
+  Q_lay_MC->cd();
+  qlay_raw->Draw(); qlay_cut->Draw("same");
+  qlay_raw->GetXaxis()->SetTitle("Z"); qlay_raw->GetYaxis()->SetTitle("Events");
+  Q_lay_MC->SetLogx(0); Q_lay_MC->SetLogy(1); qlay_raw->SetMinimum(1);
+  qlay_raw->SetLineColor(kRed); qlay_cut->SetLineColor(kBlue);
+  Q_lay_MC->Draw(); Q_lay_MC->Print("./ProtonAnalysis/PA/First Tracker Layer Charge MC.png");
+
+  cout << "ParameterAnalysis() has finished!\n" << endl;
+
+}
+
+
+
 // Returns TH1F of the selected events per rigidity bin
 void Anaaqra::RigBinner() {
 
@@ -268,15 +465,14 @@ void Anaaqra::Exposure() {
 // Returns TH1F of the geometric Acceptance
 void Anaaqra::Acceptance(bool apply_cuts = 0) {
 
-  // Loop over MC root files individually (!)
-  int start_num = 1209496744;
-  for (int i=0; i<13; i++) { // ??? Make adaptable
+  // Loop over MC root files individually
+  for (int i=0; i<13; i++) {
 
     // Import tree
     TChain mc_chain("Compact");
     TChain fi_chain("File");
-    mc_chain.Add(Form("../MC Protons/%d.root", start_num + i));
-    fi_chain.Add(Form("../MC Protons/%d.root", start_num + i));
+    mc_chain.Add(Form("../MC Protons/%d.root", Start_num + i));
+    fi_chain.Add(Form("../MC Protons/%d.root", Start_num + i));
     // Create empty class objects
     NtpCompact *comp = new class NtpCompact();
     FileMCInfo *fmci = new class FileMCInfo();
@@ -374,7 +570,6 @@ void Anaaqra::CutEff() {
   TH1F *Btof_MC = new TH1F("Btof_MC", "TOF Base Cut", 32, Bin_edges);
   TH1F *Btrk_MC = new TH1F("Btrk_MC", "Tracker Base Cut", 32, Bin_edges);
 
-
   // Loop over MC entries
   for (int i=0; i<MC_chain->GetEntries(); i++) {
 
@@ -458,6 +653,56 @@ void Anaaqra::CutEff() {
                                   * Cinn_data->GetBinContent(i+1) * Clay_data->GetBinContent(i+1)
                                   * Cgeo_data->GetBinContent(i+1));
   }
+
+  // Canvasses
+  // Single particle cut
+  TCanvas *c_spc = new TCanvas("c_spc", "Single Particle Cut Efficiency");
+  Cpar_MC->Draw(); Cpar_data->Draw("same");
+  Cpar_MC->SetLineColor(kRed); Cpar_data->SetLineColor(kBlue);
+  Cpar_MC->SetLineWidth(2); Cpar_data->SetLineWidth(2);
+  Cpar_MC->SetMinimum(0); Cpar_MC->SetMaximum(1.05);
+  Cpar_MC->GetXaxis()->SetTitle("R [GV]"); Cpar_MC->GetYaxis()->SetTitle("Cut Efficiency");
+  c_spc->Draw(); c_spc->Print("./ProtonAnalysis/CE/Single Particle Cut Efficiency.png");
+  // Consistent beta cut
+  TCanvas *c_cbc = new TCanvas("c_cbc", "Consistent Beta Cut Efficiency");
+  Ccon_MC->Draw(); Ccon_data->Draw("same");
+  Ccon_MC->SetLineColor(kRed); Ccon_data->SetLineColor(kBlue);
+  Ccon_MC->SetLineWidth(2); Ccon_data->SetLineWidth(2);
+  Ccon_MC->SetMinimum(0); Ccon_MC->SetMaximum(1.05);
+  Ccon_MC->GetXaxis()->SetTitle("R [GV]"); Ccon_MC->GetYaxis()->SetTitle("Cut Efficiency");
+  c_cbc->Draw(); c_cbc->Print("./ProtonAnalysis/CE/Consistent Beta Cut Efficiency.png");
+  // Well constructed track cut
+  TCanvas *c_wtc = new TCanvas("c_wtc", "Downward Particle Cut Efficiency");
+  Cbet_MC->Draw(); Cbet_data->Draw("same");
+  Cbet_MC->SetLineColor(kRed); Cbet_data->SetLineColor(kBlue);
+  Cbet_MC->SetLineWidth(2); Cbet_data->SetLineWidth(2);
+  Cbet_MC->SetMinimum(0); Cbet_MC->SetMaximum(1.05);
+  Cbet_MC->GetXaxis()->SetTitle("R [GV]"); Cbet_MC->GetYaxis()->SetTitle("Cut Efficiency");
+  c_wtc->Draw(); c_wtc->Print("./ProtonAnalysis/CE/Downward Particle Cut Efficiency.png");
+  // Inner tracker charge cut
+  TCanvas *c_itc = new TCanvas("c_itc", "Inner Tracker Charge Cut Efficiency");
+  Cchi_MC->Draw(); Cchi_data->Draw("same");
+  Cchi_MC->SetLineColor(kRed); Cchi_data->SetLineColor(kBlue);
+  Cchi_MC->SetLineWidth(2); Cchi_data->SetLineWidth(2);
+  Cchi_MC->SetMinimum(0); Cchi_MC->SetMaximum(1.05);
+  Cchi_MC->GetXaxis()->SetTitle("R [GV]"); Cchi_MC->GetYaxis()->SetTitle("Cut Efficiency");
+  c_itc->Draw(); c_itc->Print("./ProtonAnalysis/CE/Inner Tracker Charge Cut Efficiency.png");
+  // Tracker layer charge cut
+  TCanvas *c_tlc = new TCanvas("c_tlc", "Tracker Layer Charge Cut Efficiency");
+  Clay_MC->Draw(); Clay_data->Draw("same");
+  Clay_MC->SetLineColor(kRed); Clay_data->SetLineColor(kBlue);
+  Clay_MC->SetLineWidth(2); Clay_data->SetLineWidth(2);
+  Clay_MC->SetMinimum(0); Clay_MC->SetMaximum(1.05);
+  Clay_MC->GetXaxis()->SetTitle("R [GV]"); Clay_MC->GetYaxis()->SetTitle("Cut Efficiency");
+  c_tlc->Draw(); c_tlc->Print("./ProtonAnalysis/CE/Tracker Layer Charge Cut Efficiency.png");
+  // Geo-magnetic cut-off cut
+  TCanvas *c_gmc = new TCanvas("c_gmc", "Geo-magnetic Cut-off Cut Efficiency");
+  Cgeo_data->Draw();
+  Cgeo_data->SetLineColor(kBlue);
+  Cgeo_data->SetLineWidth(2);
+  Cgeo_data->SetMinimum(0); Cgeo_data->SetMaximum(1.05);
+  Cgeo_data->GetXaxis()->SetTitle("R [GV]"); Cgeo_data->GetYaxis()->SetTitle("Cut Efficiency");
+  c_gmc->Draw(); c_gmc->Print("./ProtonAnalysis/CE/Geo-magnetic Cut-off Cut Efficiency.png");
 
   // TGraph
   double ce_mc[32];
@@ -608,19 +853,24 @@ void Anaaqra::ProtonRate() {
     Exposure();
   }
 
+  // Error in Rate (purely from N)
+  double err_rate[32];
+
   // Loop over rigidity bins
   for (int i=0; i<Bin_num; i++) {
     if (ExposureTime->GetBinContent(i+1) == 0) {
       RateHist->SetBinContent(i+1, 0);
+      err_rate[i] = 0;
     } else {
       RateHist->SetBinContent(i+1, Events_cut->GetBinContent(i+1) / ExposureTime->GetBinContent(i+1) / (2 * Bin_err[i]));
+      err_rate[i] = RateHist->GetBinContent(i+1) / TMath::Sqrt(Events_cut->GetBinContent(i+1));
     }
   }
 
   // TGraph
   double p_rate[32];
   for (int i=0; i<Bin_num; i++) {p_rate[i] = RateHist->GetBinContent(i+1);}
-  TGraphErrors* p_rate_graph = new TGraphErrors(32, Bin_mid, p_rate, Bin_err, 0);
+  TGraphErrors* p_rate_graph = new TGraphErrors(32, Bin_mid, p_rate, Bin_err, err_rate);
   // Canvas
   TCanvas* c_Rate = new TCanvas("c_Rate", "Proton Rate per Rigitidy Bin");
   p_rate_graph->Draw("AP");
@@ -667,16 +917,21 @@ void Anaaqra::ProtonFlux() {
     TrigEff();
   }
 
+  // Error in Flux (purely from N)
+  double err_flux[32];
+
   // Loop over rigidity bins
   for (int i=0; i<Bin_num; i++) {
     if (ExposureTime->GetBinContent(i+1) == 0) {
       FluxHist->SetBinContent(i+1, 0);
+      err_flux[i] = 0;
     } else {
       FluxHist->SetBinContent(i+1, Events_cut->GetBinContent(i+1) / ExposureTime->GetBinContent(i+1)
                                    / 2 / Bin_err[i] / AcceptHist->GetBinContent(i+1)
                                    / CutEff_data->GetBinContent(i+1) * CutEff_MC->GetBinContent(i+1)
                                    / TrigEff_data->GetBinContent(i+1) * TrigEff_MC->GetBinContent(i+1)
                              );
+      err_flux[i] = FluxHist->GetBinContent(i+1) / TMath::Sqrt(Events_cut->GetBinContent(i+1));
     }
   }
 
@@ -685,7 +940,7 @@ void Anaaqra::ProtonFlux() {
   for (int i=0; i<Bin_num; i++) {
     p_flux[i] = FluxHist->GetBinContent(i+1);
   }
-  TGraphErrors* p_flux_graph = new TGraphErrors(32, Bin_mid, p_flux, Bin_err, 0);
+  TGraphErrors* p_flux_graph = new TGraphErrors(32, Bin_mid, p_flux, Bin_err, err_flux);
   // Canvas
   TCanvas* c_Flux = new TCanvas("c_Flux", "Proton Flux per Rigitidy Bin");
   p_flux_graph->Draw("AP");
