@@ -1,6 +1,6 @@
 // C++ class for full PROTON analysis
 // Created        23-11-20
-// Last Edited    09-12-20
+// Last Edited    12-12-20
 
 // Include header file(s)
 #include <iostream>
@@ -200,12 +200,14 @@ void Anaaqra::ParameterAnalysis(const char* cutbit) {
   TCanvas *Chisq_MC        = new TCanvas("ChiSq_MC", "Chi-squared Bending plane MC");
   TCanvas *Q_inn_MC        = new TCanvas("Q_inn_MC", "Inner Tracker Charge MC");
   TCanvas *Q_lay_MC        = new TCanvas("Q_lay_MC", "First Tracker Layer Charge MC");
+  TCanvas *Mass_RICH_MC    = new TCanvas("Mass_RICH_MC", "RICH Mass MC");
   TCanvas *Beta_TOF_data   = new TCanvas("Beta_TOF_data", "TOF Beta Data");
   TCanvas *Beta_RICH_data  = new TCanvas("Beta_RICH_data", "RICH Beta Data");
   TCanvas *Rig_data        = new TCanvas("Rig_data", "Tracker Rigidity Data");
   TCanvas *Chisq_data      = new TCanvas("ChiSq_data", "Chi-squared Bending plane Data");
   TCanvas *Q_inn_data      = new TCanvas("Q_inn_data", "Inner Tracker Charge Data");
   TCanvas *Q_lay_data      = new TCanvas("Q_lay_data", "First Tracker Layer Charge Data");
+  TCanvas *Mass_RICH_data  = new TCanvas("Mass_RICH_data", "RICH Mass Data");
 
   // Temporary histograms
   TH1F *tofbeta_raw = new TH1F("t1r", "", 100, 0.01, 2.0);
@@ -220,6 +222,8 @@ void Anaaqra::ParameterAnalysis(const char* cutbit) {
   TH1F *qinn_cut = new TH1F("t5c", "", 100, 0.3, 3.0);
   TH1F *qlay_raw = new TH1F("t6r", "", 100, 0.3, 3.0);
   TH1F *qlay_cut = new TH1F("t6c", "", 100, 0.3, 3.0);
+  TH1F *mass_raw = new TH1F("t7r", "", 100, 0, 2.5);
+  TH1F *mass_cut = new TH1F("t7c", "", 100, 0, 2.5);
 
   // Loop over data entries
   for (int i=0; i<Simp_chain->GetEntries(); i++) {
@@ -234,6 +238,7 @@ void Anaaqra::ParameterAnalysis(const char* cutbit) {
     chisq_raw->Fill(Tool->trk_chisqn[1]);
     qinn_raw->Fill(Tool->trk_q_inn);
     qlay_raw->Fill(Tool->trk_q_lay[0]);
+    mass_raw->Fill(Tool->trk_q_inn * Tool->trk_rig * TMath::Sqrt(1 / Tool->rich_beta / Tool->rich_beta - 1));
 
     // Fill cut histograms if selected
     if (EventSelectorSimple(Tool, cutbit)) {
@@ -243,6 +248,7 @@ void Anaaqra::ParameterAnalysis(const char* cutbit) {
       chisq_cut->Fill(Tool->trk_chisqn[1]);
       qinn_cut->Fill(Tool->trk_q_inn);
       qlay_cut->Fill(Tool->trk_q_lay[0]);
+      mass_cut->Fill(Tool->trk_q_inn * Tool->trk_rig * TMath::Sqrt(1 / Tool->rich_beta / Tool->rich_beta - 1));
     }
 
   }
@@ -290,6 +296,13 @@ void Anaaqra::ParameterAnalysis(const char* cutbit) {
   Q_lay_data->SetLogx(0); Q_lay_data->SetLogy(1); qlay_raw->SetMinimum(1);
   qlay_raw->SetLineColor(kRed); qlay_cut->SetLineColor(kBlue);
   Q_lay_data->Draw(); Q_lay_data->Print("./ProtonAnalysis/PA/First Tracker Layer Charge Data.png");
+  // RICH Mass Data
+  Mass_RICH_data->cd();
+  mass_raw->Draw(); mass_cut->Draw("same");
+  mass_raw->GetXaxis()->SetTitle("m [GeV/c#^2]"); mass_cut->GetYaxis()->SetTitle("Events");
+  Mass_RICH_data->SetLogx(0); Mass_RICH_data->SetLogy(1); mass_raw->SetMinimum(1);
+  mass_raw->SetLineColor(kRed); mass_cut->SetLineColor(kBlue);
+  Mass_RICH_data->Draw(); Mass_RICH_data->Print("./ProtonAnalysis/PA/RICH Mass Data.png");
 
   // Clear temporary histograms
   tofbeta_raw->Reset("ICESM"); tofbeta_cut->Reset("ICESM");
@@ -298,6 +311,7 @@ void Anaaqra::ParameterAnalysis(const char* cutbit) {
   chisq_raw->Reset("ICESM"); chisq_cut->Reset("ICESM");
   qinn_raw->Reset("ICESM"); qinn_cut->Reset("ICESM");
   qlay_raw->Reset("ICESM"); qlay_cut->Reset("ICESM");
+  mass_raw->Reset("ICESM"); mass_cut->Reset("ICESM");
 
   // Loop over MC entries
   for (int i=0; i<MC_chain->GetEntries(); i++) {
@@ -312,6 +326,7 @@ void Anaaqra::ParameterAnalysis(const char* cutbit) {
     chisq_raw->Fill(MC_comp->trk_chisqn[0][1]);
     qinn_raw->Fill(MC_comp->trk_q_inn);
     qlay_raw->Fill(MC_comp->trk_q_lay[0]);
+    mass_raw->Fill(MC_comp->trk_q_inn * MC_comp->trk_rig[0] * TMath::Sqrt(1 / MC_comp->rich_beta / MC_comp->rich_beta - 1));
 
     // Fill cut histograms if selected
     if (EventSelectorCompact(MC_comp, cutbit)) {
@@ -321,6 +336,8 @@ void Anaaqra::ParameterAnalysis(const char* cutbit) {
       chisq_cut->Fill(MC_comp->trk_chisqn[0][1]);
       qinn_cut->Fill(MC_comp->trk_q_inn);
       qlay_cut->Fill(MC_comp->trk_q_lay[0]);
+      mass_cut->Fill(MC_comp->trk_q_inn * MC_comp->trk_rig[0] * TMath::Sqrt(1 / MC_comp->rich_beta / MC_comp->rich_beta - 1));
+
     }
 
   }
@@ -368,6 +385,13 @@ void Anaaqra::ParameterAnalysis(const char* cutbit) {
   Q_lay_MC->SetLogx(0); Q_lay_MC->SetLogy(1); qlay_raw->SetMinimum(1);
   qlay_raw->SetLineColor(kRed); qlay_cut->SetLineColor(kBlue);
   Q_lay_MC->Draw(); Q_lay_MC->Print("./ProtonAnalysis/PA/First Tracker Layer Charge MC.png");
+  // RICH Mass MC
+  Mass_RICH_MC->cd();
+  mass_raw->Draw(); mass_cut->Draw("same");
+  mass_raw->GetXaxis()->SetTitle("m [GeV/c#^2]"); mass_cut->GetYaxis()->SetTitle("Events");
+  Mass_RICH_MC->SetLogx(0); Mass_RICH_MC->SetLogy(1); mass_raw->SetMinimum(1);
+  mass_raw->SetLineColor(kRed); mass_cut->SetLineColor(kBlue);
+  Mass_RICH_MC->Draw(); Mass_RICH_MC->Print("./ProtonAnalysis/PA/RICH Mass MC.png");
 
   cout << "ParameterAnalysis() has finished!\n" << endl;
 
@@ -441,20 +465,26 @@ void Anaaqra::Exposure() {
 
   }
 
+  // TGraph
+  double exptime[32];
+  for (int i=0; i<Bin_num; i++) {
+    exptime[i] = ExposureTime->GetBinContent(i+1);
+  }
+  TGraphErrors* exptime_graph = new TGraphErrors(32, Bin_mid, exptime, Bin_err, 0);
   // Canvas
   TCanvas* c_Exposure = new TCanvas("c_Exposure", "Exposure Time per Rigitidy Bin");
-  ExposureTime->Draw();
+  exptime_graph->Draw("AP");
   // Styling
-  ExposureTime->SetLineColor(kGreen);
-  ExposureTime->SetLineWidth(2);
+  exptime_graph->SetMarkerStyle(20);
+  exptime_graph->SetMarkerSize(1);
+  exptime_graph->SetMarkerColor(kRed);
   // Axes
   c_Exposure->SetLogy();
-  ExposureTime->SetMinimum(1);
-  ExposureTime->GetXaxis()->SetTitle("R [GV]");
-  ExposureTime->GetYaxis()->SetTitle("Exposure Time [s]");
+  exptime_graph->GetXaxis()->SetTitle("R [GV]");
+  exptime_graph->GetYaxis()->SetTitle("Exposure Time [s]");
   // Print
   c_Exposure->Draw();
-  c_Exposure->Print("./ProtonAnalysis/Exposure Time Histogram.png");
+  c_Exposure->Print("./ProtonAnalysis/Exposure Time.png");
 
     cout << "Exposure() has finished!\n" << endl;
 
@@ -537,19 +567,26 @@ void Anaaqra::Acceptance(bool apply_cuts = 0) {
   double gen_vol = TMath::Pi() * 3.9 * 3.9;
   AcceptHist->Scale(gen_vol);
 
+  // TGraph
+  double accept[32];
+  for (int i=0; i<Bin_num; i++) {
+    accept[i] = AcceptHist->GetBinContent(i+1);
+  }
+  TGraphErrors* accept_graph = new TGraphErrors(32, Bin_mid, accept, Bin_err, 0);
   // Canvas
-  TCanvas* c_Acceptance = new TCanvas("c_Acceptance", "Acceptance per Rigitidy Bin");
-  AcceptHist->Draw("hist");
+  TCanvas* c_Accept = new TCanvas("c_Accept", "Acceptance per Rigitidy Bin");
+  accept_graph->Draw("AP");
   // Styling
-  AcceptHist->SetLineColor(kOrange);
-  AcceptHist->SetLineWidth(2);
+  accept_graph->SetMarkerStyle(20);
+  accept_graph->SetMarkerSize(1);
+  accept_graph->SetMarkerColor(kRed);
   // Axes
-  c_Acceptance->SetLogy();
-  AcceptHist->GetXaxis()->SetTitle("R [GV]");
-  AcceptHist->GetYaxis()->SetTitle("Acceptance [m^2 sr]");
+  c_Accept->SetLogy();
+  accept_graph->GetXaxis()->SetTitle("R [GV]");
+  accept_graph->GetYaxis()->SetTitle("Acceptance [m^2 sr]");
   // Print
-  c_Acceptance->Draw();
-  c_Acceptance->Print("./ProtonAnalysis/Acceptance Histogram.png");
+  c_Accept->Draw();
+  c_Accept->Print("./ProtonAnalysis/Acceptance.png");
 
   cout << "Acceptance() has finished!\n" << endl;
 
