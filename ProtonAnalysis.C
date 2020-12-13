@@ -111,7 +111,7 @@ class Anaaqra {
     void Exposure();                            // Returns exposure time (livetime) as function of rigidity
     void Acceptance(bool apply_cuts = 0);       // Returns (geometric) acceptance as function of rigidity
     void CutEff();                              // Returns the cut (selection) efficiency as function of rigidity
-    void TrigEff();                             // Returns the trigger efficiency as function of rigidity
+    void TrigEff(int delta = 100);              // Returns the trigger efficiency as function of rigidity
     // Plural (dependent)
     void ProtonRate();                          // Returns the proton rate as function of rigidity
     void ProtonFlux();                          // Returns the proton flux as function of rigidity
@@ -495,6 +495,10 @@ void Anaaqra::Exposure() {
 // Returns TH1F of the geometric Acceptance
 void Anaaqra::Acceptance(bool apply_cuts = 0) {
 
+  // Clear histogram
+  MC_detected->Reset("ICESM");
+  MC_generated->Reset("ICESM");
+
   // Loop over MC root files individually
   for (int i=0; i<13; i++) {
 
@@ -581,7 +585,7 @@ void Anaaqra::Acceptance(bool apply_cuts = 0) {
   accept_graph->SetMarkerSize(1);
   accept_graph->SetMarkerColor(kRed);
   // Axes
-  c_Accept->SetLogy();
+  accept_graph->SetMinimum(0); accept_graph->SetMaximum(0.4);
   accept_graph->GetXaxis()->SetTitle("R [GV]");
   accept_graph->GetYaxis()->SetTitle("Acceptance [m^2 sr]");
   // Print
@@ -614,16 +618,16 @@ void Anaaqra::CutEff() {
     MC_chain->GetEntry(i);
 
     // Fill base histograms
-    if (EventSelectorCompact(MC_comp, "10000111")) {Btof_MC->Fill(MC_comp->trk_rig[0]);}
-    if (EventSelectorCompact(MC_comp, "10111000")) {Btrk_MC->Fill(MC_comp->trk_rig[0]);}
+    if (EventSelectorCompact(MC_comp, "11000111")) {Btof_MC->Fill(MC_comp->trk_rig[0]);}
+    if (EventSelectorCompact(MC_comp, "11111000")) {Btrk_MC->Fill(MC_comp->trk_rig[0]);}
 
     // Fill cut histograms
-    if (EventSelectorCompact(MC_comp, "10100111")) {Cpar_MC->Fill(MC_comp->trk_rig[0]);}
-    if (EventSelectorCompact(MC_comp, "10010111")) {Ccon_MC->Fill(MC_comp->trk_rig[0]);}
-    if (EventSelectorCompact(MC_comp, "10001111")) {Cbet_MC->Fill(MC_comp->trk_rig[0]);}
-    if (EventSelectorCompact(MC_comp, "10111100")) {Cchi_MC->Fill(MC_comp->trk_rig[0]);}
-    if (EventSelectorCompact(MC_comp, "10111010")) {Cinn_MC->Fill(MC_comp->trk_rig[0]);}
-    if (EventSelectorCompact(MC_comp, "10111001")) {Clay_MC->Fill(MC_comp->trk_rig[0]);}
+    if (EventSelectorCompact(MC_comp, "11100111")) {Cpar_MC->Fill(MC_comp->trk_rig[0]);}
+    if (EventSelectorCompact(MC_comp, "11010111")) {Ccon_MC->Fill(MC_comp->trk_rig[0]);}
+    if (EventSelectorCompact(MC_comp, "11001111")) {Cbet_MC->Fill(MC_comp->trk_rig[0]);}
+    if (EventSelectorCompact(MC_comp, "11111100")) {Cchi_MC->Fill(MC_comp->trk_rig[0]);}
+    if (EventSelectorCompact(MC_comp, "11111010")) {Cinn_MC->Fill(MC_comp->trk_rig[0]);}
+    if (EventSelectorCompact(MC_comp, "11111001")) {Clay_MC->Fill(MC_comp->trk_rig[0]);}
 
   }
 
@@ -660,17 +664,17 @@ void Anaaqra::CutEff() {
     Simp_chain->GetEntry(i);
 
     // Fill base histograms
-    if (EventSelectorSimple(Tool, "100001111")) {Btof_data->Fill(Tool->trk_rig);}
-    if (EventSelectorSimple(Tool, "101110000")) {Btrk_data->Fill(Tool->trk_rig);}
+    if (EventSelectorSimple(Tool, "110001111")) {Btof_data->Fill(Tool->trk_rig);}
+    if (EventSelectorSimple(Tool, "111110000")) {Btrk_data->Fill(Tool->trk_rig);}
 
     // Fill cut histograms
-    if (EventSelectorSimple(Tool, "101001111")) {Cpar_data->Fill(Tool->trk_rig);}
-    if (EventSelectorSimple(Tool, "100101111")) {Ccon_data->Fill(Tool->trk_rig);}
-    if (EventSelectorSimple(Tool, "100011111")) {Cbet_data->Fill(Tool->trk_rig);}
-    if (EventSelectorSimple(Tool, "101111000")) {Cchi_data->Fill(Tool->trk_rig);}
-    if (EventSelectorSimple(Tool, "101110100")) {Cinn_data->Fill(Tool->trk_rig);}
-    if (EventSelectorSimple(Tool, "101110010")) {Clay_data->Fill(Tool->trk_rig);}
-    if (EventSelectorSimple(Tool, "101110001")) {Cgeo_data->Fill(Tool->trk_rig);}
+    if (EventSelectorSimple(Tool, "111001111")) {Cpar_data->Fill(Tool->trk_rig);}
+    if (EventSelectorSimple(Tool, "110101111")) {Ccon_data->Fill(Tool->trk_rig);}
+    if (EventSelectorSimple(Tool, "110011111")) {Cbet_data->Fill(Tool->trk_rig);}
+    if (EventSelectorSimple(Tool, "111111000")) {Cchi_data->Fill(Tool->trk_rig);}
+    if (EventSelectorSimple(Tool, "111110100")) {Cinn_data->Fill(Tool->trk_rig);}
+    if (EventSelectorSimple(Tool, "111110010")) {Clay_data->Fill(Tool->trk_rig);}
+    if (EventSelectorSimple(Tool, "111110001")) {Cgeo_data->Fill(Tool->trk_rig);}
 
   }
 
@@ -778,7 +782,7 @@ void Anaaqra::CutEff() {
 
 
 // Returns TH1F of the trigger efficiency
-void Anaaqra::TrigEff() {
+void Anaaqra::TrigEff(int delta = 100) {
 
   // Loop over MC entries
   for (int i=0; i<MC_chain->GetEntries(); i++) {
@@ -836,7 +840,7 @@ void Anaaqra::TrigEff() {
     if (PhysHist_data->GetBinContent(i+1) == 0) {
       TrigEff_data->SetBinContent(i+1, 0);
     } else {
-      TrigEff_data->SetBinContent(i+1, PhysHist_data->GetBinContent(i+1) / (PhysHist_data->GetBinContent(i+1) + 100 * UnphHist_data->GetBinContent(i+1)));
+      TrigEff_data->SetBinContent(i+1, PhysHist_data->GetBinContent(i+1) / (PhysHist_data->GetBinContent(i+1) + delta * UnphHist_data->GetBinContent(i+1)));
     }
 
   }
