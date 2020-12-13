@@ -193,6 +193,8 @@ bool Anaaqra::EventSelectorSimple(Miiqtool* tool, const char* cutbit) {
 // Returns TH1F of various parameters
 void Anaaqra::ParameterAnalysis(const char* cutbit) {
 
+  cout << "Running ParameterAnalysis()..." << endl;
+
   // Create canvasses
   TCanvas *Beta_TOF_MC     = new TCanvas("Beta_TOF_MC", "TOF Beta MC");
   TCanvas *Beta_RICH_MC    = new TCanvas("Beta_RICH_MC", "RICH Beta MC");
@@ -402,6 +404,8 @@ void Anaaqra::ParameterAnalysis(const char* cutbit) {
 // Returns TH1F of the selected events per rigidity bin
 void Anaaqra::RigBinner() {
 
+  cout << "Running RigBinner()..." << endl;
+
   // Empty the event histograms
   Events_raw->Reset("ICESM");
   Events_cut->Reset("ICESM");
@@ -420,23 +424,36 @@ void Anaaqra::RigBinner() {
 
   }
 
+  // TGraph
+  double ev_raw[32]; double ev_raw_err[32];
+  double ev_cut[32]; double ev_cut_err[32];
+  for (int i=0; i<Bin_num; i++) {
+    ev_raw[i] = Events_raw->GetBinContent(i+1);
+    ev_cut[i] = Events_cut->GetBinContent(i+1);
+    ev_raw_err[i] = TMath::Sqrt(Events_raw->GetBinContent(i+1));
+    ev_cut_err[i] = TMath::Sqrt(Events_cut->GetBinContent(i+1));
+  }
+  TGraphErrors* ev_raw_graph = new TGraphErrors(32, Bin_mid, ev_raw, Bin_err, ev_raw_err);
+  TGraphErrors* ev_cut_graph = new TGraphErrors(32, Bin_mid, ev_cut, Bin_err, ev_cut_err);
   // Canvas
   TCanvas* c_Events = new TCanvas("c_Events", "Events per Rigitidy Bin");
-  Events_raw->Draw();
-  Events_cut->Draw("Same");
+  ev_raw_graph->Draw("AP");
+  ev_cut_graph->Draw("P");
   // Styling
-  Events_raw->SetLineColor(kRed);
-  Events_raw->SetLineWidth(2);
-  Events_cut->SetLineColor(kBlue);
-  Events_cut->SetLineWidth(2);
+  ev_raw_graph->SetMarkerStyle(20);
+  ev_raw_graph->SetMarkerSize(1);
+  ev_raw_graph->SetMarkerColor(kRed);
+  ev_cut_graph->SetMarkerStyle(20);
+  ev_cut_graph->SetMarkerSize(1);
+  ev_cut_graph->SetMarkerColor(kBlue);
   // Axes
   c_Events->SetLogy();
-  Events_raw->SetMinimum(1);
-  Events_raw->GetXaxis()->SetTitle("R [GV]");
-  Events_raw->GetYaxis()->SetTitle("Events");
+  ev_raw_graph->SetMinimum(1);
+  ev_raw_graph->GetXaxis()->SetTitle("R [GV]");
+  ev_raw_graph->GetYaxis()->SetTitle("Events");
   // Print
   c_Events->Draw();
-  c_Events->Print("./ProtonAnalysis/Events Histogram.png");
+  c_Events->Print("./ProtonAnalysis/(Selected) Events.png");
 
   cout << "RigBinner() has finished!\n" << endl;
 
@@ -446,6 +463,8 @@ void Anaaqra::RigBinner() {
 
 // Returns TH1F of the exposure time
 void Anaaqra::Exposure() {
+
+  cout << "Running Exposure()..." << endl;
 
   // Loop over RTI entries
   for (int i=0; i<RTII_chain->GetEntries(); i++) {
@@ -494,6 +513,8 @@ void Anaaqra::Exposure() {
 
 // Returns TH1F of the geometric Acceptance
 void Anaaqra::Acceptance(bool apply_cuts = 0) {
+
+  cout << "Running Acceptance()..." << endl;
 
   // Clear histogram
   MC_detected->Reset("ICESM");
@@ -600,6 +621,8 @@ void Anaaqra::Acceptance(bool apply_cuts = 0) {
 
 // Returns TH1F of the selection efficiency
 void Anaaqra::CutEff() {
+
+  cout << "Running CutEff()..." << endl;
 
   // Temporary histograms
   TH1F *Cpar_MC = new TH1F("Cpar_MC", "Single Particle Cut", 32, Bin_edges);
@@ -746,14 +769,21 @@ void Anaaqra::CutEff() {
   c_gmc->Draw(); c_gmc->Print("./ProtonAnalysis/CE/Geo-magnetic Cut-off Cut Efficiency.png");
 
   // TGraph
-  double ce_mc[32];
-  double ce_data[32];
+  double ce_mc[32]; double ce_mc_err[32];
+  double ce_data[32]; double ce_data_err[32];
   for (int i=0; i<Bin_num; i++) {
     ce_mc[i] = CutEff_MC->GetBinContent(i+1);
     ce_data[i] = CutEff_data->GetBinContent(i+1);
+    ce_mc_err[i] = TMath::Sqrt((1/Cpar_MC->GetBinContent(i+1) + 1/Btof_MC->GetBinContent(i+1)) + (1/Ccon_MC->GetBinContent(i+1) + 1/Btof_MC->GetBinContent(i+1))
+                   + (1/Cbet_MC->GetBinContent(i+1) + 1/Btof_MC->GetBinContent(i+1)) + (1/Cchi_MC->GetBinContent(i+1) + 1/Btrk_MC->GetBinContent(i+1))
+                   + (1/Cinn_MC->GetBinContent(i+1) + 1/Btrk_MC->GetBinContent(i+1)) + (1/Clay_MC->GetBinContent(i+1) + 1/Btrk_MC->GetBinContent(i+1)));
+    ce_mc_data[i] = TMath::Sqrt((1/Cpar_data->GetBinContent(i+1) + 1/Btof_data->GetBinContent(i+1)) + (1/Ccon_data->GetBinContent(i+1) + 1/Btof_data->GetBinContent(i+1))
+                    + (1/Cbet_data->GetBinContent(i+1) + 1/Btof_data->GetBinContent(i+1)) + (1/Cchi_data->GetBinContent(i+1) + 1/Btrk_data->GetBinContent(i+1))
+                    + (1/Cinn_data->GetBinContent(i+1) + 1/Btrk_data->GetBinContent(i+1)) + (1/Clay_data->GetBinContent(i+1) + 1/Btrk_data->GetBinContent(i+1))
+                    + (1/Cgeo_data->GetBinContent(i+1) + 1/Btrk_data->GetBinContent(i+1)));
   }
-  TGraphErrors* ce_mc_graph = new TGraphErrors(32, Bin_mid, ce_mc, Bin_err, 0);
-  TGraphErrors* ce_data_graph = new TGraphErrors(32, Bin_mid, ce_data, Bin_err, 0);
+  TGraphErrors* ce_mc_graph = new TGraphErrors(32, Bin_mid, ce_mc, Bin_err, ce_mc_err);
+  TGraphErrors* ce_data_graph = new TGraphErrors(32, Bin_mid, ce_data, Bin_err, ce_mc_data);
   // Canvas
   TCanvas* c_CutEff = new TCanvas("c_CutEff", "Selection Efficiency per Rigitidy Bin");
   ce_mc_graph->Draw("AP");
@@ -783,6 +813,8 @@ void Anaaqra::CutEff() {
 
 // Returns TH1F of the trigger efficiency
 void Anaaqra::TrigEff(int delta = 100) {
+
+  cout << "Running TrigEff()..." << endl;
 
   // Loop over MC entries
   for (int i=0; i<MC_chain->GetEntries(); i++) {
@@ -846,14 +878,20 @@ void Anaaqra::TrigEff(int delta = 100) {
   }
 
   // TGraph
-  double te_mc[32];
-  double te_data[32];
+  double te_mc[32]; double te_mc_err[32];
+  double te_data[32]; double te_data_err[32];
   for (int i=0; i<Bin_num; i++) {
     te_mc[i] = TrigEff_MC->GetBinContent(i+1);
     te_data[i] = TrigEff_data->GetBinContent(i+1);
+    te_mc_err[i] = delta * TMath::Sqrt(PhysHist_mc->GetBinContent(i+1)*pow(UnphHist_mc->GetBinContent(i+1), 2)
+                   + UnphHist_mc->GetBinContent(i+1)*pow(PhysHist_mc->GetBinContent(i+1), 2))
+                   / pow((PhysHist_mc->GetBinContent(i+1) + delta * UnphHist_mc->GetBinContent(i+1)), 2);
+    te_data_err[i] = delta * TMath::Sqrt(PhysHist_data->GetBinContent(i+1)*pow(UnphHist_data->GetBinContent(i+1), 2)
+                     + UnphHist_data->GetBinContent(i+1)*pow(PhysHist_data->GetBinContent(i+1), 2))
+                     / pow((PhysHist_data->GetBinContent(i+1) + delta * UnphHist_data->GetBinContent(i+1)), 2);
   }
-  TGraphErrors* te_mc_graph = new TGraphErrors(32, Bin_mid, te_mc, Bin_err, 0);
-  TGraphErrors* te_data_graph = new TGraphErrors(32, Bin_mid, te_data, Bin_err, 0);
+  TGraphErrors* te_mc_graph = new TGraphErrors(32, Bin_mid, te_mc, Bin_err, te_mc_err);
+  TGraphErrors* te_data_graph = new TGraphErrors(32, Bin_mid, te_data, Bin_err, te_data_err);
   // Canvas
   TCanvas* c_TrigEff = new TCanvas("c_TrigEff", "Trigger Efficiency per Rigitidy Bin");
   te_mc_graph->Draw("AP");
@@ -885,14 +923,8 @@ void Anaaqra::TrigEff(int delta = 100) {
 void Anaaqra::ProtonRate() {
 
   // Fill empty necessary histograms
-  if (Events_cut->GetEntries() == 0) {
-    cout << "Running RigBinner()..." << endl;
-    RigBinner();
-  }
-  if (ExposureTime->GetEntries() == 0) {
-    cout << "Running Exposure()..." << endl;
-    Exposure();
-  }
+  if (Events_cut->GetEntries() == 0) {RigBinner();}
+  if (ExposureTime->GetEntries() == 0) {Exposure();}
 
   // Error in Rate (purely from N)
   double err_rate[32];
@@ -937,26 +969,11 @@ void Anaaqra::ProtonRate() {
 void Anaaqra::ProtonFlux() {
 
   // Fill empty necessary histograms
-  if (Events_cut->GetEntries() == 0) {
-    cout << "Running RigBinner()..." << endl;
-    RigBinner();
-  }
-  if (ExposureTime->GetEntries() == 0) {
-    cout << "Running Exposure()..." << endl;
-    Exposure();
-  }
-  if (AcceptHist->GetEntries() == 0) {
-    cout << "Running Acceptance()..." << endl;
-    Acceptance();
-  }
-  if ((CutEff_MC->GetEntries() == 0) || (CutEff_data->GetEntries() == 0)) {
-    cout << "Running CutEff()..." << endl;
-    CutEff();
-  }
-  if ((TrigEff_MC->GetEntries() == 0) || (TrigEff_data->GetEntries() == 0)) {
-    cout << "Running TrigEff()..." << endl;
-    TrigEff();
-  }
+  if (Events_cut->GetEntries() == 0) {RigBinner();}
+  if (ExposureTime->GetEntries() == 0) {Exposure();}
+  if (AcceptHist->GetEntries() == 0) {Acceptance();}
+  if ((CutEff_MC->GetEntries() == 0) || (CutEff_data->GetEntries() == 0)) {CutEff();}
+  if ((TrigEff_MC->GetEntries() == 0) || (TrigEff_data->GetEntries() == 0)) {TrigEff();}
 
   // Error in Flux (purely from N)
   double err_flux[32];
