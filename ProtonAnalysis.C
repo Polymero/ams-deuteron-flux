@@ -777,13 +777,13 @@ void Anaaqra::CutEff() {
     ce_mc_err[i] = TMath::Sqrt((1/Cpar_MC->GetBinContent(i+1) + 1/Btof_MC->GetBinContent(i+1)) + (1/Ccon_MC->GetBinContent(i+1) + 1/Btof_MC->GetBinContent(i+1))
                    + (1/Cbet_MC->GetBinContent(i+1) + 1/Btof_MC->GetBinContent(i+1)) + (1/Cchi_MC->GetBinContent(i+1) + 1/Btrk_MC->GetBinContent(i+1))
                    + (1/Cinn_MC->GetBinContent(i+1) + 1/Btrk_MC->GetBinContent(i+1)) + (1/Clay_MC->GetBinContent(i+1) + 1/Btrk_MC->GetBinContent(i+1)));
-    ce_mc_data[i] = TMath::Sqrt((1/Cpar_data->GetBinContent(i+1) + 1/Btof_data->GetBinContent(i+1)) + (1/Ccon_data->GetBinContent(i+1) + 1/Btof_data->GetBinContent(i+1))
+    ce_data_err[i] = TMath::Sqrt((1/Cpar_data->GetBinContent(i+1) + 1/Btof_data->GetBinContent(i+1)) + (1/Ccon_data->GetBinContent(i+1) + 1/Btof_data->GetBinContent(i+1))
                     + (1/Cbet_data->GetBinContent(i+1) + 1/Btof_data->GetBinContent(i+1)) + (1/Cchi_data->GetBinContent(i+1) + 1/Btrk_data->GetBinContent(i+1))
                     + (1/Cinn_data->GetBinContent(i+1) + 1/Btrk_data->GetBinContent(i+1)) + (1/Clay_data->GetBinContent(i+1) + 1/Btrk_data->GetBinContent(i+1))
                     + (1/Cgeo_data->GetBinContent(i+1) + 1/Btrk_data->GetBinContent(i+1)));
   }
   TGraphErrors* ce_mc_graph = new TGraphErrors(32, Bin_mid, ce_mc, Bin_err, ce_mc_err);
-  TGraphErrors* ce_data_graph = new TGraphErrors(32, Bin_mid, ce_data, Bin_err, ce_mc_data);
+  TGraphErrors* ce_data_graph = new TGraphErrors(32, Bin_mid, ce_data, Bin_err, ce_data_err);
   // Canvas
   TCanvas* c_CutEff = new TCanvas("c_CutEff", "Selection Efficiency per Rigitidy Bin");
   ce_mc_graph->Draw("AP");
