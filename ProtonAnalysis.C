@@ -654,6 +654,13 @@ void Anaaqra::CutEff() {
 
   }
 
+  // Cut Efficiency MC Error
+  for (int i=0; i<Bin_num; i++) {
+    ce_mc_err[i] = TMath::Sqrt((1/Cpar_MC->GetBinContent(i+1) + 1/Btof_MC->GetBinContent(i+1)) + (1/Ccon_MC->GetBinContent(i+1) + 1/Btof_MC->GetBinContent(i+1))
+                   + (1/Cbet_MC->GetBinContent(i+1) + 1/Btof_MC->GetBinContent(i+1)) + (1/Cchi_MC->GetBinContent(i+1) + 1/Btrk_MC->GetBinContent(i+1))
+                   + (1/Cinn_MC->GetBinContent(i+1) + 1/Btrk_MC->GetBinContent(i+1)) + (1/Clay_MC->GetBinContent(i+1) + 1/Btrk_MC->GetBinContent(i+1)));
+  }
+
   // Divide by corresponding instrument base
   Cpar_MC->Divide(Btof_MC);
   Ccon_MC->Divide(Btof_MC);
@@ -699,6 +706,14 @@ void Anaaqra::CutEff() {
     if (EventSelectorSimple(Tool, "111110010")) {Clay_data->Fill(Tool->trk_rig);}
     if (EventSelectorSimple(Tool, "111110001")) {Cgeo_data->Fill(Tool->trk_rig);}
 
+  }
+
+  // Cut Efficiency Data Error
+  for (int i=0; i<Bin_num; i++) {
+    ce_data_err[i] = TMath::Sqrt((1/Cpar_data->GetBinContent(i+1) + 1/Btof_data->GetBinContent(i+1)) + (1/Ccon_data->GetBinContent(i+1) + 1/Btof_data->GetBinContent(i+1))
+                     + (1/Cbet_data->GetBinContent(i+1) + 1/Btof_data->GetBinContent(i+1)) + (1/Cchi_data->GetBinContent(i+1) + 1/Btrk_data->GetBinContent(i+1))
+                     + (1/Cinn_data->GetBinContent(i+1) + 1/Btrk_data->GetBinContent(i+1)) + (1/Clay_data->GetBinContent(i+1) + 1/Btrk_data->GetBinContent(i+1))
+                     + (1/Cgeo_data->GetBinContent(i+1) + 1/Btrk_data->GetBinContent(i+1)));
   }
 
   // Divide by corresponding instrument base
@@ -774,13 +789,6 @@ void Anaaqra::CutEff() {
   for (int i=0; i<Bin_num; i++) {
     ce_mc[i] = CutEff_MC->GetBinContent(i+1);
     ce_data[i] = CutEff_data->GetBinContent(i+1);
-    ce_mc_err[i] = TMath::Sqrt((1/Cpar_MC->GetBinContent(i+1) + 1/Btof_MC->GetBinContent(i+1)) + (1/Ccon_MC->GetBinContent(i+1) + 1/Btof_MC->GetBinContent(i+1))
-                   + (1/Cbet_MC->GetBinContent(i+1) + 1/Btof_MC->GetBinContent(i+1)) + (1/Cchi_MC->GetBinContent(i+1) + 1/Btrk_MC->GetBinContent(i+1))
-                   + (1/Cinn_MC->GetBinContent(i+1) + 1/Btrk_MC->GetBinContent(i+1)) + (1/Clay_MC->GetBinContent(i+1) + 1/Btrk_MC->GetBinContent(i+1)));
-    ce_data_err[i] = TMath::Sqrt((1/Cpar_data->GetBinContent(i+1) + 1/Btof_data->GetBinContent(i+1)) + (1/Ccon_data->GetBinContent(i+1) + 1/Btof_data->GetBinContent(i+1))
-                    + (1/Cbet_data->GetBinContent(i+1) + 1/Btof_data->GetBinContent(i+1)) + (1/Cchi_data->GetBinContent(i+1) + 1/Btrk_data->GetBinContent(i+1))
-                    + (1/Cinn_data->GetBinContent(i+1) + 1/Btrk_data->GetBinContent(i+1)) + (1/Clay_data->GetBinContent(i+1) + 1/Btrk_data->GetBinContent(i+1))
-                    + (1/Cgeo_data->GetBinContent(i+1) + 1/Btrk_data->GetBinContent(i+1)));
   }
   TGraphErrors* ce_mc_graph = new TGraphErrors(32, Bin_mid, ce_mc, Bin_err, ce_mc_err);
   TGraphErrors* ce_data_graph = new TGraphErrors(32, Bin_mid, ce_data, Bin_err, ce_data_err);
