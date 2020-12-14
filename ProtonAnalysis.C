@@ -230,6 +230,7 @@ void Anaaqra::ParameterAnalysis(const char* cutbit) {
   TCanvas *Q_inn_data      = new TCanvas("Q_inn_data", "Inner Tracker Charge Data");
   TCanvas *Q_lay_data      = new TCanvas("Q_lay_data", "First Tracker Layer Charge Data");
   TCanvas *Mass_RICH_data  = new TCanvas("Mass_RICH_data", "RICH Mass Data");
+  TCanvas *UTime_data      = new TCanvas("UTime_data", "UTime Data");
 
   // Temporary histograms
   TH1F *tofbeta_raw = new TH1F("t1r", "", 100, 0.01, 2.0);
@@ -246,6 +247,8 @@ void Anaaqra::ParameterAnalysis(const char* cutbit) {
   TH1F *qlay_cut = new TH1F("t6c", "", 100, 0.3, 3.0);
   TH1F *mass_raw = new TH1F("t7r", "", 100, 0, 2.5);
   TH1F *mass_cut = new TH1F("t7c", "", 100, 0, 2.5);
+  TH1F *utime_raw = new TH1F("t8r", "");
+  TH1F *utime_cut = new TH1F("t8c", "");
 
   // Loop over data entries
   for (int i=0; i<Simp_chain->GetEntries(); i++) {
@@ -261,6 +264,7 @@ void Anaaqra::ParameterAnalysis(const char* cutbit) {
     qinn_raw->Fill(Tool->trk_q_inn);
     qlay_raw->Fill(Tool->trk_q_lay[0]);
     mass_raw->Fill(Tool->trk_q_inn * Tool->trk_rig * TMath::Sqrt(1 / Tool->rich_beta / Tool->rich_beta - 1));
+    utime_raw->Fill(Tool->utime);
 
     // Fill cut histograms if selected
     if (EventSelectorSimple(Tool, cutbit)) {
@@ -271,6 +275,7 @@ void Anaaqra::ParameterAnalysis(const char* cutbit) {
       qinn_cut->Fill(Tool->trk_q_inn);
       qlay_cut->Fill(Tool->trk_q_lay[0]);
       mass_cut->Fill(Tool->trk_q_inn * Tool->trk_rig * TMath::Sqrt(1 / Tool->rich_beta / Tool->rich_beta - 1));
+      utime_cut->Fill(Tool->utime);
     }
 
   }
@@ -321,10 +326,17 @@ void Anaaqra::ParameterAnalysis(const char* cutbit) {
   // RICH Mass Data
   Mass_RICH_data->cd();
   mass_raw->Draw(); mass_cut->Draw("same");
-  mass_raw->GetXaxis()->SetTitle("m [GeV/c#^2]"); mass_cut->GetYaxis()->SetTitle("Events");
+  mass_raw->GetXaxis()->SetTitle("m [GeV/c#^2]"); mass_raw->GetYaxis()->SetTitle("Events");
   Mass_RICH_data->SetLogx(0); Mass_RICH_data->SetLogy(1); mass_raw->SetMinimum(1);
   mass_raw->SetLineColor(kRed); mass_cut->SetLineColor(kBlue);
   Mass_RICH_data->Draw(); Mass_RICH_data->Print("./ProtonAnalysis/PA/RICH Mass Data.png");
+  // UTime Data
+  UTime_data->cd();
+  utime_raw->Draw(); utime_cut->Draw("same");
+  utime_raw->GetXaxis()->SetTitle("utime"); utime_raw->GetYaxis()->SetTitle("Events");
+  UTime_data->SetLogx(0); UTime_data->SetLogx(1); UTime_data->SetMinimum(1);
+  utime_raw->SetLineColor(kRed); utime_cut->SetLineColor(kBlue);
+  UTime_data->Draw(); UTime_data->Print("./ProtonAnalysis/PA/UTime Data.png");
 
   // Clear temporary histograms
   tofbeta_raw->Reset("ICESM"); tofbeta_cut->Reset("ICESM");
@@ -536,7 +548,7 @@ void Anaaqra::Acceptance(bool apply_cuts = 0) {
 
   cout << "Running Acceptance()..." << endl;
 
-  // Clear histogram
+  // Clear histograms
   MC_detected->Reset("ICESM");
   MC_generated->Reset("ICESM");
 
