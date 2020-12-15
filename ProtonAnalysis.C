@@ -150,21 +150,21 @@ bool Anaaqra::EventSelectorCompact(NtpCompact* comp, const char* cutbit) {
   bool Crig = (comp->trk_rig[0] > Bin_edges[0])&&(comp->trk_rig[0] <= Bin_edges[Bin_num]);
   bool Ctrg = ((comp->sublvl1&0x3E)!=0)&&((comp->trigpatt&0x2)!=0);
   bool Cpar = comp->status % 10 == 1;
-  bool Ccon = std::abs(comp->tof_beta - comp->rich_beta)/comp->tof_beta < 0.05;
-  bool Cbet = comp->tof_beta > 0;
+  //bool Ccon = std::abs(comp->tof_beta - comp->rich_beta)/comp->tof_beta < 0.05;
+  bool Cbet = comp->tof_beta > 0.3;
   bool Cchi = (comp->trk_chisqn[0][0] < 10)&&(comp->trk_chisqn[0][1] < 10)&&(comp->trk_chisqn[0][0] > 0)&&(comp->trk_chisqn[0][1] > 0);
   bool Cinn = (comp->trk_q_inn > 0.80)&&(comp->trk_q_inn < 1.30);
-  bool Clay = (comp->trk_q_lay[0] >= 0)&&(comp->trk_q_lay[1] >= 0)&&(comp->trk_q_lay[2] >= 0)&&(comp->trk_q_lay[3] >= 0)&&(comp->trk_q_lay[4] >= 0)&&(comp->trk_q_lay[5] >= 0)&&(comp->trk_q_lay[6] >= 0)&&(comp->trk_q_lay[7] >= 0)&&(comp->trk_q_lay[8] >= 0);
+  //bool Clay = (comp->trk_q_lay[0] >= 0)&&(comp->trk_q_lay[1] >= 0)&&(comp->trk_q_lay[2] >= 0)&&(comp->trk_q_lay[3] >= 0)&&(comp->trk_q_lay[4] >= 0)&&(comp->trk_q_lay[5] >= 0)&&(comp->trk_q_lay[6] >= 0)&&(comp->trk_q_lay[7] >= 0)&&(comp->trk_q_lay[8] >= 0);
 
   // Adjust return bool according to cutbit
   if (cutbit[0] == '1') {pass &= Crig;}
   if (cutbit[1] == '1') {pass &= Ctrg;}
   if (cutbit[2] == '1') {pass &= Cpar;}
-  if (cutbit[3] == '1') {pass &= Ccon;}
+  //if (cutbit[3] == '1') {pass &= Ccon;}
   if (cutbit[4] == '1') {pass &= Cbet;}
   if (cutbit[5] == '1') {pass &= Cchi;}
   if (cutbit[6] == '1') {pass &= Cinn;}
-  if (cutbit[7] == '1') {pass &= Clay;}
+  //if (cutbit[7] == '1') {pass &= Clay;}
 
   // Return
   return pass;
@@ -182,22 +182,22 @@ bool Anaaqra::EventSelectorSimple(Miiqtool* tool, const char* cutbit) {
   bool Crig = (tool->trk_rig > Bin_edges[0])&&(tool->trk_rig <= Bin_edges[Bin_num]);
   bool Ctrg = ((tool->sublvl1&0x3E)!=0)&&((tool->trigpatt&0x2)!=0);
   bool Cpar = tool->status % 10 == 1;
-  bool Ccon = std::abs(tool->tof_beta - tool->rich_beta)/tool->tof_beta < 0.05;
-  bool Cbet = tool->tof_beta > 0;
+  //bool Ccon = std::abs(tool->tof_beta - tool->rich_beta)/tool->tof_beta < 0.05;
+  bool Cbet = tool->tof_beta > 0.3;
   bool Cchi = (tool->trk_chisqn[0] < 10)&&(tool->trk_chisqn[1] < 10)&&(tool->trk_chisqn[0] > 0)&&(tool->trk_chisqn[1] > 0);
   bool Cinn = (tool->trk_q_inn > 0.80)&&(tool->trk_q_inn < 1.30);
-  bool Clay = (tool->trk_q_lay[0] >= 0)&&(tool->trk_q_lay[1] >= 0)&&(tool->trk_q_lay[2] >= 0)&&(tool->trk_q_lay[3] >= 0)&&(tool->trk_q_lay[4] >= 0)&&(tool->trk_q_lay[5] >= 0)&&(tool->trk_q_lay[6] >= 0)&&(tool->trk_q_lay[7] >= 0)&&(tool->trk_q_lay[8] >= 0);
+  //bool Clay = (tool->trk_q_lay[0] >= 0)&&(tool->trk_q_lay[1] >= 0)&&(tool->trk_q_lay[2] >= 0)&&(tool->trk_q_lay[3] >= 0)&&(tool->trk_q_lay[4] >= 0)&&(tool->trk_q_lay[5] >= 0)&&(tool->trk_q_lay[6] >= 0)&&(tool->trk_q_lay[7] >= 0)&&(tool->trk_q_lay[8] >= 0);
   bool Cgeo = tool->trk_rig > 1.2 * tool->cf;
 
   // Adjust return bool according to cutbit
   if (cutbit[0] == '1') {pass &= Crig;}
   if (cutbit[1] == '1') {pass &= Ctrg;}
   if (cutbit[2] == '1') {pass &= Cpar;}
-  if (cutbit[3] == '1') {pass &= Ccon;}
+  //if (cutbit[3] == '1') {pass &= Ccon;}
   if (cutbit[4] == '1') {pass &= Cbet;}
   if (cutbit[5] == '1') {pass &= Cchi;}
   if (cutbit[6] == '1') {pass &= Cinn;}
-  if (cutbit[7] == '1') {pass &= Clay;}
+  //if (cutbit[7] == '1') {pass &= Clay;}
   if (cutbit[8] == '1') {pass &= Cgeo;}
 
   // Return
@@ -715,7 +715,6 @@ void Anaaqra::CutEff() {
   TH1F *Cchi_data = new TH1F("Cchi_data", "Well-constructed Track Cut", 32, Bin_edges);
   TH1F *Cinn_data = new TH1F("Cinn_data", "Inner Tracker Charge Cut", 32, Bin_edges);
   TH1F *Clay_data = new TH1F("Clay_data", "Tracker Layer Charge Cut", 32, Bin_edges);
-  TH1F *Cgeo_data = new TH1F("Cgeo_data", "Geo-magnetic Cut", 32, Bin_edges);
   TH1F *Btof_data = new TH1F("Btof_data", "TOF Base Cut", 32, Bin_edges);
   TH1F *Btrk_data = new TH1F("Btrk_data", "Tracker Base Cut", 32, Bin_edges);
 
@@ -736,7 +735,6 @@ void Anaaqra::CutEff() {
     if (EventSelectorSimple(Tool, "111111000")) {Cchi_data->Fill(Tool->trk_rig);}
     if (EventSelectorSimple(Tool, "111110100")) {Cinn_data->Fill(Tool->trk_rig);}
     if (EventSelectorSimple(Tool, "111110010")) {Clay_data->Fill(Tool->trk_rig);}
-    if (EventSelectorSimple(Tool, "111110001")) {Cgeo_data->Fill(Tool->trk_rig);}
 
   }
 
@@ -744,8 +742,7 @@ void Anaaqra::CutEff() {
   for (int i=0; i<Bin_num; i++) {
     CE_data_err[i] = TMath::Sqrt((1/Cpar_data->GetBinContent(i+1) + 1/Btof_data->GetBinContent(i+1)) + (1/Ccon_data->GetBinContent(i+1) + 1/Btof_data->GetBinContent(i+1))
                      + (1/Cbet_data->GetBinContent(i+1) + 1/Btof_data->GetBinContent(i+1)) + (1/Cchi_data->GetBinContent(i+1) + 1/Btrk_data->GetBinContent(i+1))
-                     + (1/Cinn_data->GetBinContent(i+1) + 1/Btrk_data->GetBinContent(i+1)) + (1/Clay_data->GetBinContent(i+1) + 1/Btrk_data->GetBinContent(i+1))
-                     + (1/Cgeo_data->GetBinContent(i+1) + 1/Btrk_data->GetBinContent(i+1)));
+                     + (1/Cinn_data->GetBinContent(i+1) + 1/Btrk_data->GetBinContent(i+1)) + (1/Clay_data->GetBinContent(i+1) + 1/Btrk_data->GetBinContent(i+1)));
   }
 
   // Divide by corresponding instrument base
@@ -755,14 +752,12 @@ void Anaaqra::CutEff() {
   Cchi_data->Divide(Btrk_data);
   Cinn_data->Divide(Btrk_data);
   Clay_data->Divide(Btrk_data);
-  Cgeo_data->Divide(Btrk_data);
 
   // Loop over rigidity bins
   for (int i=0; i<Bin_num; i++) {
     CutEff_data->SetBinContent(i+1, Cpar_data->GetBinContent(i+1) * Ccon_data->GetBinContent(i+1)
                                   * Cbet_data->GetBinContent(i+1) * Cchi_data->GetBinContent(i+1)
-                                  * Cinn_data->GetBinContent(i+1) * Clay_data->GetBinContent(i+1)
-                                  * Cgeo_data->GetBinContent(i+1));
+                                  * Cinn_data->GetBinContent(i+1) * Clay_data->GetBinContent(i+1));
   }
 
   // Canvasses
@@ -800,11 +795,11 @@ void Anaaqra::CutEff() {
   c_wtc->Draw(); c_wtc->Print("./ProtonAnalysis/CE/Well-constructed Track Cut Efficiency.png");
   // Inner tracker charge cut
   TCanvas *c_itc = new TCanvas("c_itc", "Inner Tracker Charge Cut Efficiency");
-  Cchi_MC->Draw(); Cchi_data->Draw("same");
-  Cchi_MC->SetLineColor(kRed); Cchi_data->SetLineColor(kBlue);
-  Cchi_MC->SetLineWidth(2); Cchi_data->SetLineWidth(2);
-  Cchi_MC->SetMinimum(0); Cchi_MC->SetMaximum(1.05);
-  Cchi_MC->GetXaxis()->SetTitle("R [GV]"); Cchi_MC->GetYaxis()->SetTitle("Cut Efficiency");
+  Cinn_MC->Draw(); Cinn_data->Draw("same");
+  Cinn_MC->SetLineColor(kRed); Cinn_data->SetLineColor(kBlue);
+  Cinn_MC->SetLineWidth(2); Cinn_data->SetLineWidth(2);
+  Cinn_MC->SetMinimum(0); Cinn_MC->SetMaximum(1.05);
+  Cinn_MC->GetXaxis()->SetTitle("R [GV]"); Cinn_MC->GetYaxis()->SetTitle("Cut Efficiency");
   c_itc->Draw(); c_itc->Print("./ProtonAnalysis/CE/Inner Tracker Charge Cut Efficiency.png");
   // Tracker layer charge cut
   TCanvas *c_tlc = new TCanvas("c_tlc", "Tracker Layer Charge Cut Efficiency");
@@ -814,14 +809,6 @@ void Anaaqra::CutEff() {
   Clay_MC->SetMinimum(0); Clay_MC->SetMaximum(1.05);
   Clay_MC->GetXaxis()->SetTitle("R [GV]"); Clay_MC->GetYaxis()->SetTitle("Cut Efficiency");
   c_tlc->Draw(); c_tlc->Print("./ProtonAnalysis/CE/Tracker Layer Charge Cut Efficiency.png");
-  // Geo-magnetic cut-off cut
-  TCanvas *c_gmc = new TCanvas("c_gmc", "Geo-magnetic Cut-off Cut Efficiency");
-  Cgeo_data->Draw();
-  Cgeo_data->SetLineColor(kBlue);
-  Cgeo_data->SetLineWidth(2);
-  Cgeo_data->SetMinimum(0); Cgeo_data->SetMaximum(1.05);
-  Cgeo_data->GetXaxis()->SetTitle("R [GV]"); Cgeo_data->GetYaxis()->SetTitle("Cut Efficiency");
-  c_gmc->Draw(); c_gmc->Print("./ProtonAnalysis/CE/Geo-magnetic Cut-off Cut Efficiency.png");
 
   // TGraph
   for (int i=0; i<Bin_num; i++) {
