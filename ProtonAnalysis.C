@@ -126,7 +126,7 @@ class Anaaqra {
     bool EventSelectorCompact(NtpCompact* comp, const char* cutbit);
     bool EventSelectorSimple(Miiqtool* tool, const char* cutbit);
     // Singular (independent)
-    void ParameterAnalysis(const char* cutbit); // Returns raw and cut histograms of various parameters
+    void ParameterAnalysis(const char* cutbit = "111111111"); // Returns raw and cut histograms of various parameters
     void RigBinner();                           // Returns number of selected events as function of rigidity
     void Exposure();                            // Returns exposure time (livetime) as function of rigidity
     void Acceptance(bool apply_cuts = 0);       // Returns (geometric) acceptance as function of rigidity
@@ -211,7 +211,7 @@ bool Anaaqra::EventSelectorSimple(Miiqtool* tool, const char* cutbit) {
 // METHOD FUNCTIONS
 //------------------------------------------------------------------------------
 // Returns TH1F of various parameters
-void Anaaqra::ParameterAnalysis(const char* cutbit) {
+void Anaaqra::ParameterAnalysis(const char* cutbit = "111111111") {
 
   cout << "Running ParameterAnalysis()..." << endl;
 
@@ -247,8 +247,8 @@ void Anaaqra::ParameterAnalysis(const char* cutbit) {
   TH1F *qlay_cut = new TH1F("t6c", "", 100, 0.3, 3.0);
   TH1F *mass_raw = new TH1F("t7r", "", 100, 0, 2.5);
   TH1F *mass_cut = new TH1F("t7c", "", 100, 0, 2.5);
-  TH1F *utime_raw = new TH1F("t8r", "");
-  TH1F *utime_cut = new TH1F("t8c", "");
+  TH1F *utime_raw = new TH1F("t8r", "", 100, 1.30580e9, 1.30910e9);
+  TH1F *utime_cut = new TH1F("t8c", "", 100, 1.30580e9, 1.30910e9);
 
   // Loop over data entries
   for (int i=0; i<Simp_chain->GetEntries(); i++) {
@@ -334,7 +334,7 @@ void Anaaqra::ParameterAnalysis(const char* cutbit) {
   UTime_data->cd();
   utime_raw->Draw(); utime_cut->Draw("same");
   utime_raw->GetXaxis()->SetTitle("utime"); utime_raw->GetYaxis()->SetTitle("Events");
-  UTime_data->SetLogx(0); UTime_data->SetLogx(1); UTime_data->SetMinimum(1);
+  UTime_data->SetLogx(0); UTime_data->SetLogy(1); utime_raw->SetMinimum(1);
   utime_raw->SetLineColor(kRed); utime_cut->SetLineColor(kBlue);
   UTime_data->Draw(); UTime_data->Print("./ProtonAnalysis/PA/UTime Data.png");
 
@@ -659,10 +659,10 @@ void Anaaqra::CutEff() {
   // Temporary histograms
   TH1F *Cpar_MC = new TH1F("Cpar_MC", "Single Particle Cut", 32, Bin_edges);
   TH1F *Ccon_MC = new TH1F("Ccon_MC", "Consistent Beta Cut", 32, Bin_edges);
-  TH1F *Cbet_MC = new TH1F("Cbet_MC", "Single Particle Cut", 32, Bin_edges);
-  TH1F *Cchi_MC = new TH1F("Cchi_MC", "Single Particle Cut", 32, Bin_edges);
-  TH1F *Cinn_MC = new TH1F("Cinn_MC", "Single Particle Cut", 32, Bin_edges);
-  TH1F *Clay_MC = new TH1F("Clay_MC", "Single Particle Cut", 32, Bin_edges);
+  TH1F *Cbet_MC = new TH1F("Cbet_MC", "Downward Particle Cut", 32, Bin_edges);
+  TH1F *Cchi_MC = new TH1F("Cchi_MC", "Well-constructed Track Cut", 32, Bin_edges);
+  TH1F *Cinn_MC = new TH1F("Cinn_MC", "Inner Tracker Charge Cut", 32, Bin_edges);
+  TH1F *Clay_MC = new TH1F("Clay_MC", "Tracker Layer Charge Cut", 32, Bin_edges);
   TH1F *Btof_MC = new TH1F("Btof_MC", "TOF Base Cut", 32, Bin_edges);
   TH1F *Btrk_MC = new TH1F("Btrk_MC", "Tracker Base Cut", 32, Bin_edges);
 
@@ -711,10 +711,10 @@ void Anaaqra::CutEff() {
   // Temporary histograms
   TH1F *Cpar_data = new TH1F("Cpar_data", "Single Particle Cut", 32, Bin_edges);
   TH1F *Ccon_data = new TH1F("Ccon_data", "Consistent Beta Cut", 32, Bin_edges);
-  TH1F *Cbet_data = new TH1F("Cbet_data", "Single Particle Cut", 32, Bin_edges);
-  TH1F *Cchi_data = new TH1F("Cchi_data", "Single Particle Cut", 32, Bin_edges);
-  TH1F *Cinn_data = new TH1F("Cinn_data", "Single Particle Cut", 32, Bin_edges);
-  TH1F *Clay_data = new TH1F("Clay_data", "Single Particle Cut", 32, Bin_edges);
+  TH1F *Cbet_data = new TH1F("Cbet_data", "Downward Particle Cut", 32, Bin_edges);
+  TH1F *Cchi_data = new TH1F("Cchi_data", "Well-constructed Track Cut", 32, Bin_edges);
+  TH1F *Cinn_data = new TH1F("Cinn_data", "Inner Tracker Charge Cut", 32, Bin_edges);
+  TH1F *Clay_data = new TH1F("Clay_data", "Tracker Layer Charge Cut", 32, Bin_edges);
   TH1F *Cgeo_data = new TH1F("Cgeo_data", "Geo-magnetic Cut", 32, Bin_edges);
   TH1F *Btof_data = new TH1F("Btof_data", "TOF Base Cut", 32, Bin_edges);
   TH1F *Btrk_data = new TH1F("Btrk_data", "Tracker Base Cut", 32, Bin_edges);
@@ -782,14 +782,22 @@ void Anaaqra::CutEff() {
   Ccon_MC->SetMinimum(0); Ccon_MC->SetMaximum(1.05);
   Ccon_MC->GetXaxis()->SetTitle("R [GV]"); Ccon_MC->GetYaxis()->SetTitle("Cut Efficiency");
   c_cbc->Draw(); c_cbc->Print("./ProtonAnalysis/CE/Consistent Beta Cut Efficiency.png");
-  // Well constructed track cut
-  TCanvas *c_wtc = new TCanvas("c_wtc", "Downward Particle Cut Efficiency");
+  // Downward going track cut
+  TCanvas *c_dgc = new TCanvas("c_dgc", "Downward Particle Cut Efficiency");
   Cbet_MC->Draw(); Cbet_data->Draw("same");
   Cbet_MC->SetLineColor(kRed); Cbet_data->SetLineColor(kBlue);
   Cbet_MC->SetLineWidth(2); Cbet_data->SetLineWidth(2);
   Cbet_MC->SetMinimum(0); Cbet_MC->SetMaximum(1.05);
   Cbet_MC->GetXaxis()->SetTitle("R [GV]"); Cbet_MC->GetYaxis()->SetTitle("Cut Efficiency");
-  c_wtc->Draw(); c_wtc->Print("./ProtonAnalysis/CE/Downward Particle Cut Efficiency.png");
+  c_dgc->Draw(); c_dgc->Print("./ProtonAnalysis/CE/Downward Particle Cut Efficiency.png");
+  // Well constructed track cut
+  TCanvas *c_wtc = new TCanvas("c_wtc", "Well-constructed Track Cut Efficiency");
+  Cchi_MC->Draw(); Cchi_data->Draw("same");
+  Cchi_MC->SetLineColor(kRed); Cchi_data->SetLineColor(kBlue);
+  Cchi_MC->SetLineWidth(2); Cchi_data->SetLineWidth(2);
+  Cchi_MC->SetMinimum(0); Cchi_MC->SetMaximum(1.05);
+  Cchi_MC->GetXaxis()->SetTitle("R [GV]"); Cchi_MC->GetYaxis()->SetTitle("Cut Efficiency");
+  c_wtc->Draw(); c_wtc->Print("./ProtonAnalysis/CE/Well-constructed Track Cut Efficiency.png");
   // Inner tracker charge cut
   TCanvas *c_itc = new TCanvas("c_itc", "Inner Tracker Charge Cut Efficiency");
   Cchi_MC->Draw(); Cchi_data->Draw("same");
