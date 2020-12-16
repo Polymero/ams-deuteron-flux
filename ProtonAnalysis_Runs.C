@@ -63,11 +63,11 @@ class Anaaqra {
     TH1F *FluxHist        = new TH1F("FluxHist", "Flux per Rigidity Bin", 32, Bin_edges);
 
     // Data objects
-    TChain *Simp_chain    = new TChain("Simp");
+    TChain *Simp_chain    = new TChain("Compact");
     TChain *RTII_chain    = new TChain("RTIInfo");
     TChain *MC_chain      = new TChain("Compact");
-    Miiqtool *Tool        = new Miiqtool();
-    MiiqRTI *Woi          = new MiiqRTI();
+    NtpCompact *Tool        = new NtpCompact();
+    RTIInfo *Woi          = new RTIInfo();
     NtpCompact *MC_comp   = new NtpCompact();
 
     // TGraph arrays
@@ -107,12 +107,12 @@ class Anaaqra {
       }
 
       // Read the trees
-      Simp_chain->Add("../Simp.root");
-      RTII_chain->Add("../Simp.root");
+      Simp_chain->Add("../Runs/*.root");
+      RTII_chain->Add("../Runs/*.root");
       MC_chain->Add("../MC Protons/*.root");
       // Set branch addresses
-      Simp_chain->SetBranchAddress("Simp", &Tool);
-      RTII_chain->SetBranchAddress("RTI", &Woi);
+      Simp_chain->SetBranchAddress("Compact", &Tool);
+      RTII_chain->SetBranchAddress("RTIInfo", &Woi);
       MC_chain->SetBranchAddress("Compact", &MC_comp);
 
       cout << "Class succesfully constructed!\n" << endl;
@@ -259,23 +259,23 @@ void Anaaqra::ParameterAnalysis(const char* cutbit = "111111111") {
     // Fill raw histograms
     tofbeta_raw->Fill(Tool->tof_beta);
     richbeta_raw->Fill(Tool->rich_beta);
-    rig_raw->Fill(Tool->trk_rig);
-    chisq_raw->Fill(Tool->trk_chisqn[1]);
+    rig_raw->Fill(Tool->trk_rig[0]);
+    chisq_raw->Fill(Tool->trk_chisqn[0][1]);
     qinn_raw->Fill(Tool->trk_q_inn);
     qlay_raw->Fill(Tool->trk_q_lay[0]);
-    mass_raw->Fill(Tool->trk_q_inn * Tool->trk_rig * TMath::Sqrt(1 / Tool->rich_beta / Tool->rich_beta - 1));
-    utime_raw->Fill(Tool->utime);
+    mass_raw->Fill(Tool->trk_q_inn * Tool->trk_rig[0] * TMath::Sqrt(1 / Tool->rich_beta / Tool->rich_beta - 1));
+    //utime_raw->Fill(Tool->utime);
 
     // Fill cut histograms if selected
-    if (EventSelectorSimple(Tool, cutbit)) {
+    if (EventSelectorCompact(Tool, cutbit)) {
       tofbeta_cut->Fill(Tool->tof_beta);
       richbeta_cut->Fill(Tool->rich_beta);
-      rig_cut->Fill(Tool->trk_rig);
-      chisq_cut->Fill(Tool->trk_chisqn[1]);
+      rig_cut->Fill(Tool->trk_rig[0]);
+      chisq_cut->Fill(Tool->trk_chisqn[0][1]);
       qinn_cut->Fill(Tool->trk_q_inn);
       qlay_cut->Fill(Tool->trk_q_lay[0]);
-      mass_cut->Fill(Tool->trk_q_inn * Tool->trk_rig * TMath::Sqrt(1 / Tool->rich_beta / Tool->rich_beta - 1));
-      utime_cut->Fill(Tool->utime);
+      mass_cut->Fill(Tool->trk_q_inn * Tool->trk_rig[0] * TMath::Sqrt(1 / Tool->rich_beta / Tool->rich_beta - 1));
+      //utime_cut->Fill(Tool->utime);
     }
 
   }
@@ -450,9 +450,9 @@ void Anaaqra::RigBinner() {
     Simp_chain->GetEntry(i);
 
     // Fill histograms
-    Events_raw->Fill(Tool->trk_rig);
-    if (EventSelectorSimple(Tool, "111111111")) {
-      Events_cut->Fill(Tool->trk_rig);
+    Events_raw->Fill(Tool->trk_rig[0]);
+    if (EventSelectorCompact(Tool, "111111111")) {
+      Events_cut->Fill(Tool->trk_rig[0]);
     }
 
   }
@@ -508,7 +508,7 @@ void Anaaqra::Exposure() {
     for (int j=0; j<Bin_num; j++) {
 
       // If the centre of the bin is above the geo-magnetic cut-off, add the livetime
-      if (Bin_mid[j] > 1.2 * Woi->cf) {
+      if (Bin_mid[j] > 1.2 * Woi->cf[0][3][1]) {
         ExposureTime->SetBinContent(j+1, ExposureTime->GetBinContent(j+1) + Woi->lf);
       }
 
@@ -727,16 +727,16 @@ void Anaaqra::CutEff(bool plot_all = 0) {
     Simp_chain->GetEntry(i);
 
     // Fill base histograms
-    if (EventSelectorSimple(Tool, "110001111")) {Btof_data->Fill(Tool->trk_rig);}
-    if (EventSelectorSimple(Tool, "111110000")) {Btrk_data->Fill(Tool->trk_rig);}
+    if (EventSelectorCompact(Tool, "110001111")) {Btof_data->Fill(Tool->trk_rig[0]);}
+    if (EventSelectorCompact(Tool, "111110000")) {Btrk_data->Fill(Tool->trk_rig[0]);}
 
     // Fill cut histograms
-    if (EventSelectorSimple(Tool, "111001111")) {Cpar_data->Fill(Tool->trk_rig);}
-    //if (EventSelectorSimple(Tool, "110101111")) {Ccon_data->Fill(Tool->trk_rig);}
-    if (EventSelectorSimple(Tool, "110011111")) {Cbet_data->Fill(Tool->trk_rig);}
-    if (EventSelectorSimple(Tool, "111111000")) {Cchi_data->Fill(Tool->trk_rig);}
-    if (EventSelectorSimple(Tool, "111110100")) {Cinn_data->Fill(Tool->trk_rig);}
-    //if (EventSelectorSimple(Tool, "111110010")) {Clay_data->Fill(Tool->trk_rig);}
+    if (EventSelectorCompact(Tool, "111001111")) {Cpar_data->Fill(Tool->trk_rig[0]);}
+    //if (EventSelectorCompact(Tool, "110101111")) {Ccon_data->Fill(Tool->trk_rig[0]);}
+    if (EventSelectorCompact(Tool, "110011111")) {Cbet_data->Fill(Tool->trk_rig[0]);}
+    if (EventSelectorCompact(Tool, "111111000")) {Cchi_data->Fill(Tool->trk_rig[0]);}
+    if (EventSelectorCompact(Tool, "111110100")) {Cinn_data->Fill(Tool->trk_rig[0]);}
+    //if (EventSelectorCompact(Tool, "111110010")) {Clay_data->Fill(Tool->trk_rig[0]);}
 
   }
 
@@ -893,12 +893,12 @@ void Anaaqra::TrigEff(int delta = 100) {
     bool HasUnphTrig = ((Tool->sublvl1&0x3E)==0)&&((Tool->trigpatt&0x2)!=0);
 
     // Fill histograms
-    if (EventSelectorSimple(Tool, "101111110")) {
+    if (EventSelectorCompact(Tool, "101111111")) {
       if (HasPhysTrig) {
-        PhysHist_data->Fill(Tool->trk_rig);
+        PhysHist_data->Fill(Tool->trk_rig[0]);
       }
       if (HasUnphTrig) {
-        UnphHist_data->Fill(Tool->trk_rig);
+        UnphHist_data->Fill(Tool->trk_rig[0]);
       }
     }
 
