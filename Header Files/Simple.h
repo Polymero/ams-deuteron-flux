@@ -31,6 +31,7 @@ class Miiqtool {
   float        trk_chisqn[2];               ///< Choutko fit normalized Chi2 (FS | X, Y)
 
   float        tof_beta;                    ///< TOF Beta
+  float        tof_q_lay[4];                ///< TOF Charge of each layer
 
   float        rich_beta;                   ///< RICH beta best estimator
 

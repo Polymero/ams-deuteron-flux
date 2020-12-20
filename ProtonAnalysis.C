@@ -672,16 +672,18 @@ void Anaaqra::CutEff(bool plot_all = 0) {
     // Get entry
     MC_chain->GetEntry(i);
 
+    bool tof_q = (MC_comp->tof_q_lay[0] > 0.8)&&(MC_comp->tof_q_lay[0] < 1.5);
+
     // Fill base histograms
     if (EventSelectorCompact(MC_comp, "11000111")) {Btof_MC->Fill(MC_comp->trk_rig[0]);}
-    if (EventSelectorCompact(MC_comp, "11111000")) {Btrk_MC->Fill(MC_comp->trk_rig[0]);}
+    if (EventSelectorCompact(MC_comp, "11111000") && tof_q) {Btrk_MC->Fill(MC_comp->trk_rig[0]);}
 
     // Fill cut histograms
     if (EventSelectorCompact(MC_comp, "11100111")) {Cpar_MC->Fill(MC_comp->trk_rig[0]);}
     //if (EventSelectorCompact(MC_comp, "11010111")) {Ccon_MC->Fill(MC_comp->trk_rig[0]);}
     if (EventSelectorCompact(MC_comp, "11001111")) {Cbet_MC->Fill(MC_comp->trk_rig[0]);}
-    if (EventSelectorCompact(MC_comp, "11111100")) {Cchi_MC->Fill(MC_comp->trk_rig[0]);}
-    if (EventSelectorCompact(MC_comp, "11111010")) {Cinn_MC->Fill(MC_comp->trk_rig[0]);}
+    if (EventSelectorCompact(MC_comp, "11111100") && tof_q) {Cchi_MC->Fill(MC_comp->trk_rig[0]);}
+    if (EventSelectorCompact(MC_comp, "11111010") && tof_q) {Cinn_MC->Fill(MC_comp->trk_rig[0]);}
     //if (EventSelectorCompact(MC_comp, "11111001")) {Clay_MC->Fill(MC_comp->trk_rig[0]);}
 
   }
@@ -867,15 +869,15 @@ void Anaaqra::TrigEff(int delta = 100) {
     MC_chain->GetEntry(i);
 
     // Check for physical trigger
-    bool HasPhysTrig = ((MC_comp->sublvl1&0x3E)!=0)&&((MC_comp->trigpatt&0x2)!=0);
-    bool HasUnphTrig = ((MC_comp->sublvl1&0x3E)==0)&&((MC_comp->trigpatt&0x2)!=0);
+    bool HasPhysTrigMC = ((MC_comp->sublvl1&0x3E)!=0)&&((MC_comp->trigpatt&0x2)!=0);
+    bool HasUnphTrigMC = ((MC_comp->sublvl1&0x3E)==0)&&((MC_comp->trigpatt&0x2)!=0);
 
     // Fill histograms
     if (EventSelectorCompact(MC_comp, "10111111")) {
-      if (HasPhysTrig) {
+      if (HasPhysTrig_MC) {
         PhysHist_mc->Fill(MC_comp->trk_rig[0]);
       }
-      if (HasUnphTrig) {
+      if (HasUnphTrig_MC) {
         UnphHist_mc->Fill(MC_comp->trk_rig[0]);
       }
     }
@@ -889,15 +891,15 @@ void Anaaqra::TrigEff(int delta = 100) {
     Simp_chain->GetEntry(i);
 
     // Check for physical trigger
-    bool HasPhysTrig = ((Tool->sublvl1&0x3E)!=0)&&((Tool->trigpatt&0x2)!=0);
-    bool HasUnphTrig = ((Tool->sublvl1&0x3E)==0)&&((Tool->trigpatt&0x2)!=0);
+    bool HasPhysTrig_data = ((Tool->sublvl1&0x3E)!=0)&&((Tool->trigpatt&0x2)!=0);
+    bool HasUnphTrig_data = ((Tool->sublvl1&0x3E)==0)&&((Tool->trigpatt&0x2)!=0);
 
     // Fill histograms
     if (EventSelectorSimple(Tool, "101111110")) {
-      if (HasPhysTrig) {
+      if (HasPhysTrig_data) {
         PhysHist_data->Fill(Tool->trk_rig);
       }
-      if (HasUnphTrig) {
+      if (HasUnphTrig_data) {
         UnphHist_data->Fill(Tool->trk_rig);
       }
     }

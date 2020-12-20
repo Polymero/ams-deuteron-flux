@@ -102,6 +102,9 @@ void Toimeejat(string rootfiles = "local") {
     Tool->trk_chisqn[0]   = Compact->trk_chisqn[0][0];
     Tool->trk_chisqn[1]   = Compact->trk_chisqn[0][1];
     Tool->tof_beta        = Compact->tof_beta;
+    for(Int_t k=0; k < 4; k++){
+      Tool->tof_q_lay[k] = Compact->tof_q_lay[k];
+    }
     Tool->rich_beta       = Compact->rich_beta;
 
     // SHeader parameters
