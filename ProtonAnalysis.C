@@ -88,7 +88,7 @@ class Anaaqra {
     double PRate[32]; double PRate_err[32];
     // ProtonFlux()
     double PFlux[32]; double PFlux_err[32];
-    double PSFlux[32];
+    double PSFlux[32]; double PSFlux_err[32];
 
     //----------------------------------------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTORS
@@ -728,16 +728,18 @@ void Anaaqra::CutEff(bool plot_all = 0) {
     // Get entry
     Simp_chain->GetEntry(i);
 
+    bool tof_q = (Tool->tof_q_lay[0] > 0.8)&&(Tool->tof_q_lay[0] < 1.5);
+
     // Fill base histograms
     if (EventSelectorSimple(Tool, "110001111")) {Btof_data->Fill(Tool->trk_rig);}
-    if (EventSelectorSimple(Tool, "111110000")) {Btrk_data->Fill(Tool->trk_rig);}
+    if (EventSelectorSimple(Tool, "111110001") && tof_q) {Btrk_data->Fill(Tool->trk_rig);}
 
     // Fill cut histograms
     if (EventSelectorSimple(Tool, "111001111")) {Cpar_data->Fill(Tool->trk_rig);}
     //if (EventSelectorSimple(Tool, "110101111")) {Ccon_data->Fill(Tool->trk_rig);}
     if (EventSelectorSimple(Tool, "110011111")) {Cbet_data->Fill(Tool->trk_rig);}
-    if (EventSelectorSimple(Tool, "111111000")) {Cchi_data->Fill(Tool->trk_rig);}
-    if (EventSelectorSimple(Tool, "111110100")) {Cinn_data->Fill(Tool->trk_rig);}
+    if (EventSelectorSimple(Tool, "111111001") && tof_q) {Cchi_data->Fill(Tool->trk_rig);}
+    if (EventSelectorSimple(Tool, "111110101") && tof_q) {Cinn_data->Fill(Tool->trk_rig);}
     //if (EventSelectorSimple(Tool, "111110010")) {Clay_data->Fill(Tool->trk_rig);}
 
   }
@@ -869,15 +871,15 @@ void Anaaqra::TrigEff(int delta = 100) {
     MC_chain->GetEntry(i);
 
     // Check for physical trigger
-    bool HasPhysTrigMC = ((MC_comp->sublvl1&0x3E)!=0)&&((MC_comp->trigpatt&0x2)!=0);
-    bool HasUnphTrigMC = ((MC_comp->sublvl1&0x3E)==0)&&((MC_comp->trigpatt&0x2)!=0);
+    bool HasPhysTrig_mc = ((MC_comp->sublvl1&0x3E)!=0)&&((MC_comp->trigpatt&0x2)!=0);
+    bool HasUnphTrig_mc = ((MC_comp->sublvl1&0x3E)==0)&&((MC_comp->trigpatt&0x2)!=0);
 
     // Fill histograms
     if (EventSelectorCompact(MC_comp, "10111111")) {
-      if (HasPhysTrig_MC) {
+      if (HasPhysTrig_mc) {
         PhysHist_mc->Fill(MC_comp->trk_rig[0]);
       }
-      if (HasUnphTrig_MC) {
+      if (HasUnphTrig_mc) {
         UnphHist_mc->Fill(MC_comp->trk_rig[0]);
       }
     }
@@ -895,7 +897,7 @@ void Anaaqra::TrigEff(int delta = 100) {
     bool HasUnphTrig_data = ((Tool->sublvl1&0x3E)==0)&&((Tool->trigpatt&0x2)!=0);
 
     // Fill histograms
-    if (EventSelectorSimple(Tool, "101111110")) {
+    if (EventSelectorSimple(Tool, "101111111")) {
       if (HasPhysTrig_data) {
         PhysHist_data->Fill(Tool->trk_rig);
       }
@@ -1026,6 +1028,7 @@ void Anaaqra::ProtonFlux() {
       FluxHist->SetBinContent(i+1, Events_cut->GetBinContent(i+1) / ExposureTime->GetBinContent(i+1)
                                    / 2 / Bin_err[i] / AcceptHist->GetBinContent(i+1)
                                    / CutEff_data->GetBinContent(i+1) * CutEff_MC->GetBinContent(i+1)
+                                   / TrigEff_data->GetBinContent(i+1) * TrigEff_MC->GetBinContent(i+1)
                              );
       PFlux_err[i] = FluxHist->GetBinContent(i+1) * TMath::Sqrt(1/Events_cut->GetBinContent(i+1)
                      + pow(TE_mc_err[i]/TE_mc[i], 2) + pow(TE_data_err[i]/TE_data[i], 2)
@@ -1056,8 +1059,9 @@ void Anaaqra::ProtonFlux() {
   // TGraph 2/2
   for (int i=0; i<Bin_num; i++) {
     PSFlux[i] = FluxHist->GetBinContent(i+1) * pow(Bin_mid[i], 2.7);
+    PSFlux_err[i] = PFlux_err[i] * pow(Bin_mid[i], 2.7);
   }
-  TGraphErrors* p_sflux_graph = new TGraphErrors(32, Bin_mid, PSFlux, Bin_err, 0);
+  TGraphErrors* p_sflux_graph = new TGraphErrors(32, Bin_mid, PSFlux, Bin_err, PSFlux_err);
   // Canvas
   TCanvas* c_SFlux = new TCanvas("c_SFlux", "Scaled Proton Flux per Rigitidy Bin");
   p_sflux_graph->Draw("AP");
