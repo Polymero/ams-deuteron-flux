@@ -39,6 +39,9 @@ void Toimeejat(string rootfiles = "local") {
     } else if(rootfiles == "local") {
       comp_chain.Add("../Runs/*.root");
       rtii_chain.Add("../Runs/*.root");
+    } else if(rootfiles == "ssh") {
+      comp_chain.Add("venendaal@kapteyn.astro.rug.nl:/net/dataserver3/data/users/bueno/data/iss/AO/ISS.B1130/pass7/*.root");
+      rtii_chain.Add("venendaal@kapteyn.astro.rug.nl:/net/dataserver3/data/users/bueno/data/iss/AO/ISS.B1130/pass7/*.root");
     } else {
       throw 001;
     }
