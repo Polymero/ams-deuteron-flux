@@ -247,8 +247,8 @@ void Anaaqra::ParameterAnalysis(const char* cutbit = "111111111") {
   TH1F *qlay_cut = new TH1F("t6c", "", 100, 0.3, 3.0);
   TH1F *mass_raw = new TH1F("t7r", "", 100, 0, 2.5);
   TH1F *mass_cut = new TH1F("t7c", "", 100, 0, 2.5);
-  TH1F *utime_raw = new TH1F("t8r", "", 100, 1.30580e9, 1.30910e9);
-  TH1F *utime_cut = new TH1F("t8c", "", 100, 1.30580e9, 1.30910e9);
+  TH1F *utime_raw = new TH1F("t8r", "", 100, 1.30580e9, 1.30660e9);
+  TH1F *utime_cut = new TH1F("t8c", "", 100, 1.30580e9, 1.30660e9);
 
   // Loop over data entries
   for (int i=0; i<Simp_chain->GetEntries(); i++) {
@@ -336,6 +336,7 @@ void Anaaqra::ParameterAnalysis(const char* cutbit = "111111111") {
   utime_raw->GetXaxis()->SetTitle("utime"); utime_raw->GetYaxis()->SetTitle("Events");
   UTime_data->SetLogx(0); UTime_data->SetLogy(1); utime_raw->SetMinimum(1);
   utime_raw->SetLineColor(kRed); utime_cut->SetLineColor(kBlue);
+  utime_raw->GetXaxis()->SetTimeDisplay(1); utime_raw->GetXaxis()->SetTimeFormat("%Y/%m/%d");
   UTime_data->Draw(); UTime_data->Print("./ProtonAnalysis/PA/UTime Data.png");
 
   // Clear temporary histograms
