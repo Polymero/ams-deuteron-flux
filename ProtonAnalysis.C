@@ -337,6 +337,7 @@ void Anaaqra::ParameterAnalysis(const char* cutbit = "111111111") {
   UTime_data->SetLogx(0); UTime_data->SetLogy(1); utime_raw->SetMinimum(1);
   utime_raw->SetLineColor(kRed); utime_cut->SetLineColor(kBlue);
   utime_raw->GetXaxis()->SetTimeDisplay(1); utime_raw->GetXaxis()->SetTimeFormat("%Y/%m/%d");
+  utime_raw->GetXaxis()->SetTimeOffset(-788918400);
   UTime_data->Draw(); UTime_data->Print("./ProtonAnalysis/PA/UTime Data.png");
 
   // Clear temporary histograms
