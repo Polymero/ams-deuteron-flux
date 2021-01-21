@@ -132,6 +132,7 @@ class Anaaqra {
     void Acceptance(bool apply_cuts = 0);       // Returns (geometric) acceptance as function of rigidity
     void CutEff(bool plot_all = 0);             // Returns the cut (selection) efficiency as function of rigidity
     void TrigEff(int delta = 100);              // Returns the trigger efficiency as function of rigidity
+    void AerogelSlice();
     // Plural (dependent)
     void ProtonRate();                          // Returns the proton rate as function of rigidity
     void ProtonFlux();                          // Returns the proton flux as function of rigidity
@@ -336,8 +337,8 @@ void Anaaqra::ParameterAnalysis(const char* cutbit = "111111111") {
   utime_raw->GetXaxis()->SetTitle("utime"); utime_raw->GetYaxis()->SetTitle("Events");
   UTime_data->SetLogx(0); UTime_data->SetLogy(1); utime_raw->SetMinimum(1);
   utime_raw->SetLineColor(kRed); utime_cut->SetLineColor(kBlue);
-  utime_raw->GetXaxis()->SetTimeDisplay(1); utime_raw->GetXaxis()->SetTimeFormat("%Y/%m/%d");
-  utime_raw->GetXaxis()->SetTimeOffset(-788918400);
+  utime_raw->GetXaxis()->SetTimeDisplay(1); utime_raw->GetXaxis()->SetTimeFormat("%m/%d");
+  //utime_raw->GetXaxis()->SetTimeOffset(-788918400);
   UTime_data->Draw(); UTime_data->Print("./ProtonAnalysis/PA/UTime Data.png");
 
   // Clear temporary histograms
@@ -1080,5 +1081,56 @@ void Anaaqra::ProtonFlux() {
   c_SFlux->Print("./ProtonAnalysis/Scaled Proton Flux.png");
 
   cout << "ProtonFlux() has finished!\n" << endl;
+
+}
+
+
+
+// Aerogel beta mass test
+void Anaaqra::AerogelSlice(){
+
+  cout << "Running AerogelSlice()..." << endl;
+
+  // Histograms
+  TH1F *aero_beta = new TH1F("abeta", "", 100, 0.8, 1.2);
+  TH1F *aero_rig  = new TH1F("arig", "", 100, 0, 22);
+  TH1F *aero_mass = new TH1F("amass", "", 100, 0, 2.5);
+
+  // Loop over data entries
+  for (int i=0; i<Simp_chain->GetEntries(); i++) {
+
+    // Get Entry
+    Simp_chain->GetEntry(i);
+
+    // Fill histograms
+    if ((Tool->rich_beta > 0.96) && (Tool->rich_beta < 0.996) && (Tool->trk_rig > 3.2) && (Tool->trk_rig < 10.5)) {
+      if (EventSelectorSimple(Tool, "111111111")) {
+        aero_beta->Fill(Tool->rich_beta);
+        aero_rig->Fill(Tool->trk_rig);
+        aero_mass->Fill(Tool->trk_q_inn * Tool->trk_rig * TMath::Sqrt(1 / Tool->rich_beta / Tool->rich_beta - 1));
+      }
+    }
+
+  }
+
+  // Create canvasses
+  TCanvas *Aero_beta = new TCanvas("Aero_beta", "Aerogel RICH Beta");
+  aero_beta->Draw();
+  aero_beta->GetXaxis()->SetTitle("#beta (v/c)"); aero_beta->GetYaxis()->SetTitle("Events");
+  Aero_beta->SetLogx(0); Aero_beta->SetLogy(1); aero_beta->SetMinimum(1);
+  aero_beta->SetLineColor(kGreen); aero_beta->SetLineWidth(3);
+  Aero_beta->Draw(); Aero_beta->Print("./ProtonAnalysis/Aerogel Beta.png");
+  TCanvas *Aero_rig  = new TCanvas("Aero_rig", "Aerogel Rigidity");
+  aero_rig->Draw();
+  aero_rig->GetXaxis()->SetTitle("R [GV]"); aero_rig->GetYaxis()->SetTitle("Events");
+  Aero_rig->SetLogx(0); Aero_rig->SetLogy(1); aero_rig->SetMinimum(1);
+  aero_rig->SetLineColor(kGreen); aero_rig->SetLineWidth(3);
+  Aero_rig->Draw(); Aero_rig->Print("./ProtonAnalysis/Aerogel Rigidity.png");
+  TCanvas *Aero_mass = new TCanvas("Aero_mass", "Aerogel Mass");
+  aero_mass->Draw();
+  aero_mass->GetXaxis()->SetTitle("m [GeV/c^2]"); aero_mass->GetYaxis()->SetTitle("Events");
+  Aero_mass->SetLogx(0); Aero_mass->SetLogy(1); aero_mass->SetMinimum(1);
+  aero_mass->SetLineColor(kGreen); aero_mass->SetLineWidth(3);
+  Aero_mass->Draw(); Aero_mass->Print("./ProtonAnalysis/Aerogel Mass.png");
 
 }
