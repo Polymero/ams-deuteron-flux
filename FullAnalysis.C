@@ -1,6 +1,6 @@
 // C++ class for full PROTON analysis
 // Created        23-11-20
-// Last Edited    12-12-20
+// Last Edited    24-01-21
 
 // Include header file(s)
 #include <iostream>
@@ -91,6 +91,7 @@ class Anaaqra {
     // ProtonFlux()
     double PFlux[32]; double PFlux_err[32];
     double PSFlux[32]; double PSFlux_err[32];
+    double PSFlux_SSDC_Ratio[32];
 
     //----------------------------------------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTORS
@@ -146,8 +147,8 @@ class Anaaqra {
     void TrigEff(int delta = 100);              // Returns the trigger efficiency as function of rigidity
     void AerogelSlice();
     // Plural (dependent)
-    void Rate();                          // Returns the proton rate as function of rigidity
-    void Flux(bool comp = 0);                          // Returns the proton flux as function of rigidity
+    void Rate();                                // Returns the proton rate as function of rigidity
+    void Flux(bool comp = 0);                   // Returns the proton flux as function of rigidity
 
 };
 
@@ -168,8 +169,11 @@ bool Anaaqra::EventSelectorCompact(NtpCompact* comp, const char* cutbit) {
   bool Cchi = (comp->trk_chisqn[0][0] < 10)&&(comp->trk_chisqn[0][1] < 10)&&(comp->trk_chisqn[0][0] > 0)&&(comp->trk_chisqn[0][1] > 0);
   bool Cinn = (comp->trk_q_inn > 0.80)&&(comp->trk_q_inn < 1.30);
   // Deuterons (additional cuts)
-  //bool Ccon = std::abs(comp->tof_beta - comp->rich_beta)/comp->tof_beta < 0.05;
-  //bool Clay = (comp->trk_q_lay[0] >= 0)&&(comp->trk_q_lay[1] >= 0)&&(comp->trk_q_lay[2] >= 0)&&(comp->trk_q_lay[3] >= 0)&&(comp->trk_q_lay[4] >= 0)&&(comp->trk_q_lay[5] >= 0)&&(comp->trk_q_lay[6] >= 0)&&(comp->trk_q_lay[7] >= 0)&&(comp->trk_q_lay[8] >= 0);
+  if (atype == 2){
+    bool Csel = comp->rich_select == 2;
+    bool Ccon = std::abs(comp->tof_beta - comp->rich_beta)/comp->tof_beta < 0.05;
+    bool Clay = comp->trk_q_lay[0] <= 1.7;
+  }
 
   // Adjust return bool according to cutbit
   if (cutbit[0] == '1') {pass &= Crig;}
@@ -178,6 +182,11 @@ bool Anaaqra::EventSelectorCompact(NtpCompact* comp, const char* cutbit) {
   if (cutbit[3] == '1') {pass &= Cbet;}
   if (cutbit[4] == '1') {pass &= Cchi;}
   if (cutbit[5] == '1') {pass &= Cinn;}
+  if (atype == 2){
+    if (cutbit[8] == '1') {pass &= Csel;}
+    if (cutbit[9] == '1') {pass &= Ccon;}
+    if (cutbit[10] == '1') {pass &= Clay;}
+  }
 
   // Return
   return pass;
@@ -192,6 +201,7 @@ bool Anaaqra::EventSelectorSimple(Miiqtool* tool, const char* cutbit) {
   bool pass = 1;
 
   // Boolean cuts (instead of TCut)
+  // Protons (base cuts)
   bool Crig = (tool->trk_rig > Bin_edges[0])&&(tool->trk_rig <= Bin_edges[Bin_num]);
   bool Ctrg = ((tool->sublvl1&0x3E)!=0)&&((tool->trigpatt&0x2)!=0);
   bool Cpar = tool->status % 10 == 1;
@@ -199,8 +209,12 @@ bool Anaaqra::EventSelectorSimple(Miiqtool* tool, const char* cutbit) {
   bool Cchi = (tool->trk_chisqn[0] < 10)&&(tool->trk_chisqn[1] < 10)&&(tool->trk_chisqn[0] > 0)&&(tool->trk_chisqn[1] > 0);
   bool Cinn = (tool->trk_q_inn > 0.80)&&(tool->trk_q_inn < 1.30);
   bool Cgeo = tool->trk_rig > 1.2 * tool->cf;
-  //bool Ccon = std::abs(tool->tof_beta - tool->rich_beta)/tool->tof_beta < 0.05;
-  //bool Clay = (tool->trk_q_lay[0] >= 0)&&(tool->trk_q_lay[1] >= 0)&&(tool->trk_q_lay[2] >= 0)&&(tool->trk_q_lay[3] >= 0)&&(tool->trk_q_lay[4] >= 0)&&(tool->trk_q_lay[5] >= 0)&&(tool->trk_q_lay[6] >= 0)&&(tool->trk_q_lay[7] >= 0)&&(tool->trk_q_lay[8] >= 0);
+  // Deuterons (additional cuts)
+  if (atype == 2){
+    bool Csel = tool->rich_select == 2;
+    bool Ccon = std::abs(tool->tof_beta - tool->rich_beta)/tool->tof_beta < 0.05;
+    bool Clay = tool->trk_q_lay[0] <= 1.7;
+  }
 
   // Adjust return bool according to cutbit
   if (cutbit[0] == '1') {pass &= Crig;}
@@ -210,8 +224,11 @@ bool Anaaqra::EventSelectorSimple(Miiqtool* tool, const char* cutbit) {
   if (cutbit[4] == '1') {pass &= Cchi;}
   if (cutbit[5] == '1') {pass &= Cinn;}
   if (cutbit[6] == '1') {pass &= Cgeo;}
-  //if (cutbit[3] == '1') {pass &= Ccon;}
-  //if (cutbit[7] == '1') {pass &= Clay;}
+  if (atype == 2){
+    if (cutbit[8] == '1') {pass &= Csel;}
+    if (cutbit[9] == '1') {pass &= Ccon;}
+    if (cutbit[10] == '1') {pass &= Clay;}
+  }
 
   // Return
   return pass;
@@ -224,7 +241,7 @@ bool Anaaqra::EventSelectorSimple(Miiqtool* tool, const char* cutbit) {
 // METHOD FUNCTIONS
 //------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Returns TH1F of various parameters
-void Anaaqra::ParameterAnalysis(const char* cutbit = "1111111_11") {
+void Anaaqra::ParameterAnalysis(const char* cutbit = "1111111_111") {
 
   cout << "Running ParameterAnalysis()..." << endl;
 
@@ -466,7 +483,7 @@ void Anaaqra::RigBinner() {
 
     // Fill histograms
     Events_raw->Fill(Tool->trk_rig);
-    if (EventSelectorSimple(Tool, "1111111_11")) {
+    if (EventSelectorSimple(Tool, "1111111_111")) {
       Events_cut->Fill(Tool->trk_rig);
     }
 
@@ -621,7 +638,7 @@ void Anaaqra::Acceptance(bool apply_cuts = 0) {
 
     // Apply cuts
     if (apply_cuts) {
-      if (EventSelectorCompact(MC_comp, "1111111_11")) {
+      if (EventSelectorCompact(MC_comp, "1111111_111")) {
         MC_detected->Fill(MC_comp->trk_rig[0]);
       }
     } else {
@@ -673,11 +690,9 @@ void Anaaqra::CutEff(bool plot_all = 0) {
 
   // Temporary histograms
   TH1F *Cpar_MC = new TH1F("Cpar_MC", "Single Particle Cut", 32, Bin_edges);
-  //TH1F *Ccon_MC = new TH1F("Ccon_MC", "Consistent Beta Cut", 32, Bin_edges);
   TH1F *Cbet_MC = new TH1F("Cbet_MC", "Downward Particle Cut", 32, Bin_edges);
   TH1F *Cchi_MC = new TH1F("Cchi_MC", "Well-constructed Track Cut", 32, Bin_edges);
   TH1F *Cinn_MC = new TH1F("Cinn_MC", "Inner Tracker Charge Cut", 32, Bin_edges);
-  //TH1F *Clay_MC = new TH1F("Clay_MC", "Tracker Layer Charge Cut", 32, Bin_edges);
   TH1F *Btof_MC = new TH1F("Btof_MC", "TOF Base Cut", 32, Bin_edges);
   TH1F *Btrk_MC = new TH1F("Btrk_MC", "Tracker Base Cut", 32, Bin_edges);
 
@@ -690,16 +705,14 @@ void Anaaqra::CutEff(bool plot_all = 0) {
     bool tof_q = (MC_comp->tof_q_lay[0] > 0.8)&&(MC_comp->tof_q_lay[0] < 1.5);
 
     // Fill base histograms
-    if (EventSelectorCompact(MC_comp, "11000111")) {Btof_MC->Fill(MC_comp->trk_rig[0]);}
-    if (EventSelectorCompact(MC_comp, "11111000") && tof_q) {Btrk_MC->Fill(MC_comp->trk_rig[0]);}
+    if (EventSelectorCompact(MC_comp, "110011x_111")) {Btof_MC->Fill(MC_comp->trk_rig[0]);}
+    if (EventSelectorCompact(MC_comp, "111100x_111") && tof_q) {Btrk_MC->Fill(MC_comp->trk_rig[0]);}
 
     // Fill cut histograms
-    if (EventSelectorCompact(MC_comp, "11100111")) {Cpar_MC->Fill(MC_comp->trk_rig[0]);}
-    //if (EventSelectorCompact(MC_comp, "11010111")) {Ccon_MC->Fill(MC_comp->trk_rig[0]);}
-    if (EventSelectorCompact(MC_comp, "11001111")) {Cbet_MC->Fill(MC_comp->trk_rig[0]);}
-    if (EventSelectorCompact(MC_comp, "11111100") && tof_q) {Cchi_MC->Fill(MC_comp->trk_rig[0]);}
-    if (EventSelectorCompact(MC_comp, "11111010") && tof_q) {Cinn_MC->Fill(MC_comp->trk_rig[0]);}
-    //if (EventSelectorCompact(MC_comp, "11111001")) {Clay_MC->Fill(MC_comp->trk_rig[0]);}
+    if (EventSelectorCompact(MC_comp, "111111x_111")) {Cpar_MC->Fill(MC_comp->trk_rig[0]);}
+    if (EventSelectorCompact(MC_comp, "110111x_111")) {Cbet_MC->Fill(MC_comp->trk_rig[0]);}
+    if (EventSelectorCompact(MC_comp, "111100x_111") && tof_q) {Cchi_MC->Fill(MC_comp->trk_rig[0]);}
+    if (EventSelectorCompact(MC_comp, "111010x_111") && tof_q) {Cinn_MC->Fill(MC_comp->trk_rig[0]);}
 
   }
 
@@ -713,11 +726,9 @@ void Anaaqra::CutEff(bool plot_all = 0) {
 
   // Divide by corresponding instrument base
   Cpar_MC->Divide(Btof_MC);
-  //Ccon_MC->Divide(Btof_MC);
   Cbet_MC->Divide(Btof_MC);
   Cchi_MC->Divide(Btrk_MC);
   Cinn_MC->Divide(Btrk_MC);
-  //Clay_MC->Divide(Btrk_MC);
 
   // Loop over rigidity bins
   for (int i=0; i<Bin_num; i++) {
@@ -729,11 +740,9 @@ void Anaaqra::CutEff(bool plot_all = 0) {
 
   // Temporary histograms
   TH1F *Cpar_data = new TH1F("Cpar_data", "Single Particle Cut", 32, Bin_edges);
-  //TH1F *Ccon_data = new TH1F("Ccon_data", "Consistent Beta Cut", 32, Bin_edges);
   TH1F *Cbet_data = new TH1F("Cbet_data", "Downward Particle Cut", 32, Bin_edges);
   TH1F *Cchi_data = new TH1F("Cchi_data", "Well-constructed Track Cut", 32, Bin_edges);
   TH1F *Cinn_data = new TH1F("Cinn_data", "Inner Tracker Charge Cut", 32, Bin_edges);
-  //TH1F *Clay_data = new TH1F("Clay_data", "Tracker Layer Charge Cut", 32, Bin_edges);
   TH1F *Btof_data = new TH1F("Btof_data", "TOF Base Cut", 32, Bin_edges);
   TH1F *Btrk_data = new TH1F("Btrk_data", "Tracker Base Cut", 32, Bin_edges);
 
@@ -746,16 +755,14 @@ void Anaaqra::CutEff(bool plot_all = 0) {
     bool tof_q = (Tool->tof_q_lay[0] > 0.8)&&(Tool->tof_q_lay[0] < 1.5);
 
     // Fill base histograms
-    if (EventSelectorSimple(Tool, "110001111")) {Btof_data->Fill(Tool->trk_rig);}
-    if (EventSelectorSimple(Tool, "111110001") && tof_q) {Btrk_data->Fill(Tool->trk_rig);}
+    if (EventSelectorSimple(Tool, "1100111_111")) {Btof_data->Fill(Tool->trk_rig);}
+    if (EventSelectorSimple(Tool, "1111001_111") && tof_q) {Btrk_data->Fill(Tool->trk_rig);}
 
     // Fill cut histograms
-    if (EventSelectorSimple(Tool, "111001111")) {Cpar_data->Fill(Tool->trk_rig);}
-    //if (EventSelectorSimple(Tool, "110101111")) {Ccon_data->Fill(Tool->trk_rig);}
-    if (EventSelectorSimple(Tool, "110011111")) {Cbet_data->Fill(Tool->trk_rig);}
-    if (EventSelectorSimple(Tool, "111111001") && tof_q) {Cchi_data->Fill(Tool->trk_rig);}
-    if (EventSelectorSimple(Tool, "111110101") && tof_q) {Cinn_data->Fill(Tool->trk_rig);}
-    //if (EventSelectorSimple(Tool, "111110010")) {Clay_data->Fill(Tool->trk_rig);}
+    if (EventSelectorSimple(Tool, "1110111_111")) {Cpar_data->Fill(Tool->trk_rig);}
+    if (EventSelectorSimple(Tool, "1101111_111")) {Cbet_data->Fill(Tool->trk_rig);}
+    if (EventSelectorSimple(Tool, "1111101_111") && tof_q) {Cchi_data->Fill(Tool->trk_rig);}
+    if (EventSelectorSimple(Tool, "1111011_111") && tof_q) {Cinn_data->Fill(Tool->trk_rig);}
 
   }
 
@@ -769,11 +776,9 @@ void Anaaqra::CutEff(bool plot_all = 0) {
 
   // Divide by corresponding instrument base
   Cpar_data->Divide(Btof_data);
-  //Ccon_data->Divide(Btof_data);
   Cbet_data->Divide(Btof_data);
   Cchi_data->Divide(Btrk_data);
   Cinn_data->Divide(Btrk_data);
-  //Clay_data->Divide(Btrk_data);
 
   // Loop over rigidity bins
   for (int i=0; i<Bin_num; i++) {
@@ -794,14 +799,6 @@ void Anaaqra::CutEff(bool plot_all = 0) {
     Cpar_MC->SetMinimum(0); Cpar_MC->SetMaximum(1.05);
     Cpar_MC->GetXaxis()->SetTitle("R [GV]"); Cpar_MC->GetYaxis()->SetTitle("Cut Efficiency");
     c_spc->Draw(); c_spc->Print("./ProtonAnalysis/CE/Single Particle Cut Efficiency.png");
-    // // Consistent beta cut
-    // TCanvas *c_cbc = new TCanvas("c_cbc", "Consistent Beta Cut Efficiency");
-    // Ccon_MC->Draw(); Ccon_data->Draw("same");
-    // Ccon_MC->SetLineColor(kRed); Ccon_data->SetLineColor(kBlue);
-    // Ccon_MC->SetLineWidth(2); Ccon_data->SetLineWidth(2);
-    // Ccon_MC->SetMinimum(0); Ccon_MC->SetMaximum(1.05);
-    // Ccon_MC->GetXaxis()->SetTitle("R [GV]"); Ccon_MC->GetYaxis()->SetTitle("Cut Efficiency");
-    // c_cbc->Draw(); c_cbc->Print("./ProtonAnalysis/CE/Consistent Beta Cut Efficiency.png");
     // Downward going track cut
     TCanvas *c_dgc = new TCanvas("c_dgc", "Downward Particle Cut Efficiency");
     Cbet_MC->Draw(); Cbet_data->Draw("same");
@@ -826,14 +823,6 @@ void Anaaqra::CutEff(bool plot_all = 0) {
     Cinn_MC->SetMinimum(0); Cinn_MC->SetMaximum(1.05);
     Cinn_MC->GetXaxis()->SetTitle("R [GV]"); Cinn_MC->GetYaxis()->SetTitle("Cut Efficiency");
     c_itc->Draw(); c_itc->Print("./ProtonAnalysis/CE/Inner Tracker Charge Cut Efficiency.png");
-    // // Tracker layer charge cut
-    // TCanvas *c_tlc = new TCanvas("c_tlc", "Tracker Layer Charge Cut Efficiency");
-    // Clay_MC->Draw(); Clay_data->Draw("same");
-    // Clay_MC->SetLineColor(kRed); Clay_data->SetLineColor(kBlue);
-    // Clay_MC->SetLineWidth(2); Clay_data->SetLineWidth(2);
-    // Clay_MC->SetMinimum(0); Clay_MC->SetMaximum(1.05);
-    // Clay_MC->GetXaxis()->SetTitle("R [GV]"); Clay_MC->GetYaxis()->SetTitle("Cut Efficiency");
-    // c_tlc->Draw(); c_tlc->Print("./ProtonAnalysis/CE/Tracker Layer Charge Cut Efficiency.png");
 
   }
 
@@ -858,7 +847,6 @@ void Anaaqra::CutEff(bool plot_all = 0) {
   ce_data_graph->SetMarkerSize(1);
   ce_data_graph->SetMarkerColor(kBlue);
   // Axes
-  //c_CutEff->SetLogy();
   ce_mc_graph->SetMaximum(1);
   ce_mc_graph->SetMinimum(0);
   ce_mc_graph->GetXaxis()->SetTitle("R [GV]");
@@ -890,7 +878,7 @@ void Anaaqra::TrigEff(int delta = 100) {
     bool HasUnphTrig_mc = ((MC_comp->sublvl1&0x3E)==0)&&((MC_comp->trigpatt&0x2)!=0);
 
     // Fill histograms
-    if (EventSelectorCompact(MC_comp, "10111111")) {
+    if (EventSelectorCompact(MC_comp, "101111x_111")) {
       if (HasPhysTrig_mc) {
         PhysHist_mc->Fill(MC_comp->trk_rig[0]);
       }
@@ -912,7 +900,7 @@ void Anaaqra::TrigEff(int delta = 100) {
     bool HasUnphTrig_data = ((Tool->sublvl1&0x3E)==0)&&((Tool->trigpatt&0x2)!=0);
 
     // Fill histograms
-    if (EventSelectorSimple(Tool, "101111111")) {
+    if (EventSelectorSimple(Tool, "1011111_111")) {
       if (HasPhysTrig_data) {
         PhysHist_data->Fill(Tool->trk_rig);
       }
@@ -1071,15 +1059,28 @@ void Anaaqra::ProtonFlux(bool comp = 0) {
   c_Flux->Draw();
   c_Flux->Print("./ProtonAnalysis/Proton Flux.png");
 
+  // Comparison to SSDC data
+  TFile *ssdc = new TFile("../SSDC_PubPFlux/ssdc_canvas.root","open");
+  TGraphAsymmErrors *pubpflux = (TGraphAsymmErrors *)ssdc->Get("graph1");
+
   // TGraph 2/2
   for (int i=0; i<Bin_num; i++) {
     PSFlux[i] = FluxHist->GetBinContent(i+1) * pow(Bin_mid[i], 2.7);
     PSFlux_err[i] = PFlux_err[i] * pow(Bin_mid[i], 2.7);
+
+    double SSDC_PFx; double SSDC_PFy;
+    pubpflux->GetPoint(i, SSDC_PFx, SSDC_PFy);
+    PSFlux_SSDC_Ratio[i] = PSFlux[i] / SSDC_PFy;
   }
   TGraphErrors* p_sflux_graph = new TGraphErrors(32, Bin_mid, PSFlux, Bin_err, PSFlux_err);
+  TGraph* p_sflux_ratio = new TGraph(32, Bin_mid, PSFlux_SSDC_Ratio);
   // Canvas
   TCanvas* c_SFlux = new TCanvas("c_SFlux", "Scaled Proton Flux per Rigitidy Bin");
+  c_SFlux->Divide(1,2);
+  // First split
+  c_SFlux->cd(1);
   p_sflux_graph->Draw("AP");
+  pubpflux->Draw("AP same");
   // Styling
   p_sflux_graph->SetMarkerStyle(20);
   p_sflux_graph->SetMarkerSize(1);
@@ -1089,11 +1090,18 @@ void Anaaqra::ProtonFlux(bool comp = 0) {
   p_sflux_graph->GetXaxis()->SetTitle("R [GV]");
   p_sflux_graph->GetYaxis()->SetTitle("Flux R^2.7 [m^-2 sr^-1 s^-1 GV^1.7]");
   p_sflux_graph->SetMaximum(11000);
-
-  // Comparison to SSDC data
-  TFile *ssdc = new TFile("../SSDC_PubPFlux/ssdc_canvas.root","open");
-  TGraphAsymmErrors *pubpflux = (TGraphAsymmErrors *)ssdc->Get("graph1");
-  pubpflux->Draw("AP same");
+  // Second split
+  c_SFlux->cd(2);
+  p_sflux_ratio->Draw("AP");
+  // Styling
+  p_sflux_ratio->SetMarkerStyle(20);
+  p_sflux_ratio->SetMarkerSize(1);
+  p_sflux_ratio->SetMarkerColor(kBlack);
+  // Axes
+  c_SFlux->SetLogy(0);
+  p_sflux_ratio->GetXaxis()->SetTitle("R [GV]");
+  p_sflux_ratio->GetYaxis()->SetTitle("Flux Ratio");
+  p_sflux_ratio->SetMaximum(1);
 
   // Print
   c_SFlux->Draw();
@@ -1104,6 +1112,7 @@ void Anaaqra::ProtonFlux(bool comp = 0) {
 }
 
 
+
 //------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Aerogel beta mass test
 void Anaaqra::AerogelSlice(){
@@ -1111,9 +1120,7 @@ void Anaaqra::AerogelSlice(){
   cout << "Running AerogelSlice()..." << endl;
 
   // Histograms
-  TH1F *aero_beta = new TH1F("abeta", "", 100, 0.8, 1.2);
-  TH1F *aero_rig  = new TH1F("arig", "", 100, 0, 22);
-  TH1F *aero_mass = new TH1F("amass", "", 100, 0, 2.5);
+  TH2F *aero_beta_mass = new TH2F();
 
   // Loop over data entries
   for (int i=0; i<Simp_chain->GetEntries(); i++) {
@@ -1122,34 +1129,16 @@ void Anaaqra::AerogelSlice(){
     Simp_chain->GetEntry(i);
 
     // Fill histograms
-    if ((Tool->rich_beta > 0.96) && (Tool->rich_beta < 0.996) && (Tool->trk_rig > 3.2) && (Tool->trk_rig < 10.5)) {
-      if (EventSelectorSimple(Tool, "111111111")) {
-        aero_beta->Fill(Tool->rich_beta);
-        aero_rig->Fill(Tool->trk_rig);
-        aero_mass->Fill(Tool->trk_q_inn * Tool->trk_rig * TMath::Sqrt(1 / Tool->rich_beta / Tool->rich_beta - 1));
+    if (EventSelectorSimple(Tool, "1111111_111")) {
+      aero_beta_mass->Fill(Tool->rich_beta, Tool->trk_q_inn * Tool->trk_rig * TMath::Sqrt(1 / Tool->rich_beta / Tool->rich_beta - 1));
       }
     }
 
   }
 
   // Create canvasses
-  TCanvas *Aero_beta = new TCanvas("Aero_beta", "Aerogel RICH Beta");
-  aero_beta->Draw();
-  aero_beta->GetXaxis()->SetTitle("#beta (v/c)"); aero_beta->GetYaxis()->SetTitle("Events");
-  Aero_beta->SetLogx(0); Aero_beta->SetLogy(1); aero_beta->SetMinimum(1);
-  aero_beta->SetLineColor(kGreen); aero_beta->SetLineWidth(3);
-  Aero_beta->Draw(); Aero_beta->Print("./ProtonAnalysis/Aerogel Beta.png");
-  TCanvas *Aero_rig  = new TCanvas("Aero_rig", "Aerogel Rigidity");
-  aero_rig->Draw();
-  aero_rig->GetXaxis()->SetTitle("R [GV]"); aero_rig->GetYaxis()->SetTitle("Events");
-  Aero_rig->SetLogx(0); Aero_rig->SetLogy(1); aero_rig->SetMinimum(1);
-  aero_rig->SetLineColor(kGreen); aero_rig->SetLineWidth(3);
-  Aero_rig->Draw(); Aero_rig->Print("./ProtonAnalysis/Aerogel Rigidity.png");
-  TCanvas *Aero_mass = new TCanvas("Aero_mass", "Aerogel Mass");
-  aero_mass->Draw();
-  aero_mass->GetXaxis()->SetTitle("m [GeV/c^2]"); aero_mass->GetYaxis()->SetTitle("Events");
-  Aero_mass->SetLogx(0); Aero_mass->SetLogy(1); aero_mass->SetMinimum(1);
-  aero_mass->SetLineColor(kGreen); aero_mass->SetLineWidth(3);
-  Aero_mass->Draw(); Aero_mass->Print("./ProtonAnalysis/Aerogel Mass.png");
+  TCanvas *Aero_beta_mass = new TCanvas("Aero_beta_mass", "Aerogel Beta Mass");
+  aero_beta_mass->Draw();
+  Aero_beta_mass->Draw(); Aero_beta_mass->Print("./ProtonAnalysis/Aerogel Beta Mass.png");
 
 }
