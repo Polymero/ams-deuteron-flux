@@ -26,6 +26,8 @@ class Anaaqra {
     //----------------------------------------------------------------------------------------------------------------------------------------------------
     // ATTRIBUTES
     //----------------------------------------------------------------------------------------------------------------------------------------------------
+    // Analysis type
+    int atype = 0;
     // Rigidity bins
     const int Bin_num = 32;
     double Bin_edges[32+1] = {1.00,1.16,1.33,1.51,1.71,1.92,2.15,2.40,2.67,2.97,
@@ -93,7 +95,16 @@ class Anaaqra {
     //----------------------------------------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTORS
     //----------------------------------------------------------------------------------------------------------------------------------------------------
-    Anaaqra() { // Default constructor
+    Anaaqra(string type) { // Default constructor
+
+      // Analysis type
+      if (type == "proton" || type == "p" || type == "1H"){
+        atype = 1;
+      } else if (type == "deuteron" || type == "d" || type == "2H"){
+        atype = 2;
+      } else {
+        cout << "Analysis type not recognised!\n" << endl;
+      }
 
       // gStyle
       gStyle->SetOptTitle(0);
@@ -115,6 +126,7 @@ class Anaaqra {
       RTII_chain->SetBranchAddress("RTI", &Woi);
       MC_chain->SetBranchAddress("Compact", &MC_comp);
 
+      cout << "\nAnalysis type: " << type << endl;
       cout << "Class succesfully constructed!\n" << endl;
 
     };
@@ -126,7 +138,7 @@ class Anaaqra {
     bool EventSelectorCompact(NtpCompact* comp, const char* cutbit);
     bool EventSelectorSimple(Miiqtool* tool, const char* cutbit);
     // Singular (independent)
-    void ParameterAnalysis(const char* cutbit = "111111111"); // Returns raw and cut histograms of various parameters
+    void ParameterAnalysis(const char* cutbit = "1111111_111"); // Returns raw and cut histograms of various parameters
     void RigBinner();                           // Returns number of selected events as function of rigidity
     void Exposure();                            // Returns exposure time (livetime) as function of rigidity
     void Acceptance(bool apply_cuts = 0);       // Returns (geometric) acceptance as function of rigidity
@@ -134,8 +146,8 @@ class Anaaqra {
     void TrigEff(int delta = 100);              // Returns the trigger efficiency as function of rigidity
     void AerogelSlice();
     // Plural (dependent)
-    void ProtonRate();                          // Returns the proton rate as function of rigidity
-    void ProtonFlux(bool comp = 0);                          // Returns the proton flux as function of rigidity
+    void Rate();                          // Returns the proton rate as function of rigidity
+    void Flux(bool comp = 0);                          // Returns the proton flux as function of rigidity
 
 };
 
@@ -148,24 +160,24 @@ bool Anaaqra::EventSelectorCompact(NtpCompact* comp, const char* cutbit) {
   bool pass = 1;
 
   // Boolean cuts (instead of TCut)
+  // Protons (base cuts)
   bool Crig = (comp->trk_rig[0] > Bin_edges[0])&&(comp->trk_rig[0] <= Bin_edges[Bin_num]);
   bool Ctrg = ((comp->sublvl1&0x3E)!=0)&&((comp->trigpatt&0x2)!=0);
   bool Cpar = comp->status % 10 == 1;
-  //bool Ccon = std::abs(comp->tof_beta - comp->rich_beta)/comp->tof_beta < 0.05;
   bool Cbet = comp->tof_beta > 0.3;
   bool Cchi = (comp->trk_chisqn[0][0] < 10)&&(comp->trk_chisqn[0][1] < 10)&&(comp->trk_chisqn[0][0] > 0)&&(comp->trk_chisqn[0][1] > 0);
   bool Cinn = (comp->trk_q_inn > 0.80)&&(comp->trk_q_inn < 1.30);
+  // Deuterons (additional cuts)
+  //bool Ccon = std::abs(comp->tof_beta - comp->rich_beta)/comp->tof_beta < 0.05;
   //bool Clay = (comp->trk_q_lay[0] >= 0)&&(comp->trk_q_lay[1] >= 0)&&(comp->trk_q_lay[2] >= 0)&&(comp->trk_q_lay[3] >= 0)&&(comp->trk_q_lay[4] >= 0)&&(comp->trk_q_lay[5] >= 0)&&(comp->trk_q_lay[6] >= 0)&&(comp->trk_q_lay[7] >= 0)&&(comp->trk_q_lay[8] >= 0);
 
   // Adjust return bool according to cutbit
   if (cutbit[0] == '1') {pass &= Crig;}
   if (cutbit[1] == '1') {pass &= Ctrg;}
   if (cutbit[2] == '1') {pass &= Cpar;}
-  //if (cutbit[3] == '1') {pass &= Ccon;}
-  if (cutbit[4] == '1') {pass &= Cbet;}
-  if (cutbit[5] == '1') {pass &= Cchi;}
-  if (cutbit[6] == '1') {pass &= Cinn;}
-  //if (cutbit[7] == '1') {pass &= Clay;}
+  if (cutbit[3] == '1') {pass &= Cbet;}
+  if (cutbit[4] == '1') {pass &= Cchi;}
+  if (cutbit[5] == '1') {pass &= Cinn;}
 
   // Return
   return pass;
@@ -183,23 +195,23 @@ bool Anaaqra::EventSelectorSimple(Miiqtool* tool, const char* cutbit) {
   bool Crig = (tool->trk_rig > Bin_edges[0])&&(tool->trk_rig <= Bin_edges[Bin_num]);
   bool Ctrg = ((tool->sublvl1&0x3E)!=0)&&((tool->trigpatt&0x2)!=0);
   bool Cpar = tool->status % 10 == 1;
-  //bool Ccon = std::abs(tool->tof_beta - tool->rich_beta)/tool->tof_beta < 0.05;
   bool Cbet = tool->tof_beta > 0.3;
   bool Cchi = (tool->trk_chisqn[0] < 10)&&(tool->trk_chisqn[1] < 10)&&(tool->trk_chisqn[0] > 0)&&(tool->trk_chisqn[1] > 0);
   bool Cinn = (tool->trk_q_inn > 0.80)&&(tool->trk_q_inn < 1.30);
-  //bool Clay = (tool->trk_q_lay[0] >= 0)&&(tool->trk_q_lay[1] >= 0)&&(tool->trk_q_lay[2] >= 0)&&(tool->trk_q_lay[3] >= 0)&&(tool->trk_q_lay[4] >= 0)&&(tool->trk_q_lay[5] >= 0)&&(tool->trk_q_lay[6] >= 0)&&(tool->trk_q_lay[7] >= 0)&&(tool->trk_q_lay[8] >= 0);
   bool Cgeo = tool->trk_rig > 1.2 * tool->cf;
+  //bool Ccon = std::abs(tool->tof_beta - tool->rich_beta)/tool->tof_beta < 0.05;
+  //bool Clay = (tool->trk_q_lay[0] >= 0)&&(tool->trk_q_lay[1] >= 0)&&(tool->trk_q_lay[2] >= 0)&&(tool->trk_q_lay[3] >= 0)&&(tool->trk_q_lay[4] >= 0)&&(tool->trk_q_lay[5] >= 0)&&(tool->trk_q_lay[6] >= 0)&&(tool->trk_q_lay[7] >= 0)&&(tool->trk_q_lay[8] >= 0);
 
   // Adjust return bool according to cutbit
   if (cutbit[0] == '1') {pass &= Crig;}
   if (cutbit[1] == '1') {pass &= Ctrg;}
   if (cutbit[2] == '1') {pass &= Cpar;}
+  if (cutbit[3] == '1') {pass &= Cbet;}
+  if (cutbit[4] == '1') {pass &= Cchi;}
+  if (cutbit[5] == '1') {pass &= Cinn;}
+  if (cutbit[6] == '1') {pass &= Cgeo;}
   //if (cutbit[3] == '1') {pass &= Ccon;}
-  if (cutbit[4] == '1') {pass &= Cbet;}
-  if (cutbit[5] == '1') {pass &= Cchi;}
-  if (cutbit[6] == '1') {pass &= Cinn;}
   //if (cutbit[7] == '1') {pass &= Clay;}
-  if (cutbit[8] == '1') {pass &= Cgeo;}
 
   // Return
   return pass;
@@ -212,7 +224,7 @@ bool Anaaqra::EventSelectorSimple(Miiqtool* tool, const char* cutbit) {
 // METHOD FUNCTIONS
 //------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Returns TH1F of various parameters
-void Anaaqra::ParameterAnalysis(const char* cutbit = "111111111") {
+void Anaaqra::ParameterAnalysis(const char* cutbit = "1111111_11") {
 
   cout << "Running ParameterAnalysis()..." << endl;
 
@@ -454,7 +466,7 @@ void Anaaqra::RigBinner() {
 
     // Fill histograms
     Events_raw->Fill(Tool->trk_rig);
-    if (EventSelectorSimple(Tool, "111111111")) {
+    if (EventSelectorSimple(Tool, "1111111_11")) {
       Events_cut->Fill(Tool->trk_rig);
     }
 
@@ -609,7 +621,7 @@ void Anaaqra::Acceptance(bool apply_cuts = 0) {
 
     // Apply cuts
     if (apply_cuts) {
-      if (EventSelectorCompact(MC_comp, "111111110")) {
+      if (EventSelectorCompact(MC_comp, "1111111_11")) {
         MC_detected->Fill(MC_comp->trk_rig[0]);
       }
     } else {
@@ -1076,12 +1088,12 @@ void Anaaqra::ProtonFlux(bool comp = 0) {
   c_SFlux->SetLogy();
   p_sflux_graph->GetXaxis()->SetTitle("R [GV]");
   p_sflux_graph->GetYaxis()->SetTitle("Flux R^2.7 [m^-2 sr^-1 s^-1 GV^1.7]");
-  p_sflux_graph->SetMaximum(20000);
+  p_sflux_graph->SetMaximum(11000);
 
   // Comparison to SSDC data
   TFile *ssdc = new TFile("../SSDC_PubPFlux/ssdc_canvas.root","open");
   TGraphAsymmErrors *pubpflux = (TGraphAsymmErrors *)ssdc->Get("graph1");
-  pubpflux->Draw("P");
+  pubpflux->Draw("AP same");
 
   // Print
   c_SFlux->Draw();
