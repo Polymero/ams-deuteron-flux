@@ -34,6 +34,7 @@ class Miiqtool {
   float        tof_q_lay[4];                ///< TOF Charge of each layer
 
   float        rich_beta;                   ///< RICH beta best estimator
+  short int    rich_select;                 ///< Javier selection (see Tools::RichQC)
 
   float        lf;                          ///< Livetime [0,1]
   float        cf;                          ///< Max geomagnetic cutoff in the field of view (Stoermer|40 degrees|+) [GV]

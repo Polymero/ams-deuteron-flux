@@ -109,6 +109,7 @@ void Toimeejat(string rootfiles = "local") {
       Tool->tof_q_lay[k] = Compact->tof_q_lay[k];
     }
     Tool->rich_beta       = Compact->rich_beta;
+    Tool->rich_select     = Compact->rich_select;
 
     // SHeader parameters
     Tool->event = SHeader->event;
