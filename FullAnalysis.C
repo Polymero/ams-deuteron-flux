@@ -86,9 +86,9 @@ class Anaaqra {
     // TrigEff()
     double TE_mc[32]; double TE_mc_err[32];
     double TE_data[32]; double TE_data_err[32];
-    // ProtonRate()
+    // Rate()
     double PRate[32]; double PRate_err[32];
-    // ProtonFlux()
+    // Flux()
     double PFlux[32]; double PFlux_err[32];
     double PSFlux[32]; double PSFlux_err[32];
     double PSFlux_SSDC_Ratio[32];
@@ -970,7 +970,7 @@ void Anaaqra::TrigEff(int delta = 100) {
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Returns TH1F of the proton rate
-void Anaaqra::ProtonRate() {
+void Anaaqra::Rate() {
 
   // Fill empty necessary histograms
   if (Events_cut->GetEntries() == 0) {RigBinner();}
@@ -1005,7 +1005,7 @@ void Anaaqra::ProtonRate() {
   c_Rate->Draw();
   c_Rate->Print("./ProtonAnalysis/Proton Rate.png");
 
-  cout << "ProtonRate() has finished!\n" << endl;
+  cout << "Rate() has finished!\n" << endl;
 
 }
 
@@ -1013,7 +1013,7 @@ void Anaaqra::ProtonRate() {
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Returns TH1F of the proton flux
-void Anaaqra::ProtonFlux(bool comp = 0) {
+void Anaaqra::Flux(bool comp = 0) {
 
   // Fill empty necessary histograms
   if (Events_cut->GetEntries() == 0) {RigBinner();}
@@ -1107,7 +1107,7 @@ void Anaaqra::ProtonFlux(bool comp = 0) {
   c_SFlux->Draw();
   c_SFlux->Print("./ProtonAnalysis/Scaled Proton Flux.png");
 
-  cout << "ProtonFlux() has finished!\n" << endl;
+  cout << "Flux() has finished!\n" << endl;
 
 }
 
