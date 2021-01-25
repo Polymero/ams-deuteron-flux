@@ -1133,8 +1133,8 @@ void Anaaqra::AerogelSlice(){
   }
 
   // Create canvasses
-  TCanvas *Aero_beta_mass = new TCanvas("Aero_beta_mass", "Aerogel Beta Mass");
+  TCanvas *ABMcanvas = new TCanvas("ABMcanvas", "Aerogel Beta Mass");
   aero_beta_mass->Draw();
-  Aero_beta_mass->Draw(); Aero_beta_mass->Print("./ProtonAnalysis/Aerogel Beta Mass.png");
+  ABMcanvas->Draw(); ABMcanvas->Print("./ProtonAnalysis/Aerogel Beta Mass.png");
 
 }
