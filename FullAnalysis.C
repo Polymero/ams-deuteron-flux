@@ -11,7 +11,7 @@
 #include "TChain.h"
 #include "TF1.h"
 #include "TH1F.h"
-#include "TH2F.h"
+#include "TH2.h"
 #include "TCanvas.h"
 #include "TObject.h"
 #include "TString.h"
@@ -1117,7 +1117,7 @@ void Anaaqra::AerogelSlice(){
   cout << "Running AerogelSlice()..." << endl;
 
   // Histograms
-  TH2F *aero_beta_mass = new TH2F("abm", "", 100, 0.6, 1.3, 100, 0, 2.5);
+  TH2D *aero_beta_mass = new TH2D("abm", "", 100, 0.6, 1.3, 100, 0, 2.5);
 
   // Loop over data entries
   for (int i=0; i<Simp_chain->GetEntries(); i++) {
