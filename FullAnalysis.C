@@ -1116,7 +1116,7 @@ void Anaaqra::AerogelSlice(){
   cout << "Running AerogelSlice()..." << endl;
 
   // Histograms
-  TH2F *aero_beta_mass = new TH2F();
+  TH2F *aero_beta_mass = new TH2F("abm", "", 100, 0.6, 1.3, 100, 0, 2.5);
 
   // Loop over data entries
   for (int i=0; i<Simp_chain->GetEntries(); i++) {
