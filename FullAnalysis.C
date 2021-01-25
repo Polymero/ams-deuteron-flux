@@ -1127,7 +1127,9 @@ void Anaaqra::AerogelSlice(){
 
     // Fill histograms
     if (EventSelectorSimple(Tool, "1111111_111")) {
-      aero_beta_mass->Fill(Tool->rich_beta, Tool->trk_q_inn * Tool->trk_rig * TMath::Sqrt(1 / Tool->rich_beta / Tool->rich_beta - 1));
+      double beta = Tool->rich_beta;
+      double mass = Tool->trk_q_inn * Tool->trk_rig * TMath::Sqrt(1 / Tool->rich_beta / Tool->rich_beta - 1);
+      aero_beta_mass->Fill(beta, mass);
       }
     }
 
