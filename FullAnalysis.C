@@ -1117,7 +1117,7 @@ void Anaaqra::AerogelSlice(){
   cout << "Running AerogelSlice()..." << endl;
 
   // Histograms
-  TH2D *aero_beta_mass = new TH2D("abm", "", 100, 0.6, 1.3, 100, 0, 2.5);
+  TH2D *aero_beta_mass = new TH2D("abm", "", 100, 0.94, 1.02, 100, 0, 2.5);
 
   // Loop over data entries
   for (int i=0; i<Simp_chain->GetEntries(); i++) {
@@ -1136,7 +1136,7 @@ void Anaaqra::AerogelSlice(){
   // Create canvasses
   TCanvas *ABMcanvas = new TCanvas("ABMcanvas", "Aerogel Beta Mass");
   aero_beta_mass->Draw("COLZ");
-  ABMcanvas->SetLogx(0); ABMcanvas->SetLogy(0);
+  ABMcanvas->SetLogx(0); ABMcanvas->SetLogy(0); ABMcanvas->SetLogz(1);
   ABMcanvas->Draw(); ABMcanvas->Print("./ProtonAnalysis/Aerogel Beta Mass.png");
 
 }
