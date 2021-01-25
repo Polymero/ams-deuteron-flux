@@ -168,13 +168,6 @@ bool Anaaqra::EventSelectorCompact(NtpCompact* comp, const char* cutbit) {
   bool Cbet = comp->tof_beta > 0.3;
   bool Cchi = (comp->trk_chisqn[0][0] < 10)&&(comp->trk_chisqn[0][1] < 10)&&(comp->trk_chisqn[0][0] > 0)&&(comp->trk_chisqn[0][1] > 0);
   bool Cinn = (comp->trk_q_inn > 0.80)&&(comp->trk_q_inn < 1.30);
-  // Deuterons (additional cuts)
-  if (atype == 2){
-    bool Csel = comp->rich_select == 2;
-    bool Ccon = std::abs(comp->tof_beta - comp->rich_beta)/comp->tof_beta < 0.05;
-    bool Clay = comp->trk_q_lay[0] <= 1.7;
-  }
-
   // Adjust return bool according to cutbit
   if (cutbit[0] == '1') {pass &= Crig;}
   if (cutbit[1] == '1') {pass &= Ctrg;}
@@ -182,7 +175,12 @@ bool Anaaqra::EventSelectorCompact(NtpCompact* comp, const char* cutbit) {
   if (cutbit[3] == '1') {pass &= Cbet;}
   if (cutbit[4] == '1') {pass &= Cchi;}
   if (cutbit[5] == '1') {pass &= Cinn;}
+  // Deuterons (additional cuts)
   if (atype == 2){
+    bool Csel = comp->rich_select == 2;
+    bool Ccon = std::abs(comp->tof_beta - comp->rich_beta)/comp->tof_beta < 0.05;
+    bool Clay = comp->trk_q_lay[0] <= 1.7;
+    // Adjust return bool according to cutbit
     if (cutbit[8] == '1') {pass &= Csel;}
     if (cutbit[9] == '1') {pass &= Ccon;}
     if (cutbit[10] == '1') {pass &= Clay;}
@@ -209,13 +207,6 @@ bool Anaaqra::EventSelectorSimple(Miiqtool* tool, const char* cutbit) {
   bool Cchi = (tool->trk_chisqn[0] < 10)&&(tool->trk_chisqn[1] < 10)&&(tool->trk_chisqn[0] > 0)&&(tool->trk_chisqn[1] > 0);
   bool Cinn = (tool->trk_q_inn > 0.80)&&(tool->trk_q_inn < 1.30);
   bool Cgeo = tool->trk_rig > 1.2 * tool->cf;
-  // Deuterons (additional cuts)
-  if (atype == 2){
-    bool Csel = tool->rich_select == 2;
-    bool Ccon = std::abs(tool->tof_beta - tool->rich_beta)/tool->tof_beta < 0.05;
-    bool Clay = tool->trk_q_lay[0] <= 1.7;
-  }
-
   // Adjust return bool according to cutbit
   if (cutbit[0] == '1') {pass &= Crig;}
   if (cutbit[1] == '1') {pass &= Ctrg;}
@@ -224,7 +215,12 @@ bool Anaaqra::EventSelectorSimple(Miiqtool* tool, const char* cutbit) {
   if (cutbit[4] == '1') {pass &= Cchi;}
   if (cutbit[5] == '1') {pass &= Cinn;}
   if (cutbit[6] == '1') {pass &= Cgeo;}
+  // Deuterons (additional cuts)
   if (atype == 2){
+    bool Csel = tool->rich_select == 2;
+    bool Ccon = std::abs(tool->tof_beta - tool->rich_beta)/tool->tof_beta < 0.05;
+    bool Clay = tool->trk_q_lay[0] <= 1.7;
+    // Adjust return bool according to cutbit
     if (cutbit[8] == '1') {pass &= Csel;}
     if (cutbit[9] == '1') {pass &= Ccon;}
     if (cutbit[10] == '1') {pass &= Clay;}
