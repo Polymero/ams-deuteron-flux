@@ -1077,7 +1077,7 @@ void Anaaqra::Flux(bool comp = 0) {
   // First split
   c_SFlux->cd(1);
   p_sflux_graph->Draw("AP");
-  pubpflux->Draw("AP same");
+  pubpflux->Draw("P");
   // Styling
   p_sflux_graph->SetMarkerStyle(20);
   p_sflux_graph->SetMarkerSize(1);
@@ -1098,7 +1098,7 @@ void Anaaqra::Flux(bool comp = 0) {
   c_SFlux->SetLogy(0);
   p_sflux_ratio->GetXaxis()->SetTitle("R [GV]");
   p_sflux_ratio->GetYaxis()->SetTitle("Flux Ratio");
-  p_sflux_ratio->SetMaximum(1);
+  p_sflux_ratio->SetMaximum(1); p_sflux_ratio->SetMinimum(0);
 
   // Print
   c_SFlux->Draw();
