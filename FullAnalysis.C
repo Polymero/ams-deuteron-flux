@@ -11,6 +11,7 @@
 #include "TChain.h"
 #include "TF1.h"
 #include "TH1F.h"
+#include "TH2F.h"
 #include "TCanvas.h"
 #include "TObject.h"
 #include "TString.h"
