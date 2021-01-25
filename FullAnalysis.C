@@ -1117,7 +1117,7 @@ void Anaaqra::AerogelSlice(){
   cout << "Running AerogelSlice()..." << endl;
 
   // Histograms
-  TH2 *aero_beta_mass = new TH2D("abm", "", 100, 0.6, 1.3, 100, 0, 2.5);
+  TH2D *aero_beta_mass = new TH2D("abm", "", 100, 0.6, 1.3, 100, 0, 2.5);
 
   // Loop over data entries
   for (int i=0; i<Simp_chain->GetEntries(); i++) {
@@ -1130,8 +1130,6 @@ void Anaaqra::AerogelSlice(){
       aero_beta_mass->Fill(Tool->rich_beta, Tool->trk_q_inn * Tool->trk_rig * TMath::Sqrt(1 / Tool->rich_beta / Tool->rich_beta - 1));
       }
     }
-
-  }
 
   // Create canvasses
   TCanvas *ABMcanvas = new TCanvas("ABMcanvas", "Aerogel Beta Mass");
