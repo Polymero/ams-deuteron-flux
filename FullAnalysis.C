@@ -178,11 +178,13 @@ bool Anaaqra::EventSelectorCompact(NtpCompact* comp, const char* cutbit) {
   if (cutbit[5] == '1') {pass &= Cinn;}
   // Deuterons (additional cuts)
   if (atype == 2){
-    bool Csel = comp->rich_select == 2;
+    bool Cagl = tool->rich_select == 2;
+    bool Cnaf = tool->rich_select == 1;
     bool Ccon = std::abs(comp->tof_beta - comp->rich_beta)/comp->tof_beta < 0.05;
     bool Clay = comp->trk_q_lay[0] <= 1.7;
     // Adjust return bool according to cutbit
-    if (cutbit[8] == '1') {pass &= Csel;}
+    if (cutbit[8] == '1') {pass &= Cagl;}
+    if (cutbit[8] == '2') {pass &= Cnaf;}
     if (cutbit[9] == '1') {pass &= Ccon;}
     if (cutbit[10] == '1') {pass &= Clay;}
   }
@@ -218,11 +220,13 @@ bool Anaaqra::EventSelectorSimple(Miiqtool* tool, const char* cutbit) {
   if (cutbit[6] == '1') {pass &= Cgeo;}
   // Deuterons (additional cuts)
   if (atype == 2){
-    bool Csel = tool->rich_select == 2;
+    bool Cagl = tool->rich_select == 2;
+    bool Cnaf = tool->rich_select == 1;
     bool Ccon = std::abs(tool->tof_beta - tool->rich_beta)/tool->tof_beta < 0.05;
     bool Clay = tool->trk_q_lay[0] <= 1.7;
     // Adjust return bool according to cutbit
-    if (cutbit[8] == '1') {pass &= Csel;}
+    if (cutbit[8] == '1') {pass &= Cagl;}
+    if (cutbit[8] == '2') {pass &= Cnaf;}
     if (cutbit[9] == '1') {pass &= Ccon;}
     if (cutbit[10] == '1') {pass &= Clay;}
   }
@@ -1112,12 +1116,13 @@ void Anaaqra::Flux(bool comp = 0) {
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Aerogel beta mass test
-void Anaaqra::AerogelSlice(){
+void Anaaqra::RICH_MB(){
 
-  cout << "Running AerogelSlice()..." << endl;
+  cout << "Running RICH_MB()..." << endl;
 
   // Histograms
   TH2D *aero_beta_mass = new TH2D("abm", "", 100, 0.94, 1.02, 100, 0, 2.5);
+  TH2D *naf_beta_mass  = new TH2D("nbm", "", 100, 0.94, 1.02, 100, 0, 2.5);
 
   // Loop over data entries
   for (int i=0; i<Simp_chain->GetEntries(); i++) {
@@ -1127,10 +1132,15 @@ void Anaaqra::AerogelSlice(){
 
     // Fill histograms
     if (EventSelectorSimple(Tool, "1111111_111")) {
-      double beta = Tool->rich_beta;
-      double mass = Tool->trk_q_inn * Tool->trk_rig * TMath::Sqrt(1 / Tool->rich_beta / Tool->rich_beta - 1);
-      aero_beta_mass->Fill(beta, mass);
+      double beta_agl = Tool->rich_beta;
+      double mass_agl = Tool->trk_q_inn * Tool->trk_rig * TMath::Sqrt(1 / Tool->rich_beta / Tool->rich_beta - 1);
+      aero_beta_mass->Fill(beta_agl, mass_agl);
       }
+    if (EventSelectorSimple(Tool, "1111111_211")) {
+      double beta_naf = Tool->rich_beta;
+      double mass_naf = Tool->trk_q_inn * Tool->trk_rig * TMath::Sqrt(1 / Tool->rich_beta / Tool->rich_beta - 1);
+      naf_beta_mass->Fill(beta_naf, mass_naf);
+    }
     }
 
   // Create canvasses
@@ -1138,5 +1148,11 @@ void Anaaqra::AerogelSlice(){
   aero_beta_mass->Draw("COLZ");
   ABMcanvas->SetLogx(0); ABMcanvas->SetLogy(0); ABMcanvas->SetLogz(1);
   ABMcanvas->Draw(); ABMcanvas->Print("./ProtonAnalysis/Aerogel Beta Mass.png");
+  TCanvas *NBMcanvas = new TCanvas("NBMcanvas", "NaF Beta Mass");
+  naf_beta_mass->Draw("COLZ");
+  NBMcanvas->SetLogx(0); NBMcanvas->SetLogy(0); NBMcanvas->SetLogz(1);
+  NBMcanvas->Draw(); NBMcanvas->Print("./ProtonAnalysis/NaF Beta Mass.png");
+
+  cout << "RICH_MB() has finished!\n" << endl;
 
 }
