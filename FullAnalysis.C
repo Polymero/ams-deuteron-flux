@@ -1156,7 +1156,7 @@ void Anaaqra::RICH_MB(){
   // Loop over projections
   TCanvas *Projs = new TCanvas("projs", "Projection Loop");
   Projs->SetLogy(1); Projs->SetLogx(0);
-  for (int i=0, i<10; i++) {
+  for (int i=0; i<10; i++) {
     aero_beta_mass->ProjectionY("", 1+10*i, 10+10*i)->Draw();
     Projs->Draw(); Projs->Print("./ProtonAnalysis/RICH_MB/Aerogel Beta Mass Slice" + std::to_string(i+1) + ".png");
   }
