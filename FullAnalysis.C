@@ -1091,7 +1091,7 @@ void Anaaqra::Flux(bool comp = 0) {
   c_SFlux->SetLogy();
   p_sflux_graph->GetXaxis()->SetTitle("R [GV]");
   p_sflux_graph->GetYaxis()->SetTitle("Flux R^2.7 [m^-2 sr^-1 s^-1 GV^1.7]");
-  p_sflux_graph->SetMaximum(11000);
+  p_sflux_graph->SetMaximum(18000);
   // Second split
   c_SFlux->cd(2);
   p_sflux_ratio->Draw("AP");
@@ -1103,7 +1103,7 @@ void Anaaqra::Flux(bool comp = 0) {
   c_SFlux->SetLogy(0);
   p_sflux_ratio->GetXaxis()->SetTitle("R [GV]");
   p_sflux_ratio->GetYaxis()->SetTitle("Flux Ratio");
-  p_sflux_ratio->SetMaximum(1); p_sflux_ratio->SetMinimum(0);
+  p_sflux_ratio->SetMaximum(2); p_sflux_ratio->SetMinimum(0);
 
   // Print
   c_SFlux->Draw();
