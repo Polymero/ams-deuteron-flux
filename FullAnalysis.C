@@ -146,7 +146,7 @@ class Anaaqra {
     void Acceptance(bool apply_cuts = 0);       // Returns (geometric) acceptance as function of rigidity
     void CutEff(bool plot_all = 0);             // Returns the cut (selection) efficiency as function of rigidity
     void TrigEff(int delta = 100);              // Returns the trigger efficiency as function of rigidity
-    void AerogelSlice();
+    void RICH_MB();
     // Plural (dependent)
     void Rate();                                // Returns the proton rate as function of rigidity
     void Flux(bool comp = 0);                   // Returns the proton flux as function of rigidity
@@ -178,8 +178,8 @@ bool Anaaqra::EventSelectorCompact(NtpCompact* comp, const char* cutbit) {
   if (cutbit[5] == '1') {pass &= Cinn;}
   // Deuterons (additional cuts)
   if (atype == 2){
-    bool Cagl = tool->rich_select == 2;
-    bool Cnaf = tool->rich_select == 1;
+    bool Cagl = comp->rich_select == 2;
+    bool Cnaf = comp->rich_select == 1;
     bool Ccon = std::abs(comp->tof_beta - comp->rich_beta)/comp->tof_beta < 0.05;
     bool Clay = comp->trk_q_lay[0] <= 1.7;
     // Adjust return bool according to cutbit
