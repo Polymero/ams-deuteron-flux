@@ -703,7 +703,8 @@ void Anaaqra::CutEff(bool plot_all = 0) {
     // Get entry
     MC_chain->GetEntry(i);
 
-    bool tof_q = (MC_comp->tof_q_lay[0] > 0.8)&&(MC_comp->tof_q_lay[0] < 1.5);
+    //bool tof_q = (MC_comp->tof_q_lay[0] > 0.8)&&(MC_comp->tof_q_lay[0] < 1.5);
+    bool tof_q = 1;
 
     // Fill base histograms
     if (EventSelectorCompact(MC_comp, "110011x_111")) {Btof_MC->Fill(MC_comp->trk_rig[0]);}
@@ -1159,6 +1160,8 @@ void Anaaqra::RICH_MB(){
   for (int i=0; i<10; i++) {
     aero_beta_mass->ProjectionY("", 1+10*i, 10+10*i)->Draw();
     Projs->Draw(); Projs->Print(("./ProtonAnalysis/RICH_MB/Aerogel Beta Mass Slice" + std::to_string(i+1) + ".png").c_str());
+    naf_beta_mass->ProjectionY("", 1+10*i, 10+10*i)->Draw();
+    Projs->Draw(); Projs->Print(("./ProtonAnalysis/RICH_MB/NaF Beta Mass Slice" + std::to_string(i+1) + ".png").c_str());
   }
 
   cout << "RICH_MB() has finished!\n" << endl;
