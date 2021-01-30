@@ -146,7 +146,7 @@ class Anaaqra {
     void Acceptance(bool apply_cuts = 0);       // Returns (geometric) acceptance as function of rigidity
     void CutEff(bool plot_all = 0);             // Returns the cut (selection) efficiency as function of rigidity
     void TrigEff(int delta = 100);              // Returns the trigger efficiency as function of rigidity
-    void RICH_MB();
+    void RICH_MB(int proj_num = 10);
     // Plural (dependent)
     void Rate();                                // Returns the proton rate as function of rigidity
     void Flux(bool comp = 0);                   // Returns the proton flux as function of rigidity
@@ -1117,7 +1117,7 @@ void Anaaqra::Flux(bool comp = 0) {
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Aerogel beta mass test
-void Anaaqra::RICH_MB(){
+void Anaaqra::RICH_MB(int proj_num = 10){
 
   cout << "Running RICH_MB()..." << endl;
 
@@ -1157,10 +1157,10 @@ void Anaaqra::RICH_MB(){
   // Loop over projections
   TCanvas *Projs = new TCanvas("projs", "Projection Loop");
   Projs->SetLogy(1); Projs->SetLogx(0);
-  for (int i=0; i<10; i++) {
-    aero_beta_mass->ProjectionY("", 1+10*i, 10+10*i)->Draw();
+  for (int i=0; i<100/proj_num; i++) {
+    aero_beta_mass->ProjectionY("", 1+proj_name*i, proj_name+proj_name*i)->Draw();
     Projs->Draw(); Projs->Print(("./ProtonAnalysis/RICH_MB/Aerogel Beta Mass Slice" + std::to_string(i+1) + ".png").c_str());
-    naf_beta_mass->ProjectionY("", 1+10*i, 10+10*i)->Draw();
+    naf_beta_mass->ProjectionY("", 1+proj_name*i, proj_name+proj_name*i)->Draw();
     Projs->Draw(); Projs->Print(("./ProtonAnalysis/RICH_MB/NaF Beta Mass Slice" + std::to_string(i+1) + ".png").c_str());
   }
 
