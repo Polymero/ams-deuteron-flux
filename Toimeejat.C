@@ -211,12 +211,41 @@ void MCmeejat(string rootfiles = "kapteyn") {
                             8.48,9.26,10.1,11.0,12.0,13.0,14.1,15.3,16.6,18.0,
                             19.5,21.1,22.8};
   // Create histograms
+  // Acceptance()
   TH1D *p_det = new TH1D("p_det", "Detected MC Proton Events", 32, bin_edges);
   TH1D *p_cut = new TH1D("p_cut", "Selected MC Proton Events", 32, bin_edges);
   TH1D *p_gen = new TH1D("p_gen", "Generated MC Proton Events", 32, bin_edges);
   TH1D *d_det = new TH1D("d_det", "Detected MC Deuteron Events", 32, bin_edges);
   TH1D *d_cut = new TH1D("d_cut", "Selected MC Deuteron Events", 32, bin_edges);
   TH1D *d_gen = new TH1D("d_gen", "Generated MC Deuteron Events", 32, bin_edges);
+  // TrigEff()
+  TH1D *p_te_phys = new TH1D("p_te_phys", "Physical Triggers MC Proton Events", 32, bin_edges);
+  TH1D *p_te_unph = new TH1D("p_te_unph", "Bias Triggers MC Proton Events", 32, bin_edges);
+  TH1D *d_te_phys = new TH1D("d_te_phys", "Physical Triggers MC Deuteron Events", 32, bin_edges);
+  TH1D *d_te_unph = new TH1D("d_te_unph", "Bias Triggers MC Deuteron Events", 32, bin_edges);
+  // CutEff()
+  TH1D *p_ce = new TH1D("p_ce", "Selection Efficiency MC Proton Events", 32, bin_edges);
+  TH1D *p_ce_err = new TH1D("p_ce_err", "Selection Efficiency Error MC Proton Events", 32, bin_edges);
+  TH1D *d_ce = new TH1D("d_ce", "Selection Efficiency MC Deuteron Events", 32, bin_edges);
+  TH1D *d_ce_err = new TH1D("d_ce_err", "Selection Efficiency Error MC Deuteron Events", 32, bin_edges);
+  // Individual histograms
+  TH1F *p_Cpar_MC = new TH1F("p_Cpar_MC", "Proton Single Particle Cut", 32, bin_edges);
+  TH1F *p_Cbet_MC = new TH1F("p_Cbet_MC", "Proton Downward Particle Cut", 32, bin_edges);
+  TH1F *p_Cchi_MC = new TH1F("p_Cchi_MC", "Proton Well-constructed Track Cut", 32, bin_edges);
+  TH1F *p_Cinn_MC = new TH1F("p_Cinn_MC", "Proton Inner Tracker Charge Cut", 32, bin_edges);
+  TH1F *p_Btof_MC = new TH1F("p_Btof_MC", "Proton TOF Base Cut", 32, bin_edges);
+  TH1F *p_Btrk_MC = new TH1F("p_Btrk_MC", "Proton Tracker Base Cut", 32, bin_edges);
+  TH1F *d_Cpar_MC = new TH1F("d_Cpar_MC", "Deuteron Single Particle Cut", 32, bin_edges);
+  TH1F *d_Cbet_MC = new TH1F("d_Cbet_MC", "Deuteron Downward Particle Cut", 32, bin_edges);
+  TH1F *d_Cchi_MC = new TH1F("d_Cchi_MC", "Deuteron Well-constructed Track Cut", 32, bin_edges);
+  TH1F *d_Cinn_MC = new TH1F("d_Cinn_MC", "Deuteron Inner Tracker Charge Cut", 32, bin_edges);
+  TH1F *d_Ccon_MC = new TH1F("d_Ccon_MC", "Deuteron Beta Consistency Cut", 32, bin_edges);
+  TH1F *d_Clay_MC = new TH1F("d_Clay_MC", "Deuteron First Tracker Layer Charge Cut", 32, bin_edges);
+  TH1F *d_Cagl_MC = new TH1F("d_Cagl_MC", "Deuteron Aerogel RICH Select Cut", 32, bin_edges);
+  TH1F *d_Cnaf_MC = new TH1F("d_Cnaf_MC", "Deuteron NaF RICH Select Cut", 32, bin_edges);
+  TH1F *d_Btof_MC = new TH1F("d_Btof_MC", "Deuteron TOF Base Cut", 32, bin_edges);
+  TH1F *d_Btrk_MC = new TH1F("d_Btrk_MC", "Deuteron Tracker Base Cut", 32, bin_edges);
+  TH1F *d_Brch_MC = new TH1F("d_Brch_MC", "Deuteron RICH Base Cut", 32, bin_edges);
 
   // loop over MC files individually (for gen hists)
   // Protons
@@ -313,11 +342,37 @@ void MCmeejat(string rootfiles = "kapteyn") {
     // Get entry
     p_mc.GetEntry(i);
 
-    // Apply cuts
+    // Fill Acceptance() cuts
     if (EventSelectorCompact(p_comp, "111111x_111", 1)) {
       p_cut->Fill(p_comp->trk_rig[0]);
     }
     p_det->Fill(p_comp->trk_rig[0]);
+
+    // Trigger booleans
+    bool HasPhysTrig_mc = ((p_comp->sublvl1&0x3E)!=0)&&((p_comp->trigpatt&0x2)!=0);
+    bool HasUnphTrig_mc = ((p_comp->sublvl1&0x3E)==0)&&((p_comp->trigpatt&0x2)!=0);
+
+    // Fill TrigEff() histograms
+    if (EventSelectorCompact(p_comp, "101111x_111", 1)) {
+      if (HasPhysTrig_mc) {
+        p_te_phys->Fill(p_comp->trk_rig[0]);
+      }
+      if (HasUnphTrig_mc) {
+        p_te_unph->Fill(p_comp->trk_rig[0]);
+      }
+    }
+
+    // Fill CutEff() histograms
+    // TOF charge cut
+    bool tof_q = (p_comp->tof_q_lay[0] > 0.8)&&(p_comp->tof_q_lay[0] < 1.5);
+    // Fill base histograms
+    if (EventSelectorCompact(p_comp, "110011x_111")) {p_Btof_MC->Fill(p_comp->trk_rig[0]);}
+    if (EventSelectorCompact(p_comp, "111100x_111") && tof_q) {p_Btrk_MC->Fill(p_comp->trk_rig[0]);}
+    // Fill cut histograms
+    if (EventSelectorCompact(p_comp, "111111x_111")) {p_Cpar_MC->Fill(p_comp->trk_rig[0]);}
+    if (EventSelectorCompact(p_comp, "110111x_111")) {p_Cbet_MC->Fill(p_comp->trk_rig[0]);}
+    if (EventSelectorCompact(p_comp, "111100x_111") && tof_q) {p_Cchi_MC->Fill(p_comp->trk_rig[0]);}
+    if (EventSelectorCompact(p_comp, "111010x_111") && tof_q) {p_Cinn_MC->Fill(p_comp->trk_rig[0]);}
 
   }
 
@@ -334,21 +389,117 @@ void MCmeejat(string rootfiles = "kapteyn") {
     // Get entry
     d_mc.GetEntry(i);
 
-    // Apply cuts
-    if (EventSelectorCompact(d_comp, "111111x_111", 2)) {
+    // Fill Acceptance() cuts
+    if (EventSelectorCompact(d_comp, "111111x_111", 1)) {
       d_cut->Fill(d_comp->trk_rig[0]);
     }
     d_det->Fill(d_comp->trk_rig[0]);
 
-  }
+    // Trigger booleans
+    bool HasPhysTrig_mc = ((d_comp->sublvl1&0x3E)!=0)&&((d_comp->trigpatt&0x2)!=0);
+    bool HasUnphTrig_mc = ((d_comp->sublvl1&0x3E)==0)&&((d_comp->trigpatt&0x2)!=0);
+
+    // Fill TrigEff() histograms
+    if (EventSelectorCompact(d_comp, "101111x_111", 2)) {
+      if (HasPhysTrig_mc) {
+        d_te_phys->Fill(d_comp->trk_rig[0]);
+      }
+      if (HasUnphTrig_mc) {
+        d_te_unph->Fill(d_comp->trk_rig[0]);
+      }
+    }
+
+    // Fill CutEff() histograms
+    // TOF charge cut
+    bool tof_q = (d_comp->tof_q_lay[0] > 0.8)&&(d_comp->tof_q_lay[0] < 1.5);
+    // Fill base histograms
+    if (EventSelectorCompact(d_comp, "110011x_111")) {d_Btof_MC->Fill(d_comp->trk_rig[0]);}
+    if (EventSelectorCompact(d_comp, "111100x_111") && tof_q) {d_Btrk_MC->Fill(d_comp->trk_rig[0]);}
+    if (EventSelectorCompact(d_comp, "111111x_001")) {d_Brch_MC->Fill(d_comp->trk_rig[0]);}
+    // Fill cut histograms
+    if (EventSelectorCompact(d_comp, "111111x_111")) {d_Cpar_MC->Fill(d_comp->trk_rig[0]);}
+    if (EventSelectorCompact(d_comp, "110111x_111")) {d_Cbet_MC->Fill(d_comp->trk_rig[0]);}
+    if (EventSelectorCompact(d_comp, "111100x_110") && tof_q) {d_Cchi_MC->Fill(d_comp->trk_rig[0]);}
+    if (EventSelectorCompact(d_comp, "111010x_110") && tof_q) {d_Cinn_MC->Fill(d_comp->trk_rig[0]);}
+    if (EventSelectorCompact(d_comp, "111000x_111") && tof_q) {d_Clay_MC->Fill(d_comp->trk_rig[0]);}
+    if (EventSelectorCompact(d_comp, "111111x_011")) {d_Ccon_MC->Fill(d_comp->trk_rig[0]);}
+    if (EventSelectorCompact(d_comp, "111111x_101")) {d_Cagl_MC->Fill(d_comp->trk_rig[0]);}
+    if (EventSelectorCompact(d_comp, "111111x_201")) {d_Cnaf_MC->Fill(d_comp->trk_rig[0]);}
+
+    }
+
+    // PROTONS
+    // Cut Efficiency MC Error
+    for (int i=0; i<32; i++) {
+      p_ce_err->SetBinContent(i+1, TMath::Sqrt((1/p_Cpar_MC->GetBinContent(i+1) + 1/p_Btof_MC->GetBinContent(i+1))
+                                   + (1/p_Cbet_MC->GetBinContent(i+1) + 1/p_Btof_MC->GetBinContent(i+1))
+                                   + (1/p_Cchi_MC->GetBinContent(i+1) + 1/p_Btrk_MC->GetBinContent(i+1))
+                                   + (1/p_Cinn_MC->GetBinContent(i+1) + 1/p_Btrk_MC->GetBinContent(i+1))));
+    }
+    // Divide by corresponding instrument base
+    p_Cpar_MC->Divide(p_Btof_MC);
+    p_Cbet_MC->Divide(p_Btof_MC);
+    p_Cchi_MC->Divide(p_Btrk_MC);
+    p_Cinn_MC->Divide(p_Btrk_MC);
+    // Cut Efficiency MC
+    for (int i=0; i<32; i++) {
+      p_ce->SetBinContent(i+1, p_Cpar_MC->GetBinContent(i+1)
+                               * p_Cbet_MC->GetBinContent(i+1)
+                               * p_Cchi_MC->GetBinContent(i+1)
+                               * p_Cinn_MC->GetBinContent(i+1));
+    }
+
+    // DEUTERONS
+    // Cut Efficiency MC Error
+    for (int i=0; i<32; i++) {
+      d_ce_err->SetBinContent(i+1, TMath::Sqrt((1/d_Cpar_MC->GetBinContent(i+1) + 1/d_Btof_MC->GetBinContent(i+1))
+                                   + (1/d_Cbet_MC->GetBinContent(i+1) + 1/d_Btof_MC->GetBinContent(i+1))
+                                   + (1/d_Cchi_MC->GetBinContent(i+1) + 1/d_Btrk_MC->GetBinContent(i+1))
+                                   + (1/d_Cinn_MC->GetBinContent(i+1) + 1/d_Btrk_MC->GetBinContent(i+1))
+                                   + (1/d_Clay_MC->GetBinContent(i+1) + 1/d_Btrk_MC->GetBinContent(i+1))
+                                   + (1/d_Ccon_MC->GetBinContent(i+1) + 1/d_Brch_MC->GetBinContent(i+1))
+                                   + (1/d_Cagl_MC->GetBinContent(i+1) + 1/d_Brch_MC->GetBinContent(i+1))
+                                   + (1/d_Cnaf_MC->GetBinContent(i+1) + 1/d_Brch_MC->GetBinContent(i+1))));
+    }
+    // Divide by corresponding instrument base
+    d_Cpar_MC->Divide(d_Btof_MC);
+    d_Cbet_MC->Divide(d_Btof_MC);
+    d_Cchi_MC->Divide(d_Btrk_MC);
+    d_Cinn_MC->Divide(d_Btrk_MC);
+    d_Clay_MC->Divide(d_Btrk_MC);
+    d_Ccon_MC->Divide(d_Brch_MC);
+    d_Cagl_MC->Divide(d_Brch_MC);
+    d_Cnaf_MC->Divide(d_Brch_MC);
+    // Cut Efficiency MC
+    for (int i=0; i<32; i++) {
+      d_ce->SetBinContent(i+1, d_Cpar_MC->GetBinContent(i+1)
+                               * d_Cbet_MC->GetBinContent(i+1)
+                               * d_Cchi_MC->GetBinContent(i+1)
+                               * d_Cinn_MC->GetBinContent(i+1)
+                               * d_Clay_MC->GetBinContent(i+1)
+                               * d_Ccon_MC->GetBinContent(i+1)
+                               * d_Cagl_MC->GetBinContent(i+1)
+                               * d_Cnaf_MC->GetBinContent(i+1));
+    }
 
   // Fill file
+  // Acceptance()
   p_det->Write();
   p_cut->Write();
   p_gen->Write();
   d_det->Write();
   d_cut->Write();
   d_gen->Write();
+  // TrigEff()
+  p_te_phys->Write();
+  p_te_unph->Write();
+  d_te_phys->Write();
+  d_te_unph->Write();
+  // CutEff()
+  p_ce->Write();
+  p_ce_err->Write();
+  d_ce->Write();
+  d_ce_err->Write();
 
   // Write file
   f.Write();

@@ -742,57 +742,68 @@ void Anaaqra::CutEff(bool plot_all = 0) {
 
   cout << "Running CutEff()..." << endl;
 
-  // Temporary histograms
-  TH1F *Cpar_MC = new TH1F("Cpar_MC", "Single Particle Cut", 32, Bin_edges);
-  TH1F *Cbet_MC = new TH1F("Cbet_MC", "Downward Particle Cut", 32, Bin_edges);
-  TH1F *Cchi_MC = new TH1F("Cchi_MC", "Well-constructed Track Cut", 32, Bin_edges);
-  TH1F *Cinn_MC = new TH1F("Cinn_MC", "Inner Tracker Charge Cut", 32, Bin_edges);
-  TH1F *Btof_MC = new TH1F("Btof_MC", "TOF Base Cut", 32, Bin_edges);
-  TH1F *Btrk_MC = new TH1F("Btrk_MC", "Tracker Base Cut", 32, Bin_edges);
-
-  // Loop over MC entries
-  for (int i=0; i<MC_chain->GetEntries(); i++) {
-
-    // Get entry
-    MC_chain->GetEntry(i);
-
-    //bool tof_q = (MC_comp->tof_q_lay[0] > 0.8)&&(MC_comp->tof_q_lay[0] < 1.5);
-    bool tof_q = 1;
-
-    // Fill base histograms
-    if (EventSelectorCompact(MC_comp, "110011x_111")) {Btof_MC->Fill(MC_comp->trk_rig[0]);}
-    if (EventSelectorCompact(MC_comp, "111100x_111") && tof_q) {Btrk_MC->Fill(MC_comp->trk_rig[0]);}
-
-    // Fill cut histograms
-    if (EventSelectorCompact(MC_comp, "111111x_111")) {Cpar_MC->Fill(MC_comp->trk_rig[0]);}
-    if (EventSelectorCompact(MC_comp, "110111x_111")) {Cbet_MC->Fill(MC_comp->trk_rig[0]);}
-    if (EventSelectorCompact(MC_comp, "111100x_111") && tof_q) {Cchi_MC->Fill(MC_comp->trk_rig[0]);}
-    if (EventSelectorCompact(MC_comp, "111010x_111") && tof_q) {Cinn_MC->Fill(MC_comp->trk_rig[0]);}
-
+  // Get MC histograms
+  TFile *mcf = new TFile("../MCHists.root");
+  if (atype == 1){
+    CutEff_MC = (TH1F*)mcf->Get("p_ce");
+    CutEff_MC_err = (TH1F*)mcf->Get("p_ce_err");
+  } else if (atype == 2){
+    CutEff_MC = (TH1F*)mcf->Get("d_ce");
+    CutEff_MC_err = (TH1F*)mcf->Get("d_ce_err");
   }
 
-  // Cut Efficiency MC Error
-  for (int i=0; i<Bin_num; i++) {
-    CE_mc_err[i] = TMath::Sqrt((1/Cpar_MC->GetBinContent(i+1) + 1/Btof_MC->GetBinContent(i+1))
-                   + (1/Cbet_MC->GetBinContent(i+1) + 1/Btof_MC->GetBinContent(i+1))
-                   + (1/Cchi_MC->GetBinContent(i+1) + 1/Btrk_MC->GetBinContent(i+1))
-                   + (1/Cinn_MC->GetBinContent(i+1) + 1/Btrk_MC->GetBinContent(i+1)));
-  }
+  // // Temporary histograms
+  // TH1F *Cpar_MC = new TH1F("Cpar_MC", "Single Particle Cut", 32, Bin_edges);
+  // TH1F *Cbet_MC = new TH1F("Cbet_MC", "Downward Particle Cut", 32, Bin_edges);
+  // TH1F *Cchi_MC = new TH1F("Cchi_MC", "Well-constructed Track Cut", 32, Bin_edges);
+  // TH1F *Cinn_MC = new TH1F("Cinn_MC", "Inner Tracker Charge Cut", 32, Bin_edges);
+  // TH1F *Btof_MC = new TH1F("Btof_MC", "TOF Base Cut", 32, Bin_edges);
+  // TH1F *Btrk_MC = new TH1F("Btrk_MC", "Tracker Base Cut", 32, Bin_edges);
+  //
+  // // Loop over MC entries
+  // for (int i=0; i<MC_chain->GetEntries(); i++) {
+  //
+  //   // Get entry
+  //   MC_chain->GetEntry(i);
+  //
+  //   // TOF charge cut
+  //   bool tof_q = (MC_comp->tof_q_lay[0] > 0.8)&&(MC_comp->tof_q_lay[0] < 1.5);
+  //
+  //   // Fill base histograms
+  //   if (EventSelectorCompact(MC_comp, "110011x_111")) {Btof_MC->Fill(MC_comp->trk_rig[0]);}
+  //   if (EventSelectorCompact(MC_comp, "111100x_111") && tof_q) {Btrk_MC->Fill(MC_comp->trk_rig[0]);}
+  //
+  //   // Fill cut histograms
+  //   if (EventSelectorCompact(MC_comp, "111111x_111")) {Cpar_MC->Fill(MC_comp->trk_rig[0]);}
+  //   if (EventSelectorCompact(MC_comp, "110111x_111")) {Cbet_MC->Fill(MC_comp->trk_rig[0]);}
+  //   if (EventSelectorCompact(MC_comp, "111100x_111") && tof_q) {Cchi_MC->Fill(MC_comp->trk_rig[0]);}
+  //   if (EventSelectorCompact(MC_comp, "111010x_111") && tof_q) {Cinn_MC->Fill(MC_comp->trk_rig[0]);}
+  //
+  // }
+  //
+  // // Cut Efficiency MC Error
+  // for (int i=0; i<Bin_num; i++) {
+  //   CE_mc_err[i] = TMath::Sqrt((1/Cpar_MC->GetBinContent(i+1) + 1/Btof_MC->GetBinContent(i+1))
+  //                  + (1/Cbet_MC->GetBinContent(i+1) + 1/Btof_MC->GetBinContent(i+1))
+  //                  + (1/Cchi_MC->GetBinContent(i+1) + 1/Btrk_MC->GetBinContent(i+1))
+  //                  + (1/Cinn_MC->GetBinContent(i+1) + 1/Btrk_MC->GetBinContent(i+1)));
+  // }
+  //
+  // // Divide by corresponding instrument base
+  // Cpar_MC->Divide(Btof_MC);
+  // Cbet_MC->Divide(Btof_MC);
+  // Cchi_MC->Divide(Btrk_MC);
+  // Cinn_MC->Divide(Btrk_MC);
+  //
+  // // Loop over rigidity bins
+  // for (int i=0; i<Bin_num; i++) {
+  //   CutEff_MC->SetBinContent(i+1, Cpar_MC->GetBinContent(i+1)
+  //                               * Cbet_MC->GetBinContent(i+1)
+  //                               * Cchi_MC->GetBinContent(i+1)
+  //                               * Cinn_MC->GetBinContent(i+1));
+  // }
 
-  // Divide by corresponding instrument base
-  Cpar_MC->Divide(Btof_MC);
-  Cbet_MC->Divide(Btof_MC);
-  Cchi_MC->Divide(Btrk_MC);
-  Cinn_MC->Divide(Btrk_MC);
-
-  // Loop over rigidity bins
-  for (int i=0; i<Bin_num; i++) {
-    CutEff_MC->SetBinContent(i+1, Cpar_MC->GetBinContent(i+1)
-                                * Cbet_MC->GetBinContent(i+1)
-                                * Cchi_MC->GetBinContent(i+1)
-                                * Cinn_MC->GetBinContent(i+1));
-  }
-
+  // DATA
   // Temporary histograms
   TH1F *Cpar_data = new TH1F("Cpar_data", "Single Particle Cut", 32, Bin_edges);
   TH1F *Cbet_data = new TH1F("Cbet_data", "Downward Particle Cut", 32, Bin_edges);
@@ -924,27 +935,37 @@ void Anaaqra::TrigEff(int delta = 100) {
 
   cout << "Running TrigEff()..." << endl;
 
-  // Loop over MC entries
-  for (int i=0; i<MC_chain->GetEntries(); i++) {
-
-    // Get entry
-    MC_chain->GetEntry(i);
-
-    // Check for physical trigger
-    bool HasPhysTrig_mc = ((MC_comp->sublvl1&0x3E)!=0)&&((MC_comp->trigpatt&0x2)!=0);
-    bool HasUnphTrig_mc = ((MC_comp->sublvl1&0x3E)==0)&&((MC_comp->trigpatt&0x2)!=0);
-
-    // Fill histograms
-    if (EventSelectorCompact(MC_comp, "101111x_111")) {
-      if (HasPhysTrig_mc) {
-        PhysHist_mc->Fill(MC_comp->trk_rig[0]);
-      }
-      if (HasUnphTrig_mc) {
-        UnphHist_mc->Fill(MC_comp->trk_rig[0]);
-      }
-    }
-
+  // Get MC histograms
+  TFile *mcf = new TFile("../MCHists.root");
+  if (atype == 1){
+    PhysHist_mc = (TH1F*)mcf->Get("p_te_phys");
+    UnphHist_mc = (TH1F*)mcf->Get("p_te_unph");
+  } else if (atype == 2){
+    PhysHist_mc = (TH1F*)mcf->Get("d_te_phys");
+    UnphHist_mc = (TH1F*)mcf->Get("d_te_unph");
   }
+
+  // // Loop over MC entries
+  // for (int i=0; i<MC_chain->GetEntries(); i++) {
+  //
+  //   // Get entry
+  //   MC_chain->GetEntry(i);
+  //
+  //   // Check for physical trigger
+  //   bool HasPhysTrig_mc = ((MC_comp->sublvl1&0x3E)!=0)&&((MC_comp->trigpatt&0x2)!=0);
+  //   bool HasUnphTrig_mc = ((MC_comp->sublvl1&0x3E)==0)&&((MC_comp->trigpatt&0x2)!=0);
+  //
+  //   // Fill histograms
+  //   if (EventSelectorCompact(MC_comp, "101111x_111")) {
+  //     if (HasPhysTrig_mc) {
+  //       PhysHist_mc->Fill(MC_comp->trk_rig[0]);
+  //     }
+  //     if (HasUnphTrig_mc) {
+  //       UnphHist_mc->Fill(MC_comp->trk_rig[0]);
+  //     }
+  //   }
+  //
+  // }
 
   // Loop over data entries
   for (int i=0; i<Simp_chain->GetEntries(); i++) {
