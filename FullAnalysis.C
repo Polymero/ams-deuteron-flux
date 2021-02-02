@@ -673,18 +673,18 @@ void Anaaqra::Acceptance(bool apply_cuts = 1) {
   // Get MC histograms
   TFile *mcf = new TFile("../MCHists.root");
   if (atype == 1){
-    TH1F* MC_generated = (TH1F*)mcf->Get("p_gen");
+    MC_generated = (TH1F*)mcf->Get("p_gen");
     if (apply_cuts == 0){
-      TH1F* MC_detected = (TH1F*)mcf->Get("p_det");
+      MC_detected = (TH1F*)mcf->Get("p_det");
     } else if (apply_cuts == 1){
-      TH1F* MC_detected = (TH1F*)mcf->Get("p_cut");
+      MC_detected = (TH1F*)mcf->Get("p_cut");
     }
   } else if (atype == 2){
-    TH1F* MC_generated = (TH1F*)mcf->Get("d_gen");
+    MC_generated = (TH1F*)mcf->Get("d_gen");
     if (apply_cuts == 0){
-      TH1F* MC_detected = (TH1F*)mcf->Get("d_det");
+      MC_detected = (TH1F*)mcf->Get("d_det");
     } else if (apply_cuts == 1){
-      TH1F* MC_detected = (TH1F*)mcf->Get("d_cut");
+      MC_detected = (TH1F*)mcf->Get("d_cut");
     }
   }
 
