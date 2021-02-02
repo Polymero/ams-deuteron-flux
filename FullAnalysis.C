@@ -44,37 +44,36 @@ class Anaaqra {
 
     // Histograms
     // RigBinner()
-    TH1F *Events_raw           = new TH1F("Events_raw", "Raw AMS-02 Events", 32, Bin_edges);
-    TH1F *Events_cut           = new TH1F("Events_cut", "Selected AMS-02 Events", 32, Bin_edges);
+    TH1F *Events_raw      = new TH1F("Events_raw", "Raw AMS-02 Events", 32, Bin_edges);
+    TH1F *Events_cut      = new TH1F("Events_cut", "Selected AMS-02 Events", 32, Bin_edges);
     // Exposure()
-    TH1F *ExposureTime         = new TH1F("ExposureTime", "Exposure Time per Rigidity Bin", 32, Bin_edges);
+    TH1F *ExposureTime    = new TH1F("ExposureTime", "Exposure Time per Rigidity Bin", 32, Bin_edges);
     // ProtonRate()
-    TH1F *RateHist             = new TH1F("RateHist", "Proton Rate per Rigidity Bin", 32, Bin_edges);
+    TH1F *RateHist        = new TH1F("RateHist", "Proton Rate per Rigidity Bin", 32, Bin_edges);
     // Acceptance()
-    TH1F *MC_generated         = new TH1F("MC_generated", "Generated MC Events per Rigidity Bin", 32, Bin_edges);
-    TH1F *MC_detected          = new TH1F("MC_detected", "Detected MC Events per Rigidity Bin", 32, Bin_edges);
-    TH1F *AcceptHist           = new TH1F("AcceptHist", "Acceptance per Rigidity Bin", 32, Bin_edges);
-    TGraphErrors* Accept_graph = new TGraphErrors();
+    TH1F *MC_generated    = new TH1F("MC_generated", "Generated MC Events per Rigidity Bin", 32, Bin_edges);
+    TH1F *MC_detected     = new TH1F("MC_detected", "Detected MC Events per Rigidity Bin", 32, Bin_edges);
+    TH1F *AcceptHist      = new TH1F("AcceptHist", "Acceptance per Rigidity Bin", 32, Bin_edges);
     // CutEff()
-    TH1F *CutEff_data          = new TH1F("CutEff_data", "Selection Efficiency of Data per Rigidity Bin", 32, Bin_edges);
-    TH1F *CutEff_MC            = new TH1F("CutEff_MC", "Selection Efficiency of MC per Rigidity Bin", 32, Bin_edges);
+    TH1F *CutEff_data     = new TH1F("CutEff_data", "Selection Efficiency of Data per Rigidity Bin", 32, Bin_edges);
+    TH1F *CutEff_MC       = new TH1F("CutEff_MC", "Selection Efficiency of MC per Rigidity Bin", 32, Bin_edges);
     // TrigEff()
-    TH1F *PhysHist_mc          = new TH1F("PhysHist_mc", "PhysHist_mc", 32, Bin_edges);
-    TH1F *UnphHist_mc          = new TH1F("UnphHist_mc", "UnphHist_mc", 32, Bin_edges);
-    TH1F *PhysHist_data        = new TH1F("PhysHist_data", "PhysHist_data", 32, Bin_edges);
-    TH1F *UnphHist_data        = new TH1F("UnphHist_data", "UnphHist_data", 32, Bin_edges);
-    TH1F *TrigEff_data         = new TH1F("TrigEff_data", "Trigger Efficiency of Data per Rigidity Bin", 32, Bin_edges);
-    TH1F *TrigEff_MC           = new TH1F("TrigEff_MC", "Trigger Efficiency of MC per Rigidity Bin", 32, Bin_edges);
+    TH1F *PhysHist_mc     = new TH1F("PhysHist_mc", "PhysHist_mc", 32, Bin_edges);
+    TH1F *UnphHist_mc     = new TH1F("UnphHist_mc", "UnphHist_mc", 32, Bin_edges);
+    TH1F *PhysHist_data   = new TH1F("PhysHist_data", "PhysHist_data", 32, Bin_edges);
+    TH1F *UnphHist_data   = new TH1F("UnphHist_data", "UnphHist_data", 32, Bin_edges);
+    TH1F *TrigEff_data    = new TH1F("TrigEff_data", "Trigger Efficiency of Data per Rigidity Bin", 32, Bin_edges);
+    TH1F *TrigEff_MC      = new TH1F("TrigEff_MC", "Trigger Efficiency of MC per Rigidity Bin", 32, Bin_edges);
     // ProtonFlux()
-    TH1F *FluxHist             = new TH1F("FluxHist", "Flux per Rigidity Bin", 32, Bin_edges);
+    TH1F *FluxHist        = new TH1F("FluxHist", "Flux per Rigidity Bin", 32, Bin_edges);
 
     // Data objects
-    TChain *Simp_chain         = new TChain("Simp");
-    TChain *RTII_chain         = new TChain("RTIInfo");
-    TChain *MC_chain           = new TChain("Compact");
-    Miiqtool *Tool             = new Miiqtool();
-    MiiqRTI *Woi               = new MiiqRTI();
-    NtpCompact *MC_comp        = new NtpCompact();
+    TChain *Simp_chain    = new TChain("Simp");
+    TChain *RTII_chain    = new TChain("RTIInfo");
+    TChain *MC_chain      = new TChain("Compact");
+    Miiqtool *Tool        = new Miiqtool();
+    MiiqRTI *Woi          = new MiiqRTI();
+    NtpCompact *MC_comp   = new NtpCompact();
 
     // TGraph arrays
     // RigBinner()
@@ -87,15 +86,28 @@ class Anaaqra {
     // CutEff()
     double CE_mc[32]; double CE_mc_err[32];
     double CE_data[32]; double CE_data_err[32];
+    double CE_ratio[32]; double CE_ratio_err[32];
     // TrigEff()
     double TE_mc[32]; double TE_mc_err[32];
     double TE_data[32]; double TE_data_err[32];
+    double TE_ratio[32]; double TE_ratio_err[32];
     // Rate()
     double PRate[32]; double PRate_err[32];
     // Flux()
     double PFlux[32]; double PFlux_err[32];
     double PSFlux[32]; double PSFlux_err[32];
     double PSFlux_SSDC_Ratio[32];
+
+    // TGraphs
+    // Acceptance()
+    TGraphErrors* Accept_graph = new TGraphErrors();
+    // TrigEff()
+    TGraphErrors* TE_MC_Graph = new TGraphErrors();
+    TGraphErrors* TE_Data_Graph = new TGraphErrors();
+    TGraphErrors* TE_Ratio_Graph = new TGraphErrors();
+    // Flux()
+    TGraphErrors* SFlux_Graph = new TGraphErrors();
+    TGraph* SFlux_Ratio = new TGraph();
 
     //----------------------------------------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTORS
@@ -873,8 +885,10 @@ void Anaaqra::CutEff(bool plot_all = 0) {
   for (int i=0; i<Bin_num; i++) {
     CE_mc[i] = CutEff_MC->GetBinContent(i+1);
     CE_data[i] = CutEff_data->GetBinContent(i+1);
+    CE_ratio[i] = CE_mc[i] / CE_data[i];
     CE_mc_err[i] *= CE_mc[i];
     CE_data_err[i] *= CE_data[i];
+    CE_ratio_err[i] = CE_ratio[i] * TMath::Sqrt(pow(CE_mc_err[i]/CE_mc[i], 2) + pow(CE_data_err[i]/CE_data[i], 2));
   }
   TGraphErrors* ce_mc_graph = new TGraphErrors(32, Bin_mid, CE_mc, Bin_err, CE_mc_err);
   TGraphErrors* ce_data_graph = new TGraphErrors(32, Bin_mid, CE_data, Bin_err, CE_data_err);
@@ -975,32 +989,35 @@ void Anaaqra::TrigEff(int delta = 100) {
   for (int i=0; i<Bin_num; i++) {
     TE_mc[i] = TrigEff_MC->GetBinContent(i+1);
     TE_data[i] = TrigEff_data->GetBinContent(i+1);
+    TE_ratio[i] = TE_mc[i] / TE_data[i];
     TE_mc_err[i] = delta * TMath::Sqrt(PhysHist_mc->GetBinContent(i+1)*pow(UnphHist_mc->GetBinContent(i+1), 2)
                    + UnphHist_mc->GetBinContent(i+1)*pow(PhysHist_mc->GetBinContent(i+1), 2))
                    / pow((PhysHist_mc->GetBinContent(i+1) + delta * UnphHist_mc->GetBinContent(i+1)), 2);
     TE_data_err[i] = delta * TMath::Sqrt(PhysHist_data->GetBinContent(i+1)*pow(UnphHist_data->GetBinContent(i+1), 2)
                      + UnphHist_data->GetBinContent(i+1)*pow(PhysHist_data->GetBinContent(i+1), 2))
                      / pow((PhysHist_data->GetBinContent(i+1) + delta * UnphHist_data->GetBinContent(i+1)), 2);
+    TE_ratio_err[i] = TE_ratio[i] * TMath::Sqrt(pow(TE_mc_err[i]/TE_mc[i], 2) + pow(TE_data_err[i]/TE_data[i], 2));
   }
-  TGraphErrors* te_mc_graph = new TGraphErrors(32, Bin_mid, TE_mc, Bin_err, TE_mc_err);
-  TGraphErrors* te_data_graph = new TGraphErrors(32, Bin_mid, TE_data, Bin_err, TE_data_err);
+  TGraphErrors* TE_MC_Graph = new TGraphErrors(32, Bin_mid, TE_mc, Bin_err, TE_mc_err);
+  TGraphErrors* TE_Data_Graph = new TGraphErrors(32, Bin_mid, TE_data, Bin_err, TE_data_err);
+  TGraphErrors* TE_Ratio_Graph = new TGraphErrors(32, Bin_mid, TE_ratio, Bin_err, TE_ratio_err);
   // Canvas
   TCanvas* c_TrigEff = new TCanvas("c_TrigEff", "Trigger Efficiency per Rigitidy Bin");
-  te_mc_graph->Draw("AP");
-  te_data_graph->Draw("P");
+  TE_MC_Graph->Draw("AP");
+  TE_Data_Graph->Draw("P");
   // Styling
-  te_mc_graph->SetMarkerStyle(20);
-  te_mc_graph->SetMarkerSize(1);
-  te_mc_graph->SetMarkerColor(kRed);
-  te_data_graph->SetMarkerStyle(20);
-  te_data_graph->SetMarkerSize(1);
-  te_data_graph->SetMarkerColor(kBlue);
+  TE_MC_Graph->SetMarkerStyle(20);
+  TE_MC_Graph->SetMarkerSize(1);
+  TE_MC_Graph->SetMarkerColor(kRed);
+  TE_Data_Graph->SetMarkerStyle(20);
+  TE_Data_Graph->SetMarkerSize(1);
+  TE_Data_Graph->SetMarkerColor(kBlue);
   // Axes
   //c_TrigEff->SetLogy();
-  te_mc_graph->SetMaximum(1.0);
-  te_mc_graph->SetMinimum(0.0);
-  te_mc_graph->GetXaxis()->SetTitle("R [GV]");
-  te_mc_graph->GetYaxis()->SetTitle("Trigger Efficiency");
+  TE_MC_Graph->SetMaximum(1.0);
+  TE_MC_Graph->SetMinimum(0.0);
+  TE_MC_Graph->GetXaxis()->SetTitle("R [GV]");
+  TE_MC_Graph->GetYaxis()->SetTitle("Trigger Efficiency");
   // Print
   c_TrigEff->Draw();
   c_TrigEff->Print((outdir + "Trigger Efficiency.png").c_str());
@@ -1115,36 +1132,36 @@ void Anaaqra::Flux(bool comp = 0) {
     pubpflux->GetPoint(i, SSDC_PFx, SSDC_PFy);
     PSFlux_SSDC_Ratio[i] = PSFlux[i] / SSDC_PFy;
   }
-  TGraphErrors* p_sflux_graph = new TGraphErrors(32, Bin_mid, PSFlux, Bin_err, PSFlux_err);
-  TGraph* p_sflux_ratio = new TGraph(32, Bin_mid, PSFlux_SSDC_Ratio);
+  SFlux_Graph = new TGraphErrors(32, Bin_mid, PSFlux, Bin_err, PSFlux_err);
+  SFlux_Ratio = new TGraph(32, Bin_mid, PSFlux_SSDC_Ratio);
   // Canvas
   TCanvas* c_SFlux = new TCanvas("c_SFlux", "Scaled Proton Flux per Rigitidy Bin");
   c_SFlux->Divide(1,2);
   // First split
   c_SFlux->cd(1);
-  p_sflux_graph->Draw("AP");
+  SFlux_Graph->Draw("AP");
   pubpflux->Draw("P");
   // Styling
-  p_sflux_graph->SetMarkerStyle(20);
-  p_sflux_graph->SetMarkerSize(1);
-  p_sflux_graph->SetMarkerColor(kRed);
+  SFlux_Graph->SetMarkerStyle(20);
+  SFlux_Graph->SetMarkerSize(1);
+  SFlux_Graph->SetMarkerColor(kRed);
   // Axes
   c_SFlux->SetLogy();
-  p_sflux_graph->GetXaxis()->SetTitle("R [GV]");
-  p_sflux_graph->GetYaxis()->SetTitle("Flux R^2.7 [m^-2 sr^-1 s^-1 GV^1.7]");
-  p_sflux_graph->SetMaximum(18000);
+  SFlux_Graph->GetXaxis()->SetTitle("R [GV]");
+  SFlux_Graph->GetYaxis()->SetTitle("Flux R^2.7 [m^-2 sr^-1 s^-1 GV^1.7]");
+  SFlux_Graph->SetMaximum(18000);
   // Second split
   c_SFlux->cd(2);
-  p_sflux_ratio->Draw("AP");
+  SFlux_Ratio->Draw("AP");
   // Styling
-  p_sflux_ratio->SetMarkerStyle(20);
-  p_sflux_ratio->SetMarkerSize(1);
-  p_sflux_ratio->SetMarkerColor(kBlack);
+  SFlux_Ratio->SetMarkerStyle(20);
+  SFlux_Ratio->SetMarkerSize(1);
+  SFlux_Ratio->SetMarkerColor(kBlack);
   // Axes
   c_SFlux->SetLogy(0);
-  p_sflux_ratio->GetXaxis()->SetTitle("R [GV]");
-  p_sflux_ratio->GetYaxis()->SetTitle("Flux Ratio");
-  p_sflux_ratio->SetMaximum(2); p_sflux_ratio->SetMinimum(0);
+  SFlux_Ratio->GetXaxis()->SetTitle("R [GV]");
+  SFlux_Ratio->GetYaxis()->SetTitle("Flux Ratio");
+  SFlux_Ratio->SetMaximum(2); SFlux_Ratio->SetMinimum(0);
 
   // Print
   c_SFlux->Draw();
