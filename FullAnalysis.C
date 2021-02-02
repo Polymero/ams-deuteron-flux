@@ -29,6 +29,10 @@ class Anaaqra {
     //----------------------------------------------------------------------------------------------------------------------------------------------------
     // Analysis type
     int atype = 0;
+    std::string outdir;
+    // MC Files
+    int start_num = 0;
+
     // Rigidity bins
     const int Bin_num = 32;
     double Bin_edges[32+1] = {1.00,1.16,1.33,1.51,1.71,1.92,2.15,2.40,2.67,2.97,
@@ -37,8 +41,6 @@ class Anaaqra {
                               19.5,21.1,22.8};
     double Bin_err[32];
     double Bin_mid[32];
-    // MC Files
-    int Start_num = 1209496744;
 
     // Histograms
     // RigBinner()
@@ -102,8 +104,12 @@ class Anaaqra {
       // Analysis type
       if (type == "proton" || type == "p" || type == "1H"){
         atype = 1;
+        outdir = "./ProtonAnalysis/";
+        start_num = 1209496744;
       } else if (type == "deuteron" || type == "d" || type == "2H"){
         atype = 2;
+        outdir = "./DeuteronAnalysis/";
+        start_num = 74496930;
       } else {
         cout << "Analysis type not recognised!\n" << endl;
       }
@@ -122,7 +128,12 @@ class Anaaqra {
       // Read the trees
       Simp_chain->Add("../Simp.root");
       RTII_chain->Add("../Simp.root");
-      MC_chain->Add("../MC Protons/*.root");
+      if (atype == 1){
+        MC_chain->Add("../MC Protons/*.root");
+      } else if (atype == 2){
+        MC_chain->Add("../MC Deuterons/*.root");
+      }
+
       // Set branch addresses
       Simp_chain->SetBranchAddress("Simp", &Tool);
       RTII_chain->SetBranchAddress("RTI", &Woi);
@@ -517,7 +528,7 @@ void Anaaqra::RigBinner() {
   ev_raw_graph->GetYaxis()->SetTitle("Events");
   // Print
   c_Events->Draw();
-  c_Events->Print("./ProtonAnalysis/(Selected) Events.png");
+  c_Events->Print((outdir + "(Selected) Events.png").c_str());
 
   cout << "RigBinner() has finished!\n" << endl;
 
@@ -567,7 +578,7 @@ void Anaaqra::Exposure() {
   exptime_graph->GetYaxis()->SetTitle("Exposure Time [s]");
   // Print
   c_Exposure->Draw();
-  c_Exposure->Print("./ProtonAnalysis/Exposure Time.png");
+  c_Exposure->Print((outdir + "Exposure Time.png").c_str());
 
     cout << "Exposure() has finished!\n" << endl;
 
@@ -577,7 +588,7 @@ void Anaaqra::Exposure() {
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Returns TH1F of the geometric Acceptance
-void Anaaqra::Acceptance(bool apply_cuts = 0) {
+void Anaaqra::Acceptance(bool apply_cuts = 1) {
 
   cout << "Running Acceptance()..." << endl;
 
@@ -585,14 +596,25 @@ void Anaaqra::Acceptance(bool apply_cuts = 0) {
   MC_detected->Reset("ICESM");
   MC_generated->Reset("ICESM");
 
+  int mc_num = 0;
+  if (atype == 1){
+    mc_num = 53;
+  } else if (atype == 2){
+    mc_num = 141;
+  }
   // Loop over MC root files individually
-  for (int i=0; i<13; i++) {
+  for (int i=0; i<mc_num; i++) {
 
     // Import tree
     TChain mc_chain("Compact");
     TChain fi_chain("File");
-    mc_chain.Add(Form("../MC Protons/%d.root", Start_num + i));
-    fi_chain.Add(Form("../MC Protons/%d.root", Start_num + i));
+    if (atype == 1){
+      mc_chain.Add(Form("../MC Protons/%d.root", Start_num + i));
+      fi_chain.Add(Form("../MC Protons/%d.root", Start_num + i));
+    } else if (atype == 2){
+      mc_chain.Add(Form("../MC Deuterons/%d.root", Start_num + i));
+      fi_chain.Add(Form("../MC Deuterons/%d.root", Start_num + i));
+    }
     // Create empty class objects
     NtpCompact *comp = new class NtpCompact();
     FileMCInfo *fmci = new class FileMCInfo();
@@ -639,7 +661,7 @@ void Anaaqra::Acceptance(bool apply_cuts = 0) {
 
     // Apply cuts
     if (apply_cuts) {
-      if (EventSelectorCompact(MC_comp, "1111111_111")) {
+      if (EventSelectorCompact(MC_comp, "111111x_111")) {
         MC_detected->Fill(MC_comp->trk_rig[0]);
       }
     } else {
@@ -675,7 +697,7 @@ void Anaaqra::Acceptance(bool apply_cuts = 0) {
   accept_graph->GetYaxis()->SetTitle("Acceptance [m^2 sr]");
   // Print
   c_Accept->Draw();
-  c_Accept->Print("./ProtonAnalysis/Acceptance.png");
+  c_Accept->Print((outdir + "Acceptance.png").c_str());
 
   cout << "Acceptance() has finished!\n" << endl;
 
@@ -855,7 +877,7 @@ void Anaaqra::CutEff(bool plot_all = 0) {
   ce_mc_graph->GetYaxis()->SetTitle("Selection Efficiency");
   // Print
   c_CutEff->Draw();
-  c_CutEff->Print("./ProtonAnalysis/Selection Efficiency.png");
+  c_CutEff->Print((outdir + "Selection Efficiency.png").c_str());
 
   cout << "CutEff() has finished!\n" << endl;
 
@@ -962,7 +984,7 @@ void Anaaqra::TrigEff(int delta = 100) {
   te_mc_graph->GetYaxis()->SetTitle("Trigger Efficiency");
   // Print
   c_TrigEff->Draw();
-  c_TrigEff->Print("./ProtonAnalysis/Trigger Efficiency.png");
+  c_TrigEff->Print((outdir + "Trigger Efficiency.png").c_str());
 
   cout << "TrigEff() has finished!\n" << endl;
 
@@ -1005,7 +1027,7 @@ void Anaaqra::Rate() {
   p_rate_graph->GetYaxis()->SetTitle("Rate [s^-1]");
   // Print
   c_Rate->Draw();
-  c_Rate->Print("./ProtonAnalysis/Proton Rate.png");
+  c_Rate->Print((outdir + "Proton Rate.png").c_str());
 
   cout << "Rate() has finished!\n" << endl;
 
@@ -1059,7 +1081,7 @@ void Anaaqra::Flux(bool comp = 0) {
   p_flux_graph->GetYaxis()->SetTitle("Flux [m^-2 sr^-1 s^-1 GV^-1]");
   // Print
   c_Flux->Draw();
-  c_Flux->Print("./ProtonAnalysis/Proton Flux.png");
+  c_Flux->Print((outdir + "Proton Flux.png").c_str());
 
   // Comparison to SSDC data
   TFile *ssdc = new TFile("../SSDC_PubPFlux/ssdc_canvas.root","open");
@@ -1107,7 +1129,7 @@ void Anaaqra::Flux(bool comp = 0) {
 
   // Print
   c_SFlux->Draw();
-  c_SFlux->Print("./ProtonAnalysis/Scaled Proton Flux.png");
+  c_SFlux->Print((outdir + "Scaled Proton Flux.png").c_str());
 
   cout << "Flux() has finished!\n" << endl;
 
@@ -1148,20 +1170,20 @@ void Anaaqra::RICH_MB(int proj_num = 10){
   TCanvas *ABMcanvas = new TCanvas("ABMcanvas", "Aerogel Beta Mass");
   aero_beta_mass->Draw("COLZ");
   ABMcanvas->SetLogx(0); ABMcanvas->SetLogy(0); ABMcanvas->SetLogz(1);
-  ABMcanvas->Draw(); ABMcanvas->Print("./ProtonAnalysis/RICH_MB/Aerogel Beta Mass.png");
+  ABMcanvas->Draw(); ABMcanvas->Print((outdir + "RICH_MB/Aerogel Beta Mass.png").c_str());
   TCanvas *NBMcanvas = new TCanvas("NBMcanvas", "NaF Beta Mass");
   naf_beta_mass->Draw("COLZ");
   NBMcanvas->SetLogx(0); NBMcanvas->SetLogy(0); NBMcanvas->SetLogz(1);
-  NBMcanvas->Draw(); NBMcanvas->Print("./ProtonAnalysis/RICH_MB/NaF Beta Mass.png");
+  NBMcanvas->Draw(); NBMcanvas->Print((outdir + "RICH_MB/NaF Beta Mass.png").c_str());
 
   // Loop over projections
   TCanvas *Projs = new TCanvas("projs", "Projection Loop");
   Projs->SetLogy(1); Projs->SetLogx(0);
   for (int i=0; i<100/proj_num; i++) {
     aero_beta_mass->ProjectionY("", 1+proj_name*i, proj_name+proj_name*i)->Draw();
-    Projs->Draw(); Projs->Print(("./ProtonAnalysis/RICH_MB/Aerogel Beta Mass Slice" + std::to_string(i+1) + ".png").c_str());
+    Projs->Draw(); Projs->Print((outdir + "RICH_MB/Aerogel Beta Mass Slice" + std::to_string(i+1) + ".png").c_str());
     naf_beta_mass->ProjectionY("", 1+proj_name*i, proj_name+proj_name*i)->Draw();
-    Projs->Draw(); Projs->Print(("./ProtonAnalysis/RICH_MB/NaF Beta Mass Slice" + std::to_string(i+1) + ".png").c_str());
+    Projs->Draw(); Projs->Print((outdir + "RICH_MB/NaF Beta Mass Slice" + std::to_string(i+1) + ".png").c_str());
   }
 
   cout << "RICH_MB() has finished!\n" << endl;
