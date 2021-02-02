@@ -51,8 +51,8 @@ class Anaaqra {
     // ProtonRate()
     TH1F *RateHist        = new TH1F("RateHist", "Proton Rate per Rigidity Bin", 32, Bin_edges);
     // Acceptance()
-    TH1F *MC_generated    = new TH1F("MC_generated", "Generated MC Events per Rigidity Bin", 32, Bin_edges);
-    TH1F *MC_detected     = new TH1F("MC_detected", "Detected MC Events per Rigidity Bin", 32, Bin_edges);
+    // TH1F *MC_generated    = new TH1F("MC_generated", "Generated MC Events per Rigidity Bin", 32, Bin_edges);
+    // TH1F *MC_detected     = new TH1F("MC_detected", "Detected MC Events per Rigidity Bin", 32, Bin_edges);
     TH1F *AcceptHist      = new TH1F("AcceptHist", "Acceptance per Rigidity Bin", 32, Bin_edges);
     // CutEff()
     TH1F *CutEff_data     = new TH1F("CutEff_data", "Selection Efficiency of Data per Rigidity Bin", 32, Bin_edges);
@@ -592,82 +592,100 @@ void Anaaqra::Acceptance(bool apply_cuts = 1) {
 
   cout << "Running Acceptance()..." << endl;
 
-  // Clear histograms
-  MC_detected->Reset("ICESM");
-  MC_generated->Reset("ICESM");
+  // // Clear histograms
+  // MC_detected->Reset("ICESM");
+  // MC_generated->Reset("ICESM");
+  //
+  // int mc_num = 0;
+  // if (atype == 1){
+  //   mc_num = 53;
+  // } else if (atype == 2){
+  //   mc_num = 141;
+  // }
+  // // Loop over MC root files individually
+  // for (int i=0; i<mc_num; i++) {
+  //
+  //   // Import tree
+  //   TChain mc_chain("Compact");
+  //   TChain fi_chain("File");
+  //   if (atype == 1){
+  //     mc_chain.Add(Form("../MC Protons/%d.root", Start_num + i));
+  //     fi_chain.Add(Form("../MC Protons/%d.root", Start_num + i));
+  //   } else if (atype == 2){
+  //     mc_chain.Add(Form("../MC Deuterons/%d.root", Start_num + i));
+  //     fi_chain.Add(Form("../MC Deuterons/%d.root", Start_num + i));
+  //   }
+  //   // Create empty class objects
+  //   NtpCompact *comp = new class NtpCompact();
+  //   FileMCInfo *fmci = new class FileMCInfo();
+  //   // Set branch addresses
+  //   mc_chain.SetBranchAddress("Compact", &comp);
+  //   fi_chain.SetBranchAddress("FileMCInfo", &fmci);
+  //
+  //   // Temporary parameters
+  //   double ngen = 0;
+  //   double rig_min = 0;
+  //   double rig_max = 0;
+  //   // Get FileMCInfo entry for information about MC gegneration
+  //   fi_chain.GetEntry(0);
+  //   // Get parameters
+  //   ngen = fmci->ngen_datacard;
+  //   rig_min = fmci->momentum[0];
+  //   rig_max = fmci->momentum[1];
+  //
+  //   // 1/R generation spectum
+  //   TF1 *genFlux = new TF1("genFlux", "[0]/(x)", rig_min, rig_max);
+  //   // Normalisation
+  //   genFlux->SetParameter(0, log(rig_max / rig_min));
+  //
+  //   // Loop over rigidity bins
+  //   for (int j=0; j<Bin_num; j++) {
+  //
+  //     // Fraction of spectrum in bin
+  //     double frac = genFlux->Integral(Bin_edges[j], Bin_edges[j+1]) / genFlux->Integral(rig_min, rig_max);
+  //     // Number of events in fraction
+  //     double nev = frac * ngen;
+  //
+  //     // Set bin to current bin count + nev
+  //     MC_generated->SetBinContent(j+1, MC_generated->GetBinContent(j+1) + nev);
+  //
+  //   }
+  //
+  // }
+  //
+  // // Loop over MC Compact entries
+  // for (int i=0; i<MC_chain->GetEntries(); i++) {
+  //
+  //   // Get entry
+  //   MC_chain->GetEntry(i);
+  //
+  //   // Apply cuts
+  //   if (apply_cuts) {
+  //     if (EventSelectorCompact(MC_comp, "111111x_111")) {
+  //       MC_detected->Fill(MC_comp->trk_rig[0]);
+  //     }
+  //   } else {
+  //     MC_detected->Fill(MC_comp->trk_rig[0]);
+  //   }
+  //
+  // }
 
-  int mc_num = 0;
+  // Get MC histograms
+  TFile *mcf = new TFile("../MCHists.root");
   if (atype == 1){
-    mc_num = 53;
+    TH1F* MC_generated = (TH1F*)mcf.Get("p_gen");
+    if (apply_cuts == 0){
+      TH1F* MC_detected = (TH1F*)mcf.Get("p_det");
+    } else if (apply_cuts == 1){
+      TH1F* MC_detected = (TH1F*)mcf.Get("p_cut");
+    }
   } else if (atype == 2){
-    mc_num = 141;
-  }
-  // Loop over MC root files individually
-  for (int i=0; i<mc_num; i++) {
-
-    // Import tree
-    TChain mc_chain("Compact");
-    TChain fi_chain("File");
-    if (atype == 1){
-      mc_chain.Add(Form("../MC Protons/%d.root", Start_num + i));
-      fi_chain.Add(Form("../MC Protons/%d.root", Start_num + i));
-    } else if (atype == 2){
-      mc_chain.Add(Form("../MC Deuterons/%d.root", Start_num + i));
-      fi_chain.Add(Form("../MC Deuterons/%d.root", Start_num + i));
+    TH1F* MC_generated = (TH1F*)mcf.Get("d_gen");
+    if (apply_cuts == 0){
+      TH1F* MC_detected = (TH1F*)mcf.Get("d_det");
+    } else if (apply_cuts == 1){
+      TH1F* MC_detected = (TH1F*)mcf.Get("d_cut");
     }
-    // Create empty class objects
-    NtpCompact *comp = new class NtpCompact();
-    FileMCInfo *fmci = new class FileMCInfo();
-    // Set branch addresses
-    mc_chain.SetBranchAddress("Compact", &comp);
-    fi_chain.SetBranchAddress("FileMCInfo", &fmci);
-
-    // Temporary parameters
-    double ngen = 0;
-    double rig_min = 0;
-    double rig_max = 0;
-    // Get FileMCInfo entry for information about MC gegneration
-    fi_chain.GetEntry(0);
-    // Get parameters
-    ngen = fmci->ngen_datacard;
-    rig_min = fmci->momentum[0];
-    rig_max = fmci->momentum[1];
-
-    // 1/R generation spectum
-    TF1 *genFlux = new TF1("genFlux", "[0]/(x)", rig_min, rig_max);
-    // Normalisation
-    genFlux->SetParameter(0, log(rig_max / rig_min));
-
-    // Loop over rigidity bins
-    for (int j=0; j<Bin_num; j++) {
-
-      // Fraction of spectrum in bin
-      double frac = genFlux->Integral(Bin_edges[j], Bin_edges[j+1]) / genFlux->Integral(rig_min, rig_max);
-      // Number of events in fraction
-      double nev = frac * ngen;
-
-      // Set bin to current bin count + nev
-      MC_generated->SetBinContent(j+1, MC_generated->GetBinContent(j+1) + nev);
-
-    }
-
-  }
-
-  // Loop over MC Compact entries
-  for (int i=0; i<MC_chain->GetEntries(); i++) {
-
-    // Get entry
-    MC_chain->GetEntry(i);
-
-    // Apply cuts
-    if (apply_cuts) {
-      if (EventSelectorCompact(MC_comp, "111111x_111")) {
-        MC_detected->Fill(MC_comp->trk_rig[0]);
-      }
-    } else {
-      MC_detected->Fill(MC_comp->trk_rig[0]);
-    }
-
   }
 
   // Fill Acceptance histogram
