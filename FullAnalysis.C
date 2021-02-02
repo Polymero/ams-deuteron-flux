@@ -673,18 +673,18 @@ void Anaaqra::Acceptance(bool apply_cuts = 1) {
   // Get MC histograms
   TFile *mcf = new TFile("../MCHists.root");
   if (atype == 1){
-    TH1F* MC_generated = (TH1F*)mcf.Get("p_gen");
+    TH1F* MC_generated = (TH1F*)mcf->Get("p_gen");
     if (apply_cuts == 0){
-      TH1F* MC_detected = (TH1F*)mcf.Get("p_det");
+      TH1F* MC_detected = (TH1F*)mcf->Get("p_det");
     } else if (apply_cuts == 1){
-      TH1F* MC_detected = (TH1F*)mcf.Get("p_cut");
+      TH1F* MC_detected = (TH1F*)mcf->Get("p_cut");
     }
   } else if (atype == 2){
-    TH1F* MC_generated = (TH1F*)mcf.Get("d_gen");
+    TH1F* MC_generated = (TH1F*)mcf->Get("d_gen");
     if (apply_cuts == 0){
-      TH1F* MC_detected = (TH1F*)mcf.Get("d_det");
+      TH1F* MC_detected = (TH1F*)mcf->Get("d_det");
     } else if (apply_cuts == 1){
-      TH1F* MC_detected = (TH1F*)mcf.Get("d_cut");
+      TH1F* MC_detected = (TH1F*)mcf->Get("d_cut");
     }
   }
 
@@ -1198,9 +1198,9 @@ void Anaaqra::RICH_MB(int proj_num = 10){
   TCanvas *Projs = new TCanvas("projs", "Projection Loop");
   Projs->SetLogy(1); Projs->SetLogx(0);
   for (int i=0; i<100/proj_num; i++) {
-    aero_beta_mass->ProjectionY("", 1+proj_name*i, proj_name+proj_name*i)->Draw();
+    aero_beta_mass->ProjectionY("", 1+proj_num*i, proj_num+proj_num*i)->Draw();
     Projs->Draw(); Projs->Print((outdir + "RICH_MB/Aerogel Beta Mass Slice" + std::to_string(i+1) + ".png").c_str());
-    naf_beta_mass->ProjectionY("", 1+proj_name*i, proj_name+proj_name*i)->Draw();
+    naf_beta_mass->ProjectionY("", 1+proj_num*i, proj_num+proj_num*i)->Draw();
     Projs->Draw(); Projs->Print((outdir + "RICH_MB/NaF Beta Mass Slice" + std::to_string(i+1) + ".png").c_str());
   }
 
