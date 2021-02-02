@@ -702,7 +702,7 @@ void Anaaqra::Acceptance(bool apply_cuts = 1) {
   for (int i=0; i<Bin_num; i++) {
     Accept[i] = AcceptHist->GetBinContent(i+1);
   }
-  Accept_graph = TGraphErrors(32, Bin_mid, Accept, Bin_err, 0);
+  Accept_graph = new TGraphErrors(32, Bin_mid, Accept, Bin_err, 0);
   // Canvas
   TCanvas* c_Accept = new TCanvas("c_Accept", "Acceptance per Rigitidy Bin");
   Accept_graph->Draw("AP");
