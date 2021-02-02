@@ -44,36 +44,37 @@ class Anaaqra {
 
     // Histograms
     // RigBinner()
-    TH1F *Events_raw      = new TH1F("Events_raw", "Raw AMS-02 Events", 32, Bin_edges);
-    TH1F *Events_cut      = new TH1F("Events_cut", "Selected AMS-02 Events", 32, Bin_edges);
+    TH1F *Events_raw           = new TH1F("Events_raw", "Raw AMS-02 Events", 32, Bin_edges);
+    TH1F *Events_cut           = new TH1F("Events_cut", "Selected AMS-02 Events", 32, Bin_edges);
     // Exposure()
-    TH1F *ExposureTime    = new TH1F("ExposureTime", "Exposure Time per Rigidity Bin", 32, Bin_edges);
+    TH1F *ExposureTime         = new TH1F("ExposureTime", "Exposure Time per Rigidity Bin", 32, Bin_edges);
     // ProtonRate()
-    TH1F *RateHist        = new TH1F("RateHist", "Proton Rate per Rigidity Bin", 32, Bin_edges);
+    TH1F *RateHist             = new TH1F("RateHist", "Proton Rate per Rigidity Bin", 32, Bin_edges);
     // Acceptance()
-    TH1F *MC_generated    = new TH1F("MC_generated", "Generated MC Events per Rigidity Bin", 32, Bin_edges);
-    TH1F *MC_detected     = new TH1F("MC_detected", "Detected MC Events per Rigidity Bin", 32, Bin_edges);
-    TH1F *AcceptHist      = new TH1F("AcceptHist", "Acceptance per Rigidity Bin", 32, Bin_edges);
+    TH1F *MC_generated         = new TH1F("MC_generated", "Generated MC Events per Rigidity Bin", 32, Bin_edges);
+    TH1F *MC_detected          = new TH1F("MC_detected", "Detected MC Events per Rigidity Bin", 32, Bin_edges);
+    TH1F *AcceptHist           = new TH1F("AcceptHist", "Acceptance per Rigidity Bin", 32, Bin_edges);
+    TGraphErrors* Accept_graph = new TGraphErrors();
     // CutEff()
-    TH1F *CutEff_data     = new TH1F("CutEff_data", "Selection Efficiency of Data per Rigidity Bin", 32, Bin_edges);
-    TH1F *CutEff_MC       = new TH1F("CutEff_MC", "Selection Efficiency of MC per Rigidity Bin", 32, Bin_edges);
+    TH1F *CutEff_data          = new TH1F("CutEff_data", "Selection Efficiency of Data per Rigidity Bin", 32, Bin_edges);
+    TH1F *CutEff_MC            = new TH1F("CutEff_MC", "Selection Efficiency of MC per Rigidity Bin", 32, Bin_edges);
     // TrigEff()
-    TH1F *PhysHist_mc     = new TH1F("PhysHist_mc", "PhysHist_mc", 32, Bin_edges);
-    TH1F *UnphHist_mc     = new TH1F("UnphHist_mc", "UnphHist_mc", 32, Bin_edges);
-    TH1F *PhysHist_data   = new TH1F("PhysHist_data", "PhysHist_data", 32, Bin_edges);
-    TH1F *UnphHist_data   = new TH1F("UnphHist_data", "UnphHist_data", 32, Bin_edges);
-    TH1F *TrigEff_data    = new TH1F("TrigEff_data", "Trigger Efficiency of Data per Rigidity Bin", 32, Bin_edges);
-    TH1F *TrigEff_MC      = new TH1F("TrigEff_MC", "Trigger Efficiency of MC per Rigidity Bin", 32, Bin_edges);
+    TH1F *PhysHist_mc          = new TH1F("PhysHist_mc", "PhysHist_mc", 32, Bin_edges);
+    TH1F *UnphHist_mc          = new TH1F("UnphHist_mc", "UnphHist_mc", 32, Bin_edges);
+    TH1F *PhysHist_data        = new TH1F("PhysHist_data", "PhysHist_data", 32, Bin_edges);
+    TH1F *UnphHist_data        = new TH1F("UnphHist_data", "UnphHist_data", 32, Bin_edges);
+    TH1F *TrigEff_data         = new TH1F("TrigEff_data", "Trigger Efficiency of Data per Rigidity Bin", 32, Bin_edges);
+    TH1F *TrigEff_MC           = new TH1F("TrigEff_MC", "Trigger Efficiency of MC per Rigidity Bin", 32, Bin_edges);
     // ProtonFlux()
-    TH1F *FluxHist        = new TH1F("FluxHist", "Flux per Rigidity Bin", 32, Bin_edges);
+    TH1F *FluxHist             = new TH1F("FluxHist", "Flux per Rigidity Bin", 32, Bin_edges);
 
     // Data objects
-    TChain *Simp_chain    = new TChain("Simp");
-    TChain *RTII_chain    = new TChain("RTIInfo");
-    TChain *MC_chain      = new TChain("Compact");
-    Miiqtool *Tool        = new Miiqtool();
-    MiiqRTI *Woi          = new MiiqRTI();
-    NtpCompact *MC_comp   = new NtpCompact();
+    TChain *Simp_chain         = new TChain("Simp");
+    TChain *RTII_chain         = new TChain("RTIInfo");
+    TChain *MC_chain           = new TChain("Compact");
+    Miiqtool *Tool             = new Miiqtool();
+    MiiqRTI *Woi               = new MiiqRTI();
+    NtpCompact *MC_comp        = new NtpCompact();
 
     // TGraph arrays
     // RigBinner()
@@ -701,18 +702,18 @@ void Anaaqra::Acceptance(bool apply_cuts = 1) {
   for (int i=0; i<Bin_num; i++) {
     Accept[i] = AcceptHist->GetBinContent(i+1);
   }
-  TGraphErrors* accept_graph = new TGraphErrors(32, Bin_mid, Accept, Bin_err, 0);
+  Accept_graph = TGraphErrors(32, Bin_mid, Accept, Bin_err, 0);
   // Canvas
   TCanvas* c_Accept = new TCanvas("c_Accept", "Acceptance per Rigitidy Bin");
-  accept_graph->Draw("AP");
+  Accept_graph->Draw("AP");
   // Styling
-  accept_graph->SetMarkerStyle(20);
-  accept_graph->SetMarkerSize(1);
-  accept_graph->SetMarkerColor(kRed);
+  Accept_graph->SetMarkerStyle(20);
+  Accept_graph->SetMarkerSize(1);
+  Accept_graph->SetMarkerColor(kRed);
   // Axes
-  accept_graph->SetMinimum(0); accept_graph->SetMaximum(0.4);
-  accept_graph->GetXaxis()->SetTitle("R [GV]");
-  accept_graph->GetYaxis()->SetTitle("Acceptance [m^2 sr]");
+  Accept_graph->SetMinimum(0); Accept_graph->SetMaximum(0.4);
+  Accept_graph->GetXaxis()->SetTitle("R [GV]");
+  Accept_graph->GetYaxis()->SetTitle("Acceptance [m^2 sr]");
   // Print
   c_Accept->Draw();
   c_Accept->Print((outdir + "Acceptance.png").c_str());
