@@ -142,6 +142,48 @@ void Toimeejat(string rootfiles = "local") {
 
 }
 
+
+
+// Returns bool if event passed specified selection of cuts
+bool EventSelectorCompact(NtpCompact* comp, const char* cutbit) {
+
+  bool pass = 1;
+
+  // Boolean cuts (instead of TCut)
+  // Protons (base cuts)
+  bool Crig = (comp->trk_rig[0] > Bin_edges[0])&&(comp->trk_rig[0] <= Bin_edges[Bin_num]);
+  bool Ctrg = ((comp->sublvl1&0x3E)!=0)&&((comp->trigpatt&0x2)!=0);
+  bool Cpar = comp->status % 10 == 1;
+  bool Cbet = comp->tof_beta > 0.3;
+  bool Cchi = (comp->trk_chisqn[0][0] < 10)&&(comp->trk_chisqn[0][1] < 10)&&(comp->trk_chisqn[0][0] > 0)&&(comp->trk_chisqn[0][1] > 0);
+  bool Cinn = (comp->trk_q_inn > 0.80)&&(comp->trk_q_inn < 1.30);
+  // Adjust return bool according to cutbit
+  if (cutbit[0] == '1') {pass &= Crig;}
+  if (cutbit[1] == '1') {pass &= Ctrg;}
+  if (cutbit[2] == '1') {pass &= Cpar;}
+  if (cutbit[3] == '1') {pass &= Cbet;}
+  if (cutbit[4] == '1') {pass &= Cchi;}
+  if (cutbit[5] == '1') {pass &= Cinn;}
+  // Deuterons (additional cuts)
+  if (atype == 2){
+    bool Cagl = comp->rich_select == 2;
+    bool Cnaf = comp->rich_select == 1;
+    bool Ccon = std::abs(comp->tof_beta - comp->rich_beta)/comp->tof_beta < 0.05;
+    bool Clay = comp->trk_q_lay[0] <= 1.7;
+    // Adjust return bool according to cutbit
+    if (cutbit[8] == '1') {pass &= Cagl;}
+    if (cutbit[8] == '2') {pass &= Cnaf;}
+    if (cutbit[9] == '1') {pass &= Ccon;}
+    if (cutbit[10] == '1') {pass &= Clay;}
+  }
+
+  // Return
+  return pass;
+
+}
+
+
+
 void MCmeejat(string rootfiles == "kapteyn") {
 
   cout << "Running MCmeejat()..." << endl;
@@ -197,7 +239,7 @@ void MCmeejat(string rootfiles == "kapteyn") {
     rig_max = p_fmci->momentum[1];
 
     // 1/R generation spectrum
-    TD1 *genFlux = new TF1("genFlux", "[0]/(x)", rig_min, rig_max);
+    TF1 *genFlux = new TF1("genFlux", "[0]/(x)", rig_min, rig_max);
     // Normalisation
     genFlux->SetParameter(0, log(rig_max / rig_min));
 
@@ -237,7 +279,7 @@ void MCmeejat(string rootfiles == "kapteyn") {
     rig_max = d_fmci->momentum[1];
 
     // 1/R generation spectrum
-    TD1 *genFlux = new TF1("genFlux", "[0]/(x)", rig_min, rig_max);
+    TF1 *genFlux = new TF1("genFlux", "[0]/(x)", rig_min, rig_max);
     // Normalisation
     genFlux->SetParameter(0, log(rig_max / rig_min));
 
@@ -256,16 +298,16 @@ void MCmeejat(string rootfiles == "kapteyn") {
   // Loop over MC Compact entries
   // Protons
   // Get chain
-  TChain p_mc("Compact")
+  TChain p_mc("Compact");
   p_mc.Add("/net/dataserver3/data/users/bueno/data/mc/Pr.B1200/*.root");
   // Create empty class objects
   NtpCompact *p_comp = new NtpCompact();
   // Set Branch address
-  p_mc->SetBranchAddress("Compact", &p_comp);
-  for (int i=0; i<p_mc->GetEntries(); i++) {
+  p_mc.SetBranchAddress("Compact", &p_comp);
+  for (int i=0; i<p_mc.GetEntries(); i++) {
 
     // Get entry
-    p_mc->GetEntry(i);
+    p_mc.GetEntry(i);
 
     // Apply cuts
     if (EventSelectorCompact(p_comp, "111111x_111")) {
@@ -283,10 +325,10 @@ void MCmeejat(string rootfiles == "kapteyn") {
   NtpCompact *d_comp = new NtpCompact();
   // Set Branch address
   d_mc->SetBranchAddress("Compact", &d_comp);
-  for (int i=0; i<d_mc->GetEntries(); i++) {
+  for (int i=0; i<d_mc.GetEntries(); i++) {
 
     // Get entry
-    d_mc->GetEntry(i);
+    d_mc.GetEntry(i);
 
     // Apply cuts
     if (EventSelectorCompact(d_comp, "111111x_111")) {
@@ -305,7 +347,7 @@ void MCmeejat(string rootfiles == "kapteyn") {
   d_gen->Write();
 
   // Write file
-  f->Write();
-  f->Close();
+  f.Write();
+  f.Close();
 
 }
