@@ -57,6 +57,7 @@ class Anaaqra {
     // CutEff()
     TH1F *CutEff_data     = new TH1F("CutEff_data", "Selection Efficiency of Data per Rigidity Bin", 32, Bin_edges);
     TH1F *CutEff_MC       = new TH1F("CutEff_MC", "Selection Efficiency of MC per Rigidity Bin", 32, Bin_edges);
+    TH1F *CutEff_MC_err   = new TH1F("CutEff_MC_err", "Selection Efficiency error of MC per Rigidity Bin", 32, Bin_edges);
     // TrigEff()
     TH1F *PhysHist_mc     = new TH1F("PhysHist_mc", "PhysHist_mc", 32, Bin_edges);
     TH1F *UnphHist_mc     = new TH1F("UnphHist_mc", "UnphHist_mc", 32, Bin_edges);
@@ -897,7 +898,7 @@ void Anaaqra::CutEff(bool plot_all = 0) {
     CE_mc[i] = CutEff_MC->GetBinContent(i+1);
     CE_data[i] = CutEff_data->GetBinContent(i+1);
     CE_ratio[i] = CE_mc[i] / CE_data[i];
-    CE_mc_err[i] *= CE_mc[i];
+    CE_mc_err[i] = CE_mc[i] * CutEff_MC_err->GetBinContent(i+1);
     CE_data_err[i] *= CE_data[i];
     CE_ratio_err[i] = CE_ratio[i] * TMath::Sqrt(pow(CE_mc_err[i]/CE_mc[i], 2) + pow(CE_data_err[i]/CE_data[i], 2));
   }
