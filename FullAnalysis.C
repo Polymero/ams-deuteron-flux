@@ -168,7 +168,7 @@ class Anaaqra {
     void ParameterAnalysis(const char* cutbit = "1111111_111"); // Returns raw and cut histograms of various parameters
     void RigBinner();                           // Returns number of selected events as function of rigidity
     void Exposure();                            // Returns exposure time (livetime) as function of rigidity
-    void Acceptance(bool apply_cuts = 0);       // Returns (geometric) acceptance as function of rigidity
+    void Acceptance(bool apply_cuts = 1);       // Returns (geometric) acceptance as function of rigidity
     void CutEff(bool plot_all = 0);             // Returns the cut (selection) efficiency as function of rigidity
     void TrigEff(int delta = 100);              // Returns the trigger efficiency as function of rigidity
     void RICH_MB(int proj_num = 10);
