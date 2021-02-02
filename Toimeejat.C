@@ -203,7 +203,7 @@ void MCmeejat(string rootfiles = "kapteyn") {
   // D->Branch("D_generated", %d_det);
   // Parameters
   int p_num = 52; //minus last one
-  int d_num = 141;
+  int d_num = 140;
   int p_start = 1209496744;
   int d_start = 74496930;
   double bin_edges[32+1] = {1.00,1.16,1.33,1.51,1.71,1.92,2.15,2.40,2.67,2.97,
