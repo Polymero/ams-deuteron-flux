@@ -11,6 +11,8 @@
 // CREATE SIMPLIFIED TREE FROM ROOT FILES
 void Toimeejat(string rootfiles = "local") {
 
+  cout << "Running Toimeejat()..." << endl;
+
   // Create new objects
   TFile f("../Simp.root", "recreate");
   TTree *T = new TTree("Simp", "Simplified Compact Tree");
@@ -135,5 +137,175 @@ void Toimeejat(string rootfiles = "local") {
   // Print and scan tree (for visual check)
   T->Print();
   T->Scan("tof_beta:rich_beta:utime:lf:cf", "", "colsize=15 precision=10", 24, 0);
+
+  cout << "Toimeejat() has fininshed!\n" << endl;
+
+}
+
+void MCmeejat(string rootfiles == "kapteyn") {
+
+  cout << "Running MCmeejat()..." << endl;
+
+  // Create new objects
+  TFile f("../MCHists.root", "recreate");
+  // TTree *P = new TTree("Protons", "Proton MC Histograms");
+  // TTree *D = new TTree("Deuterons", "Deuteron MC Histograms");
+  // // Initialise branches
+  // P->Branch("P_detected", &p_det);
+  // P->Branch("P_generated", &p_gen);
+  // D->Branch("D_detected", &d_det);
+  // D->Branch("D_generated", %d_det);
+  // Parameters
+  int p_num = 53;
+  int d_num = 141;
+  int p_start = 1209496744;
+  int d_start = 74496930;
+  double bin_edges[32+1] = {1.00,1.16,1.33,1.51,1.71,1.92,2.15,2.40,2.67,2.97,
+                            3.29,3.64,4.02,4.43,4.88,5.37,5.90,6.47,7.09,7.76,
+                            8.48,9.26,10.1,11.0,12.0,13.0,14.1,15.3,16.6,18.0,
+                            19.5,21.1,22.8};
+  // Create histograms
+  TH1D *p_det = new TH1D("p_det", "Detected MC Proton Events", 32, bin_edges);
+  TH1D *p_cut = new TH1D("p_cut", "Selected MC Proton Events", 32, bin_edges);
+  TH1D *p_gen = new TH1D("p_gen", "Generated MC Proton Events", 32, bin_edges);
+  TH1D *d_det = new TH1D("d_det", "Detected MC Deuteron Events", 32, bin_edges);
+  TH1D *d_cut = new TH1D("d_cut", "Selected MC Deuteron Events", 32, bin_edges);
+  TH1D *d_gen = new TH1D("d_gen", "Generated MC Deuteron Events", 32, bin_edges);
+
+  // loop over MC files individually (for gen hists)
+  // Protons
+  for (int i=0; i<p_num; i++) {
+
+    // Import tree
+    TChain p_fi("File");
+    p_fi.Add(Form("/net/dataserver3/data/users/bueno/data/mc/Pr.B1200/%d.root", p_start + i));
+    // Create empty class objects
+    FileMCInfo *p_fmci = new class FileMCInfo();
+    // Set branch addresses
+    p_fi.SetBranchAddress("FileMCInfo", &p_fmci);
+
+    // Temporary parameters
+    double ngen = 0;
+    double rig_min = 0;
+    double rig_max = 0;
+
+    // Get FileMCInfo entry for info on MC generation
+    p_fi.GetEntry(0);
+    // Get file parameters
+    ngen = p_fmci->ngen_datacard;
+    rig_min = p_fmci->momentum[0];
+    rig_max = p_fmci->momentum[1];
+
+    // 1/R generation spectrum
+    TD1 *genFlux = new TF1("genFlux", "[0]/(x)", rig_min, rig_max);
+    // Normalisation
+    genFlux->SetParameter(0, log(rig_max / rig_min));
+
+    // Loop over rigidity bins
+    for (int j=0; j<32; j++) {
+      // Fraction of spectrum in bin
+      double frac = genFlux->Integral(bin_edges[j], bin_edges[j+1]) / genFlux->Integral(rig_min, rig_max);
+      // Number of events in fraction
+      double nev = frac * ngen;
+      // Set bin to current bin count + nev
+      p_gen->SetBinContent(j+1, p_gen->GetBinContent(j+1) + nev);
+    }
+
+  }
+
+  // Deuterons
+  for (int i=0; i<d_num; i++) {
+
+    // Get chain
+    TChain d_fi("File");
+    d_fi.Add(Form("/net/dataserver3/data/users/bueno/data/mc/D.B1220/%d.root", d_start + i));
+    // Create empty class objects
+    FileMCInfo *d_fmci = new class FileMCInfo();
+    // Set branch addresses
+    d_fi.SetBranchAddress("FileMCInfo", &d_fmci);
+
+    // Temporary parameters
+    double ngen = 0;
+    double rig_min = 0;
+    double rig_max = 0;
+
+    // Get FileMCInfo entry for info on MC generation
+    d_fi.GetEntry(0);
+    // Get file parameters
+    ngen = d_fmci->ngen_datacard;
+    rig_min = d_fmci->momentum[0];
+    rig_max = d_fmci->momentum[1];
+
+    // 1/R generation spectrum
+    TD1 *genFlux = new TF1("genFlux", "[0]/(x)", rig_min, rig_max);
+    // Normalisation
+    genFlux->SetParameter(0, log(rig_max / rig_min));
+
+    // Loop over rigidity bins
+    for (int j=0; j<32; j++) {
+      // Fraction of spectrum in bin
+      double frac = genFlux->Integral(bin_edges[j], bin_edges[j+1]) / genFlux->Integral(rig_min, rig_max);
+      // Number of events in fraction
+      double nev = frac * ngen;
+      // Set bin to current bin count + nev
+      d_gen->SetBinContent(j+1, d_gen->GetBinContent(j+1) + nev);
+    }
+
+  }
+
+  // Loop over MC Compact entries
+  // Protons
+  // Get chain
+  TChain p_mc("Compact")
+  p_mc.Add("/net/dataserver3/data/users/bueno/data/mc/Pr.B1200/*.root");
+  // Create empty class objects
+  NtpCompact *p_comp = new NtpCompact();
+  // Set Branch address
+  p_mc->SetBranchAddress("Compact", &p_comp);
+  for (int i=0; i<p_mc->GetEntries(); i++) {
+
+    // Get entry
+    p_mc->GetEntry(i);
+
+    // Apply cuts
+    if (EventSelectorCompact(p_comp, "111111x_111")) {
+      p_cut->Fill(p_comp->trk_rig[0]);
+    }
+    p_det->Fill(p_comp->trk_rig[0]);
+
+  }
+
+  // Deuterons
+  // Get chain
+  TChain d_mc("Compact")
+  d_mc.Add("/net/dataserver3/data/users/bueno/data/mc/D.B1220/*.root");
+  // Create empty class objects
+  NtpCompact *d_comp = new NtpCompact();
+  // Set Branch address
+  d_mc->SetBranchAddress("Compact", &d_comp);
+  for (int i=0; i<d_mc->GetEntries(); i++) {
+
+    // Get entry
+    d_mc->GetEntry(i);
+
+    // Apply cuts
+    if (EventSelectorCompact(d_comp, "111111x_111")) {
+      d_cut->Fill(d_comp->trk_rig[0]);
+    }
+    d_det->Fill(d_comp->trk_rig[0]);
+
+  }
+
+  // Fill file
+  p_det->Write();
+  p_cut->Write();
+  p_gen->Write();
+  d_det->Write();
+  d_cut->Write();
+  d_gen->Write();
+
+  // Write file
+  f->Write();
+  f->Close();
 
 }

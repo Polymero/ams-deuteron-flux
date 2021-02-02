@@ -580,7 +580,7 @@ void Anaaqra::Exposure() {
   c_Exposure->Draw();
   c_Exposure->Print((outdir + "Exposure Time.png").c_str());
 
-    cout << "Exposure() has finished!\n" << endl;
+  cout << "Exposure() has finished!\n" << endl;
 
 }
 
