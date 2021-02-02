@@ -366,13 +366,13 @@ void MCmeejat(string rootfiles = "kapteyn") {
     // TOF charge cut
     bool tof_q = (p_comp->tof_q_lay[0] > 0.8)&&(p_comp->tof_q_lay[0] < 1.5);
     // Fill base histograms
-    if (EventSelectorCompact(p_comp, "110011x_111")) {p_Btof_MC->Fill(p_comp->trk_rig[0]);}
-    if (EventSelectorCompact(p_comp, "111100x_111") && tof_q) {p_Btrk_MC->Fill(p_comp->trk_rig[0]);}
+    if (EventSelectorCompact(p_comp, "110011x_111", 1)) {p_Btof_MC->Fill(p_comp->trk_rig[0]);}
+    if (EventSelectorCompact(p_comp, "111100x_111", 1) && tof_q) {p_Btrk_MC->Fill(p_comp->trk_rig[0]);}
     // Fill cut histograms
-    if (EventSelectorCompact(p_comp, "111111x_111")) {p_Cpar_MC->Fill(p_comp->trk_rig[0]);}
-    if (EventSelectorCompact(p_comp, "110111x_111")) {p_Cbet_MC->Fill(p_comp->trk_rig[0]);}
-    if (EventSelectorCompact(p_comp, "111100x_111") && tof_q) {p_Cchi_MC->Fill(p_comp->trk_rig[0]);}
-    if (EventSelectorCompact(p_comp, "111010x_111") && tof_q) {p_Cinn_MC->Fill(p_comp->trk_rig[0]);}
+    if (EventSelectorCompact(p_comp, "111111x_111", 1)) {p_Cpar_MC->Fill(p_comp->trk_rig[0]);}
+    if (EventSelectorCompact(p_comp, "110111x_111", 1)) {p_Cbet_MC->Fill(p_comp->trk_rig[0]);}
+    if (EventSelectorCompact(p_comp, "111100x_111", 1) && tof_q) {p_Cchi_MC->Fill(p_comp->trk_rig[0]);}
+    if (EventSelectorCompact(p_comp, "111010x_111", 1) && tof_q) {p_Cinn_MC->Fill(p_comp->trk_rig[0]);}
 
   }
 
@@ -413,18 +413,18 @@ void MCmeejat(string rootfiles = "kapteyn") {
     // TOF charge cut
     bool tof_q = (d_comp->tof_q_lay[0] > 0.8)&&(d_comp->tof_q_lay[0] < 1.5);
     // Fill base histograms
-    if (EventSelectorCompact(d_comp, "110011x_111")) {d_Btof_MC->Fill(d_comp->trk_rig[0]);}
-    if (EventSelectorCompact(d_comp, "111100x_111") && tof_q) {d_Btrk_MC->Fill(d_comp->trk_rig[0]);}
-    if (EventSelectorCompact(d_comp, "111111x_001")) {d_Brch_MC->Fill(d_comp->trk_rig[0]);}
+    if (EventSelectorCompact(d_comp, "110011x_111", 2)) {d_Btof_MC->Fill(d_comp->trk_rig[0]);}
+    if (EventSelectorCompact(d_comp, "111100x_111", 2) && tof_q) {d_Btrk_MC->Fill(d_comp->trk_rig[0]);}
+    if (EventSelectorCompact(d_comp, "111111x_001", 2)) {d_Brch_MC->Fill(d_comp->trk_rig[0]);}
     // Fill cut histograms
-    if (EventSelectorCompact(d_comp, "111111x_111")) {d_Cpar_MC->Fill(d_comp->trk_rig[0]);}
-    if (EventSelectorCompact(d_comp, "110111x_111")) {d_Cbet_MC->Fill(d_comp->trk_rig[0]);}
-    if (EventSelectorCompact(d_comp, "111100x_110") && tof_q) {d_Cchi_MC->Fill(d_comp->trk_rig[0]);}
-    if (EventSelectorCompact(d_comp, "111010x_110") && tof_q) {d_Cinn_MC->Fill(d_comp->trk_rig[0]);}
-    if (EventSelectorCompact(d_comp, "111000x_111") && tof_q) {d_Clay_MC->Fill(d_comp->trk_rig[0]);}
-    if (EventSelectorCompact(d_comp, "111111x_011")) {d_Ccon_MC->Fill(d_comp->trk_rig[0]);}
-    if (EventSelectorCompact(d_comp, "111111x_101")) {d_Cagl_MC->Fill(d_comp->trk_rig[0]);}
-    if (EventSelectorCompact(d_comp, "111111x_201")) {d_Cnaf_MC->Fill(d_comp->trk_rig[0]);}
+    if (EventSelectorCompact(d_comp, "111111x_111", 2)) {d_Cpar_MC->Fill(d_comp->trk_rig[0]);}
+    if (EventSelectorCompact(d_comp, "110111x_111", 2)) {d_Cbet_MC->Fill(d_comp->trk_rig[0]);}
+    if (EventSelectorCompact(d_comp, "111100x_110", 2) && tof_q) {d_Cchi_MC->Fill(d_comp->trk_rig[0]);}
+    if (EventSelectorCompact(d_comp, "111010x_110", 2) && tof_q) {d_Cinn_MC->Fill(d_comp->trk_rig[0]);}
+    if (EventSelectorCompact(d_comp, "111000x_111", 2) && tof_q) {d_Clay_MC->Fill(d_comp->trk_rig[0]);}
+    if (EventSelectorCompact(d_comp, "111111x_011", 2)) {d_Ccon_MC->Fill(d_comp->trk_rig[0]);}
+    if (EventSelectorCompact(d_comp, "111111x_101", 2)) {d_Cagl_MC->Fill(d_comp->trk_rig[0]);}
+    if (EventSelectorCompact(d_comp, "111111x_201", 2)) {d_Cnaf_MC->Fill(d_comp->trk_rig[0]);}
 
     }
 
