@@ -890,24 +890,24 @@ void Anaaqra::CutEff(bool plot_all = 0) {
     CE_data_err[i] *= CE_data[i];
     CE_ratio_err[i] = CE_ratio[i] * TMath::Sqrt(pow(CE_mc_err[i]/CE_mc[i], 2) + pow(CE_data_err[i]/CE_data[i], 2));
   }
-  TGraphErrors* ce_mc_graph = new TGraphErrors(32, Bin_mid, CE_mc, Bin_err, CE_mc_err);
-  TGraphErrors* ce_data_graph = new TGraphErrors(32, Bin_mid, CE_data, Bin_err, CE_data_err);
+  TGraphErrors* CE_MC_Graph = new TGraphErrors(32, Bin_mid, CE_mc, Bin_err, CE_mc_err);
+  TGraphErrors* CE_Data_Graph = new TGraphErrors(32, Bin_mid, CE_data, Bin_err, CE_data_err);
   // Canvas
   TCanvas* c_CutEff = new TCanvas("c_CutEff", "Selection Efficiency per Rigitidy Bin");
-  ce_mc_graph->Draw("AP");
-  ce_data_graph->Draw("P");
+  CE_MC_Graph->Draw("AP");
+  CE_Data_Graph->Draw("P");
   // Styling
-  ce_mc_graph->SetMarkerStyle(20);
-  ce_mc_graph->SetMarkerSize(1);
-  ce_mc_graph->SetMarkerColor(kRed);
-  ce_data_graph->SetMarkerStyle(20);
-  ce_data_graph->SetMarkerSize(1);
-  ce_data_graph->SetMarkerColor(kBlue);
+  CE_MC_Graph->SetMarkerStyle(20);
+  CE_MC_Graph->SetMarkerSize(1);
+  CE_MC_Graph->SetMarkerColor(kRed);
+  CE_Data_Graph->SetMarkerStyle(20);
+  CE_Data_Graph->SetMarkerSize(1);
+  CE_Data_Graph->SetMarkerColor(kBlue);
   // Axes
-  ce_mc_graph->SetMaximum(1);
-  ce_mc_graph->SetMinimum(0);
-  ce_mc_graph->GetXaxis()->SetTitle("R [GV]");
-  ce_mc_graph->GetYaxis()->SetTitle("Selection Efficiency");
+  CE_MC_Graph->SetMaximum(1);
+  CE_MC_Graph->SetMinimum(0);
+  CE_MC_Graph->GetXaxis()->SetTitle("R [GV]");
+  CE_MC_Graph->GetYaxis()->SetTitle("Selection Efficiency");
   // Print
   c_CutEff->Draw();
   c_CutEff->Print((outdir + "Selection Efficiency.png").c_str());
