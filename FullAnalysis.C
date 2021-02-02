@@ -854,43 +854,43 @@ void Anaaqra::CutEff(bool plot_all = 0) {
                                   * Cinn_data->GetBinContent(i+1));
   }
 
-  if (plot_all) {
-
-    // Canvasses
-    // Single particle cut
-    TCanvas *c_spc = new TCanvas("c_spc", "Single Particle Cut Efficiency");
-    Cpar_MC->Draw(); Cpar_data->Draw("same");
-    Cpar_MC->SetLineColor(kRed); Cpar_data->SetLineColor(kBlue);
-    Cpar_MC->SetLineWidth(2); Cpar_data->SetLineWidth(2);
-    Cpar_MC->SetMinimum(0); Cpar_MC->SetMaximum(1.05);
-    Cpar_MC->GetXaxis()->SetTitle("R [GV]"); Cpar_MC->GetYaxis()->SetTitle("Cut Efficiency");
-    c_spc->Draw(); c_spc->Print("./ProtonAnalysis/CE/Single Particle Cut Efficiency.png");
-    // Downward going track cut
-    TCanvas *c_dgc = new TCanvas("c_dgc", "Downward Particle Cut Efficiency");
-    Cbet_MC->Draw(); Cbet_data->Draw("same");
-    Cbet_MC->SetLineColor(kRed); Cbet_data->SetLineColor(kBlue);
-    Cbet_MC->SetLineWidth(2); Cbet_data->SetLineWidth(2);
-    Cbet_MC->SetMinimum(0); Cbet_MC->SetMaximum(1.05);
-    Cbet_MC->GetXaxis()->SetTitle("R [GV]"); Cbet_MC->GetYaxis()->SetTitle("Cut Efficiency");
-    c_dgc->Draw(); c_dgc->Print("./ProtonAnalysis/CE/Downward Particle Cut Efficiency.png");
-    // Well constructed track cut
-    TCanvas *c_wtc = new TCanvas("c_wtc", "Well-constructed Track Cut Efficiency");
-    Cchi_MC->Draw(); Cchi_data->Draw("same");
-    Cchi_MC->SetLineColor(kRed); Cchi_data->SetLineColor(kBlue);
-    Cchi_MC->SetLineWidth(2); Cchi_data->SetLineWidth(2);
-    Cchi_MC->SetMinimum(0); Cchi_MC->SetMaximum(1.05);
-    Cchi_MC->GetXaxis()->SetTitle("R [GV]"); Cchi_MC->GetYaxis()->SetTitle("Cut Efficiency");
-    c_wtc->Draw(); c_wtc->Print("./ProtonAnalysis/CE/Well-constructed Track Cut Efficiency.png");
-    // Inner tracker charge cut
-    TCanvas *c_itc = new TCanvas("c_itc", "Inner Tracker Charge Cut Efficiency");
-    Cinn_MC->Draw(); Cinn_data->Draw("same");
-    Cinn_MC->SetLineColor(kRed); Cinn_data->SetLineColor(kBlue);
-    Cinn_MC->SetLineWidth(2); Cinn_data->SetLineWidth(2);
-    Cinn_MC->SetMinimum(0); Cinn_MC->SetMaximum(1.05);
-    Cinn_MC->GetXaxis()->SetTitle("R [GV]"); Cinn_MC->GetYaxis()->SetTitle("Cut Efficiency");
-    c_itc->Draw(); c_itc->Print("./ProtonAnalysis/CE/Inner Tracker Charge Cut Efficiency.png");
-
-  }
+  // if (plot_all) {
+  //
+  //   // Canvasses
+  //   // Single particle cut
+  //   TCanvas *c_spc = new TCanvas("c_spc", "Single Particle Cut Efficiency");
+  //   Cpar_MC->Draw(); Cpar_data->Draw("same");
+  //   Cpar_MC->SetLineColor(kRed); Cpar_data->SetLineColor(kBlue);
+  //   Cpar_MC->SetLineWidth(2); Cpar_data->SetLineWidth(2);
+  //   Cpar_MC->SetMinimum(0); Cpar_MC->SetMaximum(1.05);
+  //   Cpar_MC->GetXaxis()->SetTitle("R [GV]"); Cpar_MC->GetYaxis()->SetTitle("Cut Efficiency");
+  //   c_spc->Draw(); c_spc->Print("./ProtonAnalysis/CE/Single Particle Cut Efficiency.png");
+  //   // Downward going track cut
+  //   TCanvas *c_dgc = new TCanvas("c_dgc", "Downward Particle Cut Efficiency");
+  //   Cbet_MC->Draw(); Cbet_data->Draw("same");
+  //   Cbet_MC->SetLineColor(kRed); Cbet_data->SetLineColor(kBlue);
+  //   Cbet_MC->SetLineWidth(2); Cbet_data->SetLineWidth(2);
+  //   Cbet_MC->SetMinimum(0); Cbet_MC->SetMaximum(1.05);
+  //   Cbet_MC->GetXaxis()->SetTitle("R [GV]"); Cbet_MC->GetYaxis()->SetTitle("Cut Efficiency");
+  //   c_dgc->Draw(); c_dgc->Print("./ProtonAnalysis/CE/Downward Particle Cut Efficiency.png");
+  //   // Well constructed track cut
+  //   TCanvas *c_wtc = new TCanvas("c_wtc", "Well-constructed Track Cut Efficiency");
+  //   Cchi_MC->Draw(); Cchi_data->Draw("same");
+  //   Cchi_MC->SetLineColor(kRed); Cchi_data->SetLineColor(kBlue);
+  //   Cchi_MC->SetLineWidth(2); Cchi_data->SetLineWidth(2);
+  //   Cchi_MC->SetMinimum(0); Cchi_MC->SetMaximum(1.05);
+  //   Cchi_MC->GetXaxis()->SetTitle("R [GV]"); Cchi_MC->GetYaxis()->SetTitle("Cut Efficiency");
+  //   c_wtc->Draw(); c_wtc->Print("./ProtonAnalysis/CE/Well-constructed Track Cut Efficiency.png");
+  //   // Inner tracker charge cut
+  //   TCanvas *c_itc = new TCanvas("c_itc", "Inner Tracker Charge Cut Efficiency");
+  //   Cinn_MC->Draw(); Cinn_data->Draw("same");
+  //   Cinn_MC->SetLineColor(kRed); Cinn_data->SetLineColor(kBlue);
+  //   Cinn_MC->SetLineWidth(2); Cinn_data->SetLineWidth(2);
+  //   Cinn_MC->SetMinimum(0); Cinn_MC->SetMaximum(1.05);
+  //   Cinn_MC->GetXaxis()->SetTitle("R [GV]"); Cinn_MC->GetYaxis()->SetTitle("Cut Efficiency");
+  //   c_itc->Draw(); c_itc->Print("./ProtonAnalysis/CE/Inner Tracker Charge Cut Efficiency.png");
+  //
+  // }
 
   // TGraph
   for (int i=0; i<Bin_num; i++) {
