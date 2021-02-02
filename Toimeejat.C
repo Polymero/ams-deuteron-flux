@@ -145,13 +145,17 @@ void Toimeejat(string rootfiles = "local") {
 
 
 // Returns bool if event passed specified selection of cuts
-bool EventSelectorCompact(NtpCompact* comp, const char* cutbit) {
+bool EventSelectorCompact(NtpCompact* comp, const char* cutbit, int atype) {
 
   bool pass = 1;
+  double bin_edges[32+1] = {1.00,1.16,1.33,1.51,1.71,1.92,2.15,2.40,2.67,2.97,
+                            3.29,3.64,4.02,4.43,4.88,5.37,5.90,6.47,7.09,7.76,
+                            8.48,9.26,10.1,11.0,12.0,13.0,14.1,15.3,16.6,18.0,
+                            19.5,21.1,22.8};
 
   // Boolean cuts (instead of TCut)
   // Protons (base cuts)
-  bool Crig = (comp->trk_rig[0] > Bin_edges[0])&&(comp->trk_rig[0] <= Bin_edges[Bin_num]);
+  bool Crig = (comp->trk_rig[0] > bin_edges[0])&&(comp->trk_rig[0] <= bin_edges[32]);
   bool Ctrg = ((comp->sublvl1&0x3E)!=0)&&((comp->trigpatt&0x2)!=0);
   bool Cpar = comp->status % 10 == 1;
   bool Cbet = comp->tof_beta > 0.3;
@@ -184,7 +188,7 @@ bool EventSelectorCompact(NtpCompact* comp, const char* cutbit) {
 
 
 
-void MCmeejat(string rootfiles == "kapteyn") {
+void MCmeejat(string rootfiles = "kapteyn") {
 
   cout << "Running MCmeejat()..." << endl;
 
@@ -310,7 +314,7 @@ void MCmeejat(string rootfiles == "kapteyn") {
     p_mc.GetEntry(i);
 
     // Apply cuts
-    if (EventSelectorCompact(p_comp, "111111x_111")) {
+    if (EventSelectorCompact(p_comp, "111111x_111", 1)) {
       p_cut->Fill(p_comp->trk_rig[0]);
     }
     p_det->Fill(p_comp->trk_rig[0]);
@@ -319,19 +323,19 @@ void MCmeejat(string rootfiles == "kapteyn") {
 
   // Deuterons
   // Get chain
-  TChain d_mc("Compact")
+  TChain d_mc("Compact");
   d_mc.Add("/net/dataserver3/data/users/bueno/data/mc/D.B1220/*.root");
   // Create empty class objects
   NtpCompact *d_comp = new NtpCompact();
   // Set Branch address
-  d_mc->SetBranchAddress("Compact", &d_comp);
+  d_mc.SetBranchAddress("Compact", &d_comp);
   for (int i=0; i<d_mc.GetEntries(); i++) {
 
     // Get entry
     d_mc.GetEntry(i);
 
     // Apply cuts
-    if (EventSelectorCompact(d_comp, "111111x_111")) {
+    if (EventSelectorCompact(d_comp, "111111x_111", 2)) {
       d_cut->Fill(d_comp->trk_rig[0]);
     }
     d_det->Fill(d_comp->trk_rig[0]);
