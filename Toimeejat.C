@@ -423,8 +423,8 @@ void MCmeejat(string rootfiles = "kapteyn") {
     if (EventSelectorCompact(d_comp, "111010x_110", 2) && tof_q) {d_Cinn_MC->Fill(d_comp->trk_rig[0]);}
     if (EventSelectorCompact(d_comp, "111000x_111", 2) && tof_q) {d_Clay_MC->Fill(d_comp->trk_rig[0]);}
     if (EventSelectorCompact(d_comp, "111111x_011", 2)) {d_Ccon_MC->Fill(d_comp->trk_rig[0]);}
-    //if (EventSelectorCompact(d_comp, "111111x_101", 2)) {d_Cagl_MC->Fill(d_comp->trk_rig[0]);}
-    if (EventSelectorCompact(d_comp, "111111x_201", 2)) {d_Cnaf_MC->Fill(d_comp->trk_rig[0]);}
+    if (EventSelectorCompact(d_comp, "111111x_101", 2)) {d_Cagl_MC->Fill(d_comp->trk_rig[0]);}
+    //if (EventSelectorCompact(d_comp, "111111x_201", 2)) {d_Cnaf_MC->Fill(d_comp->trk_rig[0]);}
 
     }
 
