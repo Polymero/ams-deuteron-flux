@@ -242,7 +242,7 @@ void MCmeejat(string rootfiles = "kapteyn") {
   TH1F *d_Ccon_MC = new TH1F("d_Ccon_MC", "Deuteron Beta Consistency Cut", 32, bin_edges);
   TH1F *d_Clay_MC = new TH1F("d_Clay_MC", "Deuteron First Tracker Layer Charge Cut", 32, bin_edges);
   TH1F *d_Cagl_MC = new TH1F("d_Cagl_MC", "Deuteron Aerogel RICH Select Cut", 32, bin_edges);
-  TH1F *d_Cnaf_MC = new TH1F("d_Cnaf_MC", "Deuteron NaF RICH Select Cut", 32, bin_edges);
+  //TH1F *d_Cnaf_MC = new TH1F("d_Cnaf_MC", "Deuteron NaF RICH Select Cut", 32, bin_edges);
   TH1F *d_Btof_MC = new TH1F("d_Btof_MC", "Deuteron TOF Base Cut", 32, bin_edges);
   TH1F *d_Btrk_MC = new TH1F("d_Btrk_MC", "Deuteron Tracker Base Cut", 32, bin_edges);
   TH1F *d_Brch_MC = new TH1F("d_Brch_MC", "Deuteron RICH Base Cut", 32, bin_edges);
@@ -423,7 +423,7 @@ void MCmeejat(string rootfiles = "kapteyn") {
     if (EventSelectorCompact(d_comp, "111010x_110", 2) && tof_q) {d_Cinn_MC->Fill(d_comp->trk_rig[0]);}
     if (EventSelectorCompact(d_comp, "111000x_111", 2) && tof_q) {d_Clay_MC->Fill(d_comp->trk_rig[0]);}
     if (EventSelectorCompact(d_comp, "111111x_011", 2)) {d_Ccon_MC->Fill(d_comp->trk_rig[0]);}
-    if (EventSelectorCompact(d_comp, "111111x_101", 2)) {d_Cagl_MC->Fill(d_comp->trk_rig[0]);}
+    //if (EventSelectorCompact(d_comp, "111111x_101", 2)) {d_Cagl_MC->Fill(d_comp->trk_rig[0]);}
     if (EventSelectorCompact(d_comp, "111111x_201", 2)) {d_Cnaf_MC->Fill(d_comp->trk_rig[0]);}
 
     }
@@ -458,8 +458,7 @@ void MCmeejat(string rootfiles = "kapteyn") {
                                    + (1/d_Cinn_MC->GetBinContent(i+1) + 1/d_Btrk_MC->GetBinContent(i+1))
                                    + (1/d_Clay_MC->GetBinContent(i+1) + 1/d_Btrk_MC->GetBinContent(i+1))
                                    + (1/d_Ccon_MC->GetBinContent(i+1) + 1/d_Brch_MC->GetBinContent(i+1))
-                                   + (1/d_Cagl_MC->GetBinContent(i+1) + 1/d_Brch_MC->GetBinContent(i+1))
-                                   + (1/d_Cnaf_MC->GetBinContent(i+1) + 1/d_Brch_MC->GetBinContent(i+1))));
+                                   + (1/d_Cagl_MC->GetBinContent(i+1) + 1/d_Brch_MC->GetBinContent(i+1))));
     }
     // Divide by corresponding instrument base
     d_Cpar_MC->Divide(d_Btof_MC);
@@ -469,7 +468,7 @@ void MCmeejat(string rootfiles = "kapteyn") {
     d_Clay_MC->Divide(d_Btrk_MC);
     d_Ccon_MC->Divide(d_Brch_MC);
     d_Cagl_MC->Divide(d_Brch_MC);
-    d_Cnaf_MC->Divide(d_Brch_MC);
+    //d_Cnaf_MC->Divide(d_Brch_MC);
     // Cut Efficiency MC
     for (int i=0; i<32; i++) {
       d_ce->SetBinContent(i+1, d_Cpar_MC->GetBinContent(i+1)
@@ -478,8 +477,7 @@ void MCmeejat(string rootfiles = "kapteyn") {
                                * d_Cinn_MC->GetBinContent(i+1)
                                * d_Clay_MC->GetBinContent(i+1)
                                * d_Ccon_MC->GetBinContent(i+1)
-                               * d_Cagl_MC->GetBinContent(i+1)
-                               * d_Cnaf_MC->GetBinContent(i+1));
+                               * d_Cagl_MC->GetBinContent(i+1));
     }
 
   // Fill file
