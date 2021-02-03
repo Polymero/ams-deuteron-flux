@@ -849,7 +849,7 @@ void Anaaqra::CutEff(bool plot_all = 0) {
                      + (1/Cinn_data->GetBinContent(i+1) + 1/Btrk_data->GetBinContent(i+1))
                      + (1/Clay_data->GetBinContent(i+1) + 1/Btrk_data->GetBinContent(i+1))
                      + (1/Ccon_data->GetBinContent(i+1) + 1/Brch_data->GetBinContent(i+1))
-                     + (1/Cagl_data->GetBinContent(i+1) + 1/Brch_data->GetBinContent(i+1))));
+                     + (1/Cagl_data->GetBinContent(i+1) + 1/Brch_data->GetBinContent(i+1)));
   }
 
   // Divide by corresponding instrument base
