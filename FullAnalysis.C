@@ -810,8 +810,12 @@ void Anaaqra::CutEff(bool plot_all = 0) {
   TH1F *Cbet_data = new TH1F("Cbet_data", "Downward Particle Cut", 32, Bin_edges);
   TH1F *Cchi_data = new TH1F("Cchi_data", "Well-constructed Track Cut", 32, Bin_edges);
   TH1F *Cinn_data = new TH1F("Cinn_data", "Inner Tracker Charge Cut", 32, Bin_edges);
+  TH1F *Clay_data = new TH1F("Clay_data", "First Tracker Layer Charge Cut", 32, Bin_edges);
+  TH1F *Ccon_data = new TH1F("Ccon_data", "Consistent Beta Cut", 32, Bin_edges);
+  TH1F *Cagl_data = new TH1F("Cagl_data", "Aerogel RICH Select Cut", 32, Bin_edges);
   TH1F *Btof_data = new TH1F("Btof_data", "TOF Base Cut", 32, Bin_edges);
   TH1F *Btrk_data = new TH1F("Btrk_data", "Tracker Base Cut", 32, Bin_edges);
+  TH1F *Brch_data = new TH1F("Brch_data", "RICH Base Cut", 32, Bin_edges);
 
   // Loop over data entries
   for (int i=0; i<Simp_chain->GetEntries(); i++) {
@@ -824,12 +828,16 @@ void Anaaqra::CutEff(bool plot_all = 0) {
     // Fill base histograms
     if (EventSelectorSimple(Tool, "1100111_111")) {Btof_data->Fill(Tool->trk_rig);}
     if (EventSelectorSimple(Tool, "1111001_111") && tof_q) {Btrk_data->Fill(Tool->trk_rig);}
+    if (EventSelectorSimple(Tool, "1111111_001")) {Brch_data->Fill(Tool->trk_rig);}
 
     // Fill cut histograms
     if (EventSelectorSimple(Tool, "1110111_111")) {Cpar_data->Fill(Tool->trk_rig);}
     if (EventSelectorSimple(Tool, "1101111_111")) {Cbet_data->Fill(Tool->trk_rig);}
     if (EventSelectorSimple(Tool, "1111101_111") && tof_q) {Cchi_data->Fill(Tool->trk_rig);}
     if (EventSelectorSimple(Tool, "1111011_111") && tof_q) {Cinn_data->Fill(Tool->trk_rig);}
+    if (EventSelectorSimple(Tool, "1110001_111") && tof_q) {Clay_data->Fill(Tool->trk_rig);}
+    if (EventSelectorSimple(Tool, "1111111_011")) {Ccon_data->Fill(Tool->trk_rig);}
+    if (EventSelectorSimple(Tool, "1111111_101")) {Cagl_data->Fill(Tool->trk_rig);}
 
   }
 
@@ -838,7 +846,10 @@ void Anaaqra::CutEff(bool plot_all = 0) {
     CE_data_err[i] = TMath::Sqrt((1/Cpar_data->GetBinContent(i+1) + 1/Btof_data->GetBinContent(i+1))
                      + (1/Cbet_data->GetBinContent(i+1) + 1/Btof_data->GetBinContent(i+1))
                      + (1/Cchi_data->GetBinContent(i+1) + 1/Btrk_data->GetBinContent(i+1))
-                     + (1/Cinn_data->GetBinContent(i+1) + 1/Btrk_data->GetBinContent(i+1)));
+                     + (1/Cinn_data->GetBinContent(i+1) + 1/Btrk_data->GetBinContent(i+1))
+                     + (1/Clay_data->GetBinContent(i+1) + 1/Btrk_data->GetBinContent(i+1))
+                     + (1/Ccon_data->GetBinContent(i+1) + 1/Brch_data->GetBinContent(i+1))
+                     + (1/Cagl_data->GetBinContent(i+1) + 1/Brch_data->GetBinContent(i+1))));
   }
 
   // Divide by corresponding instrument base
@@ -846,13 +857,19 @@ void Anaaqra::CutEff(bool plot_all = 0) {
   Cbet_data->Divide(Btof_data);
   Cchi_data->Divide(Btrk_data);
   Cinn_data->Divide(Btrk_data);
+  Clay_data->Divide(Btrk_data);
+  Ccon_data->Divide(Brch_data);
+  Cagl_data->Divide(Brch_data);
 
   // Loop over rigidity bins
   for (int i=0; i<Bin_num; i++) {
     CutEff_data->SetBinContent(i+1, Cpar_data->GetBinContent(i+1)
                                   * Cbet_data->GetBinContent(i+1)
                                   * Cchi_data->GetBinContent(i+1)
-                                  * Cinn_data->GetBinContent(i+1));
+                                  * Cinn_data->GetBinContent(i+1)
+                                  * Clay_data->GetBinContent(i+1)
+                                  * Ccon_data->GetBinContent(i+1)
+                                  * Cagl_data->GetBinContent(i+1));
   }
 
   // if (plot_all) {

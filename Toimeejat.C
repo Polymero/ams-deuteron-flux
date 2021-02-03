@@ -503,4 +503,6 @@ void MCmeejat(string rootfiles = "kapteyn") {
   f.Write();
   f.Close();
 
+  cout << "MCmeejat() has finished!\n" << endl;
+
 }
