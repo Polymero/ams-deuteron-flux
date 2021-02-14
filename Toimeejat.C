@@ -480,24 +480,24 @@ void MCmeejat(string rootfiles = "kapteyn") {
                                * d_Cagl_MC->GetBinContent(i+1));
     }
 
-  // Fill file
+  // Fill file  ( NECESSARY ??? )
   // Acceptance()
-  p_det->Write();
-  p_cut->Write();
-  p_gen->Write();
-  d_det->Write();
-  d_cut->Write();
-  d_gen->Write();
-  // TrigEff()
-  p_te_phys->Write();
-  p_te_unph->Write();
-  d_te_phys->Write();
-  d_te_unph->Write();
-  // CutEff()
-  p_ce->Write();
-  p_ce_err->Write();
-  d_ce->Write();
-  d_ce_err->Write();
+  // p_det->Write();
+  // p_cut->Write();
+  // p_gen->Write();
+  // d_det->Write();
+  // d_cut->Write();
+  // d_gen->Write();
+  // // TrigEff()
+  // p_te_phys->Write();
+  // p_te_unph->Write();
+  // d_te_phys->Write();
+  // d_te_unph->Write();
+  // // CutEff()
+  // p_ce->Write();
+  // p_ce_err->Write();
+  // d_ce->Write();
+  // d_ce_err->Write();
 
   // Write file
   f.Write();
