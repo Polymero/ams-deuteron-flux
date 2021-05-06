@@ -23,7 +23,7 @@
 
 // Class
 class Mirja {
-	public: // Accews Specifier
+	public: // Access Specifier
 
 	//-------------------------------------------------------------------------------
 	// ATTRIBUTES
@@ -179,10 +179,12 @@ void Mirja::RunAnalysis(const char* runbit = "1111111") {
 
 		// RigBinner() -- Bin events as function of rigidity
 		Events_raw->Fill(Comp->trk_rig[0]);
+		// Protons
 		if ((boolbit & 2032) == 2032) {
 			Events_pcut->Fill(Comp->trk_rig[0]);
 		}
-		if ((boolbit & 2047) == 2047) {
+		// Deuterons
+		if ((boolbit & 2047) == 2047) { 
 			Events_dcut->Fill(Comp->trk_rig[0]);
 		}
 
@@ -191,6 +193,7 @@ void Mirja::RunAnalysis(const char* runbit = "1111111") {
     	bool HasPhysTrig = ((Comp->sublvl1&0x3E)!=0)&&((Comp->trigpatt&0x2)!=0);
     	bool HasUnphTrig = ((Comp->sublvl1&0x3E)==0)&&((Comp->trigpatt&0x2)!=0);
     	// Fill histograms
+    	// Protons
     	if ((boolbit & 1776) == 1776) {
     		if (HasPhysTrig) {
     			P_phT->Fill(Comp->trk_rig[0]);
@@ -199,11 +202,87 @@ void Mirja::RunAnalysis(const char* runbit = "1111111") {
     			P_unT->Fill(Comp->trk_rig[0]);
     		}
     	}
+    	// Deuterons
     	if ((boolbit & 1791) == 1791) {
-
+    		if (HasPhysTrig) {
+    			D_phT->Fill(Comp->trk_rig[0]);
+    		}
+    		if (HasUnphTrig) {
+    			D_unT->Fill(Comp->trk_rig[0]);
+    		}
     	}
 
 		// SelEff(): Data -- Selection efficiency of applied cuts as function of rigidity
+    	// Additional TOF charge cuts (to replace TRK charge cuts)
+    	bool tof_q_p = (Comp->tof_q_lay[0] > 0.8)&&(Comp-tof_q_lay[0] < 1.5)
+    	bool tof_q_d = (Comp->tof_d_lay[1] < 1.9)
+		// Fill histograms
+		// Protons
+		// TRK Base
+		if ((boolbit & 1856) == 1856)&&(tof_q_p) {
+			P_TRK_Base_Data->Fill(Comp->trk_rig[0]);
+		}
+		// TOF Base
+		if ((boolbit & 1968) == 1968) {
+			P_TOF_Base_Data->Fill(Comp->trk_rig[0]);
+		}
+		// Ppar Cut (TRK Base)
+		if ((boolbit & 1984) == 1984)&&(tof_q_p) {
+			P_Ppar_Cut_Data->Fill(Comp->trk_rig[0]);
+		}
+		// Pbet Cut (TOF Base)
+		if ((boolbit & 2032) == 2032) {
+			P_Pbet_Cut_Data->Fill(Comp->trk_rig[0]);
+		}
+		// Pchi Cut (TRK Base)
+		if ((boolbit & 1888) == 1888)&&(tof_q_p) {
+			P_Pchi_Cut_Data->Fill(Comp->trk_rig[0]);
+		}
+		// Pinn Cut (TRK Base)
+		if ((boolbit & 1872) == 1872) {
+			P_Pinn_Cut_Data->Fill(Comp->trk_rig[0]);
+		}
+		// Deuterons
+		// TRK Base
+		if ((boolbit & 1870) == 1870)&&(tof_q_p)&&(tof_q_d) {
+			D_TRK_Base_Data->Fill(Comp->trk_rig[0]);
+		}
+		// TOF Base
+		if ((boolbit & 1981) == 1981) {
+			D_TOF_Base_Data->Fill(Comp->trk_rig[0]);
+		}
+		// RCH Base
+		if ((boolbit & 2041) == 2041) {
+			D_RCH_Base_Data->Fill(Comp->trk_rig[0]);
+		}
+		// Ppar Cut
+		if ((boolbit & 1998) == 1998)&&(tof_q_p)&&(tof_q_d) {
+			D_Ppar_Cut_Data->Fill(Comp->trk_rig[0]);
+		}
+		// Pbet Cut
+		if ((boolbit & 2045) == 2045) {
+			D_Pbet_Cut_Data->Fill(Comp->trk_rig[0]);
+		}
+		// Pchi Cut
+		if ((boolbit & 1902) == 1902)&&(tof_q_p)&&(tof_q_d) {
+			D_Pchi_Cut_Data->Fill(Comp->trk_rig[0]);
+		}
+		// Pinn Cut
+		if ((boolbit & 1886) == 1886)&&(tof_q_d) {
+			D_Pinn_Cut_Data->Fill(Comp->trk_rig[0]);
+		}
+		// Dagl Cut
+		if ((boolbit & 2045) == 2045) {
+			D_Dagl_Cut_Data->Fill(Comp->trk_rig[0]);
+		}
+		// Dcon Cut
+		if ((boolbit & 2043) == 2043) {
+			D_Dcon_Cut_Data->Fill(Comp->trk_rig[0]);
+		}
+		// Dlay Cut
+		if ((boolbit & 1871) == 1871)&&(tof_q_p) {
+			D_Dlay_Cut_Data->Fill(Comp->trk_rig[0]);
+		}
 
 	}
 
