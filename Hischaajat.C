@@ -185,6 +185,7 @@ void Mirja::RunAnalysis() {
 
 	int RTII_chain_num = RTII_chain->GetEntries();
 	cout << "Number of RTIInfo Entries: " << RTII_chain_num << endl;
+
 	// Looping over RTII files
 	for (int i=0; i<RTII_chain_num; i++) {
 
@@ -205,19 +206,22 @@ void Mirja::RunAnalysis() {
 
 		}
 
-		int progress = (RTII_chain_num / 100);
-
+		// Progress tracker
+		int progress = (RTII_chain_num / 20);
 		if (i % progress == 0) {
-			cout << "Done" << i << "so far" << flush;
+			cout << "#" << flush;
 		} 
 
 	}
 
 	//-------------------------------------------------------------------------------
-	cout << "Looping over Compact Data... (2/6)" << endl;
-	cout << "Number of Compact Entries: " << Comp_chain->GetEntries() << endl;
+	cout << "\nLooping over Compact Data... (2/6)" << endl;
+
+	int Comp_chain_num = Comop_chain->GetEntries();
+	cout << "Number of Compact Entries: " << Comp_chain_num << endl;
+
 	// Loop over Data Compact entries
-	for (int i=0; i<Comp_chain->GetEntries(); i++) {
+	for (int i=0; i<Comp_chain_num; i++) {
 
 		// Get entry
 		Comp_chain->GetEntry(i);
@@ -349,13 +353,22 @@ void Mirja::RunAnalysis() {
 			D_Dlay_Cut_Data->Fill(Comp->trk_rig[0]);
 		}
 
+		// Progress tracker
+		int progress = (Comp_chain_num / 20);
+		if (i % progress == 0) {
+			cout << "#" << flush;
+		} 
+
 	}
 
 	//-------------------------------------------------------------------------------
-	cout << "Looping over Proton MC Compact Data... (3/6)" << endl;
-	cout << "Number of MC Proton Compact Entries: " << MCps_chain->GetEntries() << endl;
+	cout << "\nLooping over Proton MC Compact Data... (3/6)" << endl;
+
+	int MCps_chain_num = MCps_chain->GetEntries();
+	cout << "Number of MC Proton Compact Entries: " << MCps_chain_num << endl;
+
 	// Loop over MC Proton Compact entries
-	for (int i=0; i<MCps_chain->GetEntries(); i++) {
+	for (int i=0; i<MCps_chain_num; i++) {
 
 		// Get entry
 		MCps_chain->GetEntry(i);
@@ -429,14 +442,22 @@ void Mirja::RunAnalysis() {
 			MCp_Pinn_Cut_Data->Fill(MCp_comp->trk_rig[0]);
 		}
 
+		// Progress tracker
+		int progress = (MCps_chain_num / 20);
+		if (i % progress == 0) {
+			cout << "#" << flush;
+		} 
 
 	}
 
 	//-------------------------------------------------------------------------------
-	cout << "Looping over Deuteron MC Compact Data... (4/6)" << endl;
-	cout << "Number of MC Deuteron Compact Entries: " << MCds_chain->GetEntries() << endl;
+	cout << "\nLooping over Deuteron MC Compact Data... (4/6)" << endl;
+
+	int MCds_chain_num = MCds_chain->GetEntries();
+	cout << "Number of MC Deuteron Compact Entries: " << MCds_chain_num << endl;
+
 	// Loop over MC Deuteron Compact entries
-	for (int i=0; i<MCds_chain->GetEntries(); i++) {
+	for (int i=0; i<MCds_chain_num; i++) {
 
 		// Get entry
 		MCds_chain->GetEntry(i);
@@ -527,13 +548,22 @@ void Mirja::RunAnalysis() {
 			MCd_Dlay_Cut_Data->Fill(MCd_comp->trk_rig[0]);
 		}
 
+		// Progress tracker
+		int progress = (MCds_chain_num / 20);
+		if (i % progress == 0) {
+			cout << "#" << flush;
+		}
+
 	}
 
 	//-------------------------------------------------------------------------------
-	cout << "Looping over Proton MC File Info Data... (5/6)" << endl;
-	cout << "Number of Proton FileMCInfo Entries: " << MCpi_chain->GetEntries() << endl;
+	cout << "\nLooping over Proton MC File Info Data... (5/6)" << endl;
+
+	int MCpi_chain_num = MCpi_chain->GetEntries();
+	cout << "Number of Proton FileMCInfo Entries: " << MCpi_chain_num << endl;
+
 	// Loop over MC Proton FileMCInfo entries
-	for (int i=0; i<MCpi_chain->GetEntries(); i++) {
+	for (int i=0; i<MCpi_chain_num; i++) {
 
 		// Get entry
 		MCpi_chain->GetEntry(i);
@@ -558,13 +588,22 @@ void Mirja::RunAnalysis() {
 		  MCp_gen->SetBinContent(j+1, MCp_gen->GetBinContent(j+1) + evnum);
 		}
 
+		// Progress tracker
+		int progress = (MCpi_chain_num / 20);
+		if (i % progress == 0) {
+			cout << "#" << flush;
+		}
+
 	}
 
 	//-------------------------------------------------------------------------------
-	cout << "Looping over Deuteron MC File Info Data... (6/6)" << endl;
-	cout << "Number of Deuteron FileMCInfo Entries: " << MCdi_chain->GetEntries() << endl;
+	cout << "\nLooping over Deuteron MC File Info Data... (6/6)" << endl;
+
+	int MCdi_chain_num = MCdi_chain->GetEntries();
+	cout << "Number of Deuteron FileMCInfo Entries: " << MCdi_chain_num << endl;
+
 	// Loop over MC Deuteron FileMCInfo entries
-	for (int i=0; i<MCdi_chain->GetEntries(); i++) {
+	for (int i=0; i<MCdi_chain_num; i++) {
 
 		// Get entry
 		MCdi_chain->GetEntry(i);
@@ -587,6 +626,12 @@ void Mirja::RunAnalysis() {
 		  double evnum = frac * ngen;
 		  // Set bin to current bin count + number of events
 		  MCd_gen->SetBinContent(j+1, MCd_gen->GetBinContent(j+1) + evnum);
+		}
+
+		// Progress tracker
+		int progress = (MCdi_chain_num / 20);
+		if (i % progress == 0) {
+			cout << "#" << flush;
 		}
 		
 	}
