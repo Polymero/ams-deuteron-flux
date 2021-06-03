@@ -217,7 +217,7 @@ void Mirja::RunAnalysis() {
 	//-------------------------------------------------------------------------------
 	cout << "\nLooping over Compact Data... (2/6)" << endl;
 
-	int Comp_chain_num = Comop_chain->GetEntries();
+	int Comp_chain_num = Comp_chain->GetEntries();
 	cout << "Number of Compact Entries: " << Comp_chain_num << endl;
 
 	// Loop over Data Compact entries
