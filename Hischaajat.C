@@ -205,7 +205,7 @@ void Mirja::RunAnalysis() {
 
 		}
 
-		double progress = (RTII_chain_num / 100);
+		int progress = (RTII_chain_num / 100);
 
 		if (i % progress == 0) {
 			cout << "Done" << i << "so far" << flush;
