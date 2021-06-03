@@ -151,9 +151,9 @@ class Mirja {
 		Comp_chain->SetBranchAddress("SHeader", &SHeader);
 		RTII_chain->SetBranchAddress("RTIInfo", &RTIInfo);
 		MCps_chain->SetBranchAddress("Compact", &MCp_comp);
-		MCpi_chain->SetBranchAddress("FileMCInfo", MCp_info);
+		MCpi_chain->SetBranchAddress("FileMCInfo", &MCp_info);
 		MCds_chain->SetBranchAddress("Compact", &MCd_comp);
-		MCdi_chain->SetBranchAddress("FileMCInfo", MCd_info);
+		MCdi_chain->SetBranchAddress("FileMCInfo", &MCd_info);
 
 		cout << "\nClass succesfully constructed!\n" << endl;
 
