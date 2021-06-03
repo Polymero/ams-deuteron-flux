@@ -182,9 +182,11 @@ void Mirja::RunAnalysis() {
 
 	//-------------------------------------------------------------------------------
 	cout << "Looping over RTIInfo Data... (1/6)" << endl;
-	cout << "Number of RTIInfo Entries: " << RTII_chain->GetEntries() << endl;
+
+	int RTII_chain_num = RTII_chain->GetEntries();
+	cout << "Number of RTIInfo Entries: " << RTII_chain_num << endl;
 	// Looping over RTII files
-	for (int i=0; i<RTII_chain->GetEntries(); i++) {
+	for (int i=0; i<RTII_chain_num; i++) {
 
 		// Get entry
 		RTII_chain->GetEntry(i);
@@ -202,6 +204,12 @@ void Mirja::RunAnalysis() {
 			}
 
 		}
+
+		double progress = (RTII_chain_num / 100);
+
+		if (i % progress == 0) {
+			cout << "Done" << i << "so far" << flush
+		} 
 
 	}
 
