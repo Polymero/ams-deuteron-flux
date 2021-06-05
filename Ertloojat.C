@@ -56,6 +56,11 @@ class Uspo {
 			Bin_mid[i] = (Bin_edges[i+1] + Bin_edges[i]) / 2;
 		}
 
+		// Retrieve histogram ROOT file $ Hischaajat.C
+		cout << "Trying to load Histogram file..." << flush
+		TFile *Hist_file = new TFile("../test.root");
+		cout << "   ...File loaded!" << endl;
+
 		cout << "\nClass succesfully constructed!\n" << endl;
 
 	};
@@ -76,12 +81,39 @@ class Uspo {
 //-----------------------------------------------------------------------------------
 // METHOD FUNCTIONS
 //-----------------------------------------------------------------------------------
-//
+// Saves TGraph graphs
 void Uspo::RunAnalysis() {
 
 	cout << "Starting RunAnalysis()..." << endl;
 
 	//-------------------------------------------------------------------------------
+	cout << "Creating event graphs... (1/?)" << endl;
+
+	// Get histograms
+	H_Events_raw  = (TH1F*)Hist_file->Get("Events_raw");
+	H_Events_pcut = (TH1F*)Hist_file->Get("Events_pcut");
+	H_Events_dcut = (TH1F*)Hist_file->Get("Events_dcut");
+
+	// Set arrays
+	double Events_raw[Bin_num]; double Events_raw_err[Bin_num];
+	double Events_pcut[Bin_num]; double Events_pcut_err[Bin_num]; 
+	double Events_dcut[Bin_num]; double Events_dcut_err[Bin_num];
+	for (int i=0; i<Bin_num; i++) {
+		Events_raw[i]  = H_Events_raw->GetBinContent(i+1);
+		Events_pcut[i] = H_Events_pcut->GetBinContent(i+1);
+		Events_dcut[i] = H_Events_dcut->GetBinContent(i+1);
+		Events_raw_err[i]  = TMath::Sqrt(Events_raw[i]);
+		Events_pcut_err[i] = TMath::Sqrt(Events_pcut[i]);
+		Events_dcut_err[i] = TMath::Sqrt(Events_dcut[i]);
+	}
+
+	// TGraphs
+	TGraphErrors *G_Events_raw  = new TGraphErrors(Bin_num, Bin_mid, Events_raw, Bin_err, Events_raw_err);
+	TGraphErrors *G_Events_pcut = new TGraphErrors(Bin_num, Bin_mid, Events_pcut, Bin_err, Events_pcut_err);
+	TGraphErrors *G_Events_dcut = new TGraphErrors(Bin_num, Bin_mid, Events_dcut, Bin_err, Events_dcut_err);
+
+	// Canvas
+
 
 	cout << "\n All done! :) \n"
 

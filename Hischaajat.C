@@ -175,7 +175,7 @@ class Mirja {
 //-----------------------------------------------------------------------------------
 // METHOD FUNCTIONS
 //-----------------------------------------------------------------------------------
-// Returns TH1D histograms
+// Saves TH1D histograms
 void Mirja::RunAnalysis() {
 
 	cout << "Starting RunAnalysis()..." << endl;
@@ -207,7 +207,7 @@ void Mirja::RunAnalysis() {
 		}
 
 		// Progress tracker
-		int progress = (RTII_chain_num / 20);
+		int progress = (RTII_chain_num / 100);
 		if (i % progress == 0) {
 			cout << "#" << flush;
 		} 
@@ -354,7 +354,7 @@ void Mirja::RunAnalysis() {
 		}
 
 		// Progress tracker
-		int progress = (Comp_chain_num / 20);
+		int progress = (Comp_chain_num / 100);
 		if (i % progress == 0) {
 			cout << "#" << flush;
 		} 
@@ -443,7 +443,7 @@ void Mirja::RunAnalysis() {
 		}
 
 		// Progress tracker
-		int progress = (MCps_chain_num / 20);
+		int progress = (MCps_chain_num / 100);
 		if (i % progress == 0) {
 			cout << "#" << flush;
 		} 
@@ -549,7 +549,7 @@ void Mirja::RunAnalysis() {
 		}
 
 		// Progress tracker
-		int progress = (MCds_chain_num / 20);
+		int progress = (MCds_chain_num / 100);
 		if (i % progress == 0) {
 			cout << "#" << flush;
 		}
@@ -589,7 +589,7 @@ void Mirja::RunAnalysis() {
 		}
 
 		// Progress tracker
-		int progress = (MCpi_chain_num / 20);
+		int progress = (MCpi_chain_num / 100);
 		if (i % progress == 0) {
 			cout << "#" << flush;
 		}
@@ -629,7 +629,7 @@ void Mirja::RunAnalysis() {
 		}
 
 		// Progress tracker
-		int progress = (MCdi_chain_num / 20);
+		int progress = (MCdi_chain_num / 100);
 		if (i % progress == 0) {
 			cout << "#" << flush;
 		}
