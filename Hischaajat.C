@@ -1,14 +1,13 @@
 // Written by Sebastiaan Venendaal (University of Groningen, the Netherlands)
 // C++ class for histogram generation of AMS-02 data, used for p/d flux analysis
 // Created 			03-03-21
-// Last modified 	02-06-21
+// Last modified 	06-06-21
 
 // Include header files
 #include <iostream>
 #include <string>
 #include <algorithm>
 #include "Header Files/Ntp.h"
-//#include "Header Files/Simple.h"
 #include "TChain.h"
 #include "TF1.h"
 #include "TH1F.h"
@@ -49,59 +48,59 @@ class Mirja {
 	// Histograms
 	// Compact Data (protons and deuterons)
 	TH1F *ExposureTime      = new TH1F("ExposureTime", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *Events_raw        = new TH1F("Events_raw", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *Events_pcut       = new TH1F("Events_pcut ", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *Events_dcut       = new TH1F("Events_dcut ", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *P_phT      		= new TH1F("P_phT", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *P_unT      		= new TH1F("P_unT", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *D_phT      		= new TH1F("D_phT", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *D_unT   	        = new TH1F("D_unT", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *P_TRK_Base_Data   = new TH1F("P_TRK_Base_Data", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *P_TOF_Base_Data   = new TH1F("P_TOF_Base_Data", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *P_Ppar_Cut_Data   = new TH1F("P_Ppar_Cut_Data", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *P_Pbet_Cut_Data   = new TH1F("P_Pbet_Cut_Data", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *P_Pchi_Cut_Data   = new TH1F("P_Pchi_Cut_Data", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *P_Pinn_Cut_Data   = new TH1F("P_Pinn_Cut_Data", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *D_TRK_Base_Data   = new TH1F("D_TRK_Base_Data", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *D_TOF_Base_Data   = new TH1F("D_TOF_Base_Data", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *D_RCH_Base_Data   = new TH1F("D_RCH_Base_Data", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *D_Ppar_Cut_Data   = new TH1F("D_Ppar_Cut_Data", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *D_Pbet_Cut_Data   = new TH1F("D_Pbet_Cut_Data", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *D_Pchi_Cut_Data   = new TH1F("D_Pchi_Cut_Data", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *D_Pinn_Cut_Data   = new TH1F("D_Pinn_Cut_Data", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *D_Dagl_Cut_Data   = new TH1F("D_Dagl_Cut_Data", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *D_Dcon_Cut_Data   = new TH1F("D_Dcon_Cut_Data", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *D_Dlay_Cut_Data   = new TH1F("D_Dlay_Cut_Data", "Exposure Time per Rigidity Bin", 32, Bin_edges);
+	TH1F *Events_raw        = new TH1F("Events_raw", "Detected Events per Rigidity Bin", 32, Bin_edges);
+	TH1F *Events_pcut       = new TH1F("Events_pcut ", "Selected Proton Events per Rigidity Bin", 32, Bin_edges);
+	TH1F *Events_dcut       = new TH1F("Events_dcut ", "Selected Deuteron Events per Rigidity Bin", 32, Bin_edges);
+	TH1F *P_phT      		= new TH1F("P_phT", "Proton Physical Triggers per Rigidity Bin", 32, Bin_edges);
+	TH1F *P_unT      		= new TH1F("P_unT", "Proton Bias Triggers per Rigidity Bin", 32, Bin_edges);
+	TH1F *D_phT      		= new TH1F("D_phT", "Deuteron Physical per Rigidity Bin", 32, Bin_edges);
+	TH1F *D_unT   	        = new TH1F("D_unT", "Deuteron Bias per Rigidity Bin", 32, Bin_edges);
+	TH1F *P_TRK_Base_Data   = new TH1F("P_TRK_Base_Data", "Proton Tracker Base", 32, Bin_edges);
+	TH1F *P_TOF_Base_Data   = new TH1F("P_TOF_Base_Data", "Proton TOF Base", 32, Bin_edges);
+	TH1F *P_Ppar_Cut_Data   = new TH1F("P_Ppar_Cut_Data", "Proton Ppar Cut", 32, Bin_edges);
+	TH1F *P_Pbet_Cut_Data   = new TH1F("P_Pbet_Cut_Data", "Proton Pbet Cut", 32, Bin_edges);
+	TH1F *P_Pchi_Cut_Data   = new TH1F("P_Pchi_Cut_Data", "Proton Pchi Cut", 32, Bin_edges);
+	TH1F *P_Pinn_Cut_Data   = new TH1F("P_Pinn_Cut_Data", "Proton Pinn Cut", 32, Bin_edges);
+	TH1F *D_TRK_Base_Data   = new TH1F("D_TRK_Base_Data", "Deuteron Tracker Base", 32, Bin_edges);
+	TH1F *D_TOF_Base_Data   = new TH1F("D_TOF_Base_Data", "Deuteron TOF Base", 32, Bin_edges);
+	TH1F *D_RCH_Base_Data   = new TH1F("D_RCH_Base_Data", "Deuteron RICH Base", 32, Bin_edges);
+	TH1F *D_Ppar_Cut_Data   = new TH1F("D_Ppar_Cut_Data", "Deuteron Ppar Cut", 32, Bin_edges);
+	TH1F *D_Pbet_Cut_Data   = new TH1F("D_Pbet_Cut_Data", "Deuteron Pbet Cut", 32, Bin_edges);
+	TH1F *D_Pchi_Cut_Data   = new TH1F("D_Pchi_Cut_Data", "Deuteron Pchi Cut", 32, Bin_edges);
+	TH1F *D_Pinn_Cut_Data   = new TH1F("D_Pinn_Cut_Data", "Deuteron Pinn Cut", 32, Bin_edges);
+	TH1F *D_Dagl_Cut_Data   = new TH1F("D_Dagl_Cut_Data", "Deuteron Dagl Cut", 32, Bin_edges);
+	TH1F *D_Dcon_Cut_Data   = new TH1F("D_Dcon_Cut_Data", "Deuteron Dcon Cut", 32, Bin_edges);
+	TH1F *D_Dlay_Cut_Data   = new TH1F("D_Dlay_Cut_Data", "Deuteron Dlay Cut", 32, Bin_edges);
 	// MC Proton Compact Data 
-	TH1F *MCp_det    	  	= new TH1F("MCp_det", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *MCp_sel      		= new TH1F("MCp_sel", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *MCp_phT      		= new TH1F("MCp_phT", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *MCp_unT      		= new TH1F("MCp_unT", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *MCp_TRK_Base_Data = new TH1F("MCp_TRK_Base_Data", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *MCp_TOF_Base_Data = new TH1F("MCp_TOF_Base_Data", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *MCp_Ppar_Cut_Data = new TH1F("MCp_Ppar_Cut_Data", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *MCp_Pbet_Cut_Data = new TH1F("MCp_Pbet_Cut_Data", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *MCp_Pchi_Cut_Data = new TH1F("MCp_Pchi_Cut_Data", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *MCp_Pinn_Cut_Data = new TH1F("MCp_Pinn_Cut_Data", "Exposure Time per Rigidity Bin", 32, Bin_edges);
+	TH1F *MCp_det    	  	= new TH1F("MCp_det", "MC Proton Detected Events per Rigidity Bin", 32, Bin_edges);
+	TH1F *MCp_sel      		= new TH1F("MCp_sel", "MC Proton Selected Events per Rigidity Bin", 32, Bin_edges);
+	TH1F *MCp_phT      		= new TH1F("MCp_phT", "MC Proton Physical Triggers per Rigidity Bin", 32, Bin_edges);
+	TH1F *MCp_unT      		= new TH1F("MCp_unT", "MC Proton Bias Triggers per Rigidity Bin", 32, Bin_edges);
+	TH1F *MCp_TRK_Base_Data = new TH1F("MCp_TRK_Base_Data", "MC Proton Tracker Base", 32, Bin_edges);
+	TH1F *MCp_TOF_Base_Data = new TH1F("MCp_TOF_Base_Data", "MC Proton TOF Base", 32, Bin_edges);
+	TH1F *MCp_Ppar_Cut_Data = new TH1F("MCp_Ppar_Cut_Data", "MC Proton Ppar Cut", 32, Bin_edges);
+	TH1F *MCp_Pbet_Cut_Data = new TH1F("MCp_Pbet_Cut_Data", "MC Proton Pbet Cut", 32, Bin_edges);
+	TH1F *MCp_Pchi_Cut_Data = new TH1F("MCp_Pchi_Cut_Data", "MC Proton Pchi Cut", 32, Bin_edges);
+	TH1F *MCp_Pinn_Cut_Data = new TH1F("MCp_Pinn_Cut_Data", "MC Proton Pinn Cut", 32, Bin_edges);
 	// MC Deuteron Compact Data
-	TH1F *MCd_det      		= new TH1F("MCd_det", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *MCd_sel      		= new TH1F("MCd_sel", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *MCd_phT      		= new TH1F("MCd_phT", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *MCd_unT      		= new TH1F("MCd_unT", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *MCd_TRK_Base_Data = new TH1F("MCd_TRK_Base_Data", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *MCd_TOF_Base_Data = new TH1F("MCd_TOF_Base_Data", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *MCd_RCH_Base_Data = new TH1F("MCd_RCH_Base_Data", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *MCd_Ppar_Cut_Data = new TH1F("MCd_Ppar_Cut_Data", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *MCd_Pbet_Cut_Data = new TH1F("MCd_Pbet_Cut_Data", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *MCd_Pchi_Cut_Data = new TH1F("MCd_Pchi_Cut_Data", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *MCd_Pinn_Cut_Data = new TH1F("MCd_Pinn_Cut_Data", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *MCd_Dagl_Cut_Data = new TH1F("MCd_Dagl_Cut_Data", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *MCd_Dcon_Cut_Data = new TH1F("MCd_Dcon_Cut_Data", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	TH1F *MCd_Dlay_Cut_Data = new TH1F("MCd_Dlay_Cut_Data", "Exposure Time per Rigidity Bin", 32, Bin_edges);
+	TH1F *MCd_det      		= new TH1F("MCd_det", "MC Deuteron Detected Events per Rigidity Bin", 32, Bin_edges);
+	TH1F *MCd_sel      		= new TH1F("MCd_sel", "MC Deuteron Selected per Rigidity Bin", 32, Bin_edges);
+	TH1F *MCd_phT      		= new TH1F("MCd_phT", "MC Deuteron Physical Triggers per Rigidity Bin", 32, Bin_edges);
+	TH1F *MCd_unT      		= new TH1F("MCd_unT", "MC Deuteron Bias Triggers per Rigidity Bin", 32, Bin_edges);
+	TH1F *MCd_TRK_Base_Data = new TH1F("MCd_TRK_Base_Data", "MC Deuteron Tracker Base", 32, Bin_edges);
+	TH1F *MCd_TOF_Base_Data = new TH1F("MCd_TOF_Base_Data", "MC Deuteron TOF Base", 32, Bin_edges);
+	TH1F *MCd_RCH_Base_Data = new TH1F("MCd_RCH_Base_Data", "MC Deuteron RICH Base", 32, Bin_edges);
+	TH1F *MCd_Ppar_Cut_Data = new TH1F("MCd_Ppar_Cut_Data", "MC Deuteron Ppar Cut", 32, Bin_edges);
+	TH1F *MCd_Pbet_Cut_Data = new TH1F("MCd_Pbet_Cut_Data", "MC Deuteron Pbet Cut", 32, Bin_edges);
+	TH1F *MCd_Pchi_Cut_Data = new TH1F("MCd_Pchi_Cut_Data", "MC Deuteron Pchi Cut", 32, Bin_edges);
+	TH1F *MCd_Pinn_Cut_Data = new TH1F("MCd_Pinn_Cut_Data", "MC Deuteron Pinn Cut", 32, Bin_edges);
+	TH1F *MCd_Dagl_Cut_Data = new TH1F("MCd_Dagl_Cut_Data", "MC Deuteron Dagl Cut", 32, Bin_edges);
+	TH1F *MCd_Dcon_Cut_Data = new TH1F("MCd_Dcon_Cut_Data", "MC Deuteron Dcon Cut", 32, Bin_edges);
+	TH1F *MCd_Dlay_Cut_Data = new TH1F("MCd_Dlay_Cut_Data", "MC Deuteron Dlay Cut", 32, Bin_edges);
 	// MC Proton FileMCInfo
-	TH1F *MCp_gen      		= new TH1F("MCp_gen", "Exposure Time per Rigidity Bin", 32, Bin_edges);
-	//
-	TH1F *MCd_gen      		= new TH1F("MCd_gen", "Exposure Time per Rigidity Bin", 32, Bin_edges);
+	TH1F *MCp_gen      		= new TH1F("MCp_gen", "MC Proton Generated Events per Rigidity Bin", 32, Bin_edges);
+	// MC Deuteron FileMCInfo
+	TH1F *MCd_gen      		= new TH1F("MCd_gen", "MC Deuteron Generated Events per Rigidity Bin", 32, Bin_edges);
 
 	// Data objects
 	// Chains

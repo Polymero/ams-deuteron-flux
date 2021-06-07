@@ -1,14 +1,13 @@
 // Written by Sebastiaan Venendaal (University of Groningen, the Netherlands)
 // C++ class for histogram analysis of AMS-02 data, used for p/d flux analysis
 // Created 			02-06-21
-// Last modified 	02-06-21
+// Last modified 	06-06-21
 
 // Include header files
 #include <iostream>
 #include <string>
 #include <algorithm>
 #include "Header Files/Ntp.h"
-//#include "Header Files/Simple.h"
 #include "TChain.h"
 #include "TF1.h"
 #include "TH1F.h"
@@ -87,7 +86,7 @@ void Uspo::RunAnalysis() {
 	cout << "Starting RunAnalysis()..." << endl;
 
 	//-------------------------------------------------------------------------------
-	cout << "Creating event graphs... (1/?)" << endl;
+	cout << "Creating Events graph... (1/?)" << endl;
 
 	// Get histograms
 	H_Events_raw  = (TH1F*)Hist_file->Get("Events_raw");
@@ -113,8 +112,165 @@ void Uspo::RunAnalysis() {
 	TGraphErrors *G_Events_dcut = new TGraphErrors(Bin_num, Bin_mid, Events_dcut, Bin_err, Events_dcut_err);
 
 	// Canvas
+	TCanvas *C_Events = new TCanvas("C_Events", "Events per Rigidity Bin");
+	G_Events_raw->Draw("AP");
+	G_Events_pcut->Draw("P");
+	G_Events_dcut->Draw("P");
+	// Styling
+	G_Events_raw->SetMarkerStyle(20);
+	G_Events_raw->SetMarkerSize(1);
+	G_Events_raw->SetMarkerColor(kBlack);
+	G_Events_pcut->SetMarkerStyle(20);
+	G_Events_pcut->SetMarkerSize(1);
+	G_Events_pcut->SetMarkerColor(kBlue);
+	G_Events_dcut->SetMarkerStyle(20);
+	G_Events_dcut->SetMarkerSize(1);
+	G_Events_dcut->SetMarkerColor(kGreen);
+	// Axes
+	C_Events->SetLogy();
+	G_Events_raw->SetMinimum(1);
+	G_Events_raw->GetXaxis()->SetTitle("R [GV]");
+	G_Events_raw->GetYaxis()->SetTitle("Events");
+	// Print
+	C_Events->Draw();
+	C_Events->Print((outdir + "Events.png").c_str());
 
 
-	cout << "\n All done! :) \n"
+
+	//-------------------------------------------------------------------------------
+	cout << "Creating ExposureTime graph... (2/?)" << endl;
+
+	// Get histograms
+	H_ExposureTime = (TH1F*)Hist_file->Get("ExposureTime");
+
+	// Set arrays
+	double ExposureTime[Bin_num];
+	for (int i=0; i<Bin_num; i++) {
+		ExposureTime[i] = H_ExposureTime->GetBinContent(i+1);
+	}
+
+	// TGraphs
+	TGraphErrors *G_ExposureTime = new TGraphErrors(Bin_num, Bin_mid, ExposureTime, Bin_err, 0);
+
+	// Canvas
+	TCanvas *C_ExposureTime = new TCanvas("C_ExposureTime", "Exposure Time per Rigidity Bin");
+	G_ExposureTime->Draw("AP");
+	// Styling
+	G_ExposureTime->SetMarkerSize(20);
+	G_ExposureTime->SetMarkerSize(1);
+	G_ExposureTime->SetMarkerColor(kRed);
+	// Axes
+	C_ExposureTime->SetLogy();
+	G_ExposureTime->GetXaxis()->SetTitle("R [GV]");
+	G_ExposureTime->GetYaxis()->SetTitle("Exposure Time [s]");
+	// Print
+	C_ExposureTime->Draw();
+	C_ExposureTime->Print((outdir + "ExposureTime.png").c_str());
+
+
+
+	//-------------------------------------------------------------------------------
+	cout << "Creating Acceptance graphs... (3/?)" << endl;
+
+	// Get histograms
+	H_MCp_gen = (TH1F*)Hist_file->Get("MCp_gen");
+	H_MCp_det = (TH1F*)Hist_file->Get("MCp_det");
+	H_MCp_sel = (TH1F*)Hist_file->Get("MCp_sel");
+	H_MCd_gen = (TH1F*)Hist_file->Get("MCd_gen");
+	H_MCd_det = (TH1F*)Hist_file->Get("MCd_det");
+	H_MCd_sel = (TH1F*)Hist_file->Get("MCd_sel");
+
+	// Set arrays
+	double pAcceptance_det[Bin_num];
+	double pAcceptance_sel[Bin_num];
+	double dAcceptance_det[Bin_num];
+	double dAcceptance_sel[Bin_num];
+	for (int i=0; i<Bin_num; i++) {
+		pAcceptance_det[i] = TMath::Pi()*3.9*3.9 * H_MCp_det->GetBinContent(i+1) / H_MCp_gen->GetBinContent(i+1);
+		pAcceptance_sel[i] = TMath::Pi()*3.9*3.9 * H_MCp_sel->GetBinContent(i+1) / H_MCp_gen->GetBinContent(i+1);
+		dAcceptance_det[i] = TMath::Pi()*3.9*3.9 * H_MCd_det->GetBinContent(i+1) / H_MCd_gen->GetBinContent(i+1);
+		dAcceptance_sel[i] = TMath::Pi()*3.9*3.9 * H_MCd_sel->GetBinContent(i+1) / H_MCd_gen->GetBinContent(i+1);
+	}
+
+	// TGraphs
+	TGraphErrors *G_pAcceptance_det = new TGraphErrors(Bin_num, Bin_mid, pAcceptance_det, Bin_err, 0);
+	TGraphErrors *G_pAcceptance_sel = new TGraphErrors(Bin_num, Bin_mid, pAcceptance_sel, Bin_err, 0);
+	TGraphErrors *G_dAcceptance_det = new TGraphErrors(Bin_num, Bin_mid, dAcceptance_det, Bin_err, 0);
+	TGraphErrors *G_dAcceptance_sel = new TGraphErrors(Bin_num, Bin_mid, dAcceptance_sel, Bin_err, 0);
+
+	// Canvas 1
+	TCanvas *C_Acceptance_det = new TCanvas("C_Acceptance_det", "Uncut Acceptance per Rigidity Bin");
+	G_pAcceptance_det->Draw("AP");
+	G_dAcceptance_det->Draw("P");
+	// Styling
+	G_pAcceptance_det->SetMarkerStyle(20);
+	G_pAcceptance_det->SetMarkerSize(1);
+	G_pAcceptance_det->SetMarkerColor(kBlue);
+	G_dAcceptance_det->SetMarkerStyle(20);
+	G_dAcceptance_det->SetMarkerSize(1);
+	G_dAcceptance_det->SetMarkerColor(kGreen);
+	// Axes
+	G_pAcceptance_det->SetMinimum(0);
+	G_pAcceptance_det->GetXaxis()->SetTitle("R [GV]");
+	G_pAcceptance_det->GetYaxis()->SetTitle("Acceptance [m^2 sr]");
+	// Print
+	C_Acceptance_det->Draw();
+	C_Acceptance_det->Print((outdir + "AcceptanceUncut.png").c_str());
+
+	// Canvas 2
+	TCanvas *C_Acceptance_sel = new TCanvas("C_Acceptance_sel", "Cut Acceptance per Rigidity Bin");
+	G_pAcceptance_sel->Draw("AP");
+	G_dAcceptance_sel->Draw("P");
+	// Styling
+	G_pAcceptance_sel->SetMarkerStyle(20);
+	G_pAcceptance_sel->SetMarkerSize(1);
+	G_pAcceptance_sel->SetMarkerColor(kBlue);
+	G_dAcceptance_sel->SetMarkerStyle(20);
+	G_dAcceptance_sel->SetMarkerSize(1);
+	G_dAcceptance_sel->SetMarkerColor(kGreen);
+	// Axes
+	G_pAcceptance_sel->SetMinimum(0);
+	G_pAcceptance_sel->GetXaxis()->SetTitle("R [GV]");
+	G_pAcceptance_sel->GetYaxis()->SetTitle("Acceptance [m^2 sr]");
+	// Print
+	C_Acceptance_sel->Draw();
+	C_Acceptance_sel->Print((outdir + "AcceptanceCut.png").c_str());
+
+
+	//-------------------------------------------------------------------------------
+	cout << "Creating Trigger Efficiency graphs... (4/?)" << endl;
+
+	// Get histograms
+	H_P_phT = (TH1F*)Hist_file->Get("P_phT");
+	H_P_unT = (TH1F*)Hist_file->Get("P_unT");
+	H_D_phT = (TH1F*)Hist_file->Get("D_phT");
+	H_D_unT = (TH1F*)Hist_file->Get("D_unT");
+	H_MCp_phT = (TH1F*)Hist_file->Get("MCp_phT");
+	H_MCp_unT = (TH1F*)Hist_file->Get("MCp_unT");
+	H_MCd_phT = (TH1F*)Hist_file->Get("MCd_phT");
+	H_MCd_unT = (TH1F*)Hist_file->Get("MCd_unT");
+
+	// Set arrays
+ 	double p_TE[Bin_num]; double p_TE_err[Bin_num];
+ 	double d_TE[Bin_num]; double d_TE_err[Bin_num];
+ 	double MCp_TE[Bin_num]; double MCp_TE_err[Bin_num];
+ 	double MCd_TE[Bin_num]; double MCd_TE_err[Bin_num];
+ 	double p_TER[Bin_num]; double p_TER_err[Bin_num];
+ 	double d_TER[Bin_num]; double d_TER_err[Bin_num];
+ 	for (int i=0; i<Bin_num; i++) {
+ 		p_TE[i] = H_P_phT->GetBinContent(i+1) / (H_P_phT->GetBinContent(i+1) + H_P_unT->GetBinContent(i+1));
+ 		d_TE[i] = H_D_phT->GetBinContent(i+1) / (H_D_phT->GetBinContent(i+1) + H_D_unT->GetBinContent(i+1));
+ 		MCp_TE[i] = H_MCp_phT->GetBinContent(i+1) / (H_MCp_phT->GetBinContent(i+1) + H_MCp_unT->GetBinContent(i+1));
+ 		MCd_TE[i] = H_MCd_phT->GetBinContent(i+1) / (H_MCd_phT->GetBinContent(i+1) + H_MCd_unT->GetBinContent(i+1));
+ 		p_TER[i] = 
+ 	}
+
+	// Tgraphs
+
+
+	// Canvas
+
+
+
 
 }
