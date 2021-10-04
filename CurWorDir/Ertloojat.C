@@ -269,7 +269,9 @@ void Uspo::RunAnalysis() {
 
 
 	// Canvas
-
+ 	// Styling
+ 	// Axes
+ 	// Print
 
 
 

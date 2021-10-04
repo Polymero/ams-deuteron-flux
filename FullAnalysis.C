@@ -1264,3 +1264,11 @@ void Anaaqra::RICH_MB(int proj_num = 10){
   cout << "RICH_MB() has finished!\n" << endl;
 
 }
+
+void FullAnalysis() {
+
+  Anaaqra* A = new Anaaqra("p");
+
+  A->Flux();
+
+}
